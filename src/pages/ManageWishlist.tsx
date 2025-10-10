@@ -1,18 +1,30 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
-import { ArrowLeft, Plus, Trash2, ExternalLink, Loader2 } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { toast } from 'sonner';
+import { ArrowLeft, Plus, Trash2, ExternalLink, Loader2 } from 'lucide-react';
 
 interface WishlistItem {
   id: string;
   title: string;
   link: string | null;
-  is_taken: boolean;
   created_at: string;
 }
 
@@ -22,14 +34,14 @@ const ManageWishlist = () => {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [newTitle, setNewTitle] = useState("");
-  const [newLink, setNewLink] = useState("");
+  const [newTitle, setNewTitle] = useState('');
+  const [newLink, setNewLink] = useState('');
   const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
-        navigate("/auth");
+        navigate('/auth');
       } else {
         loadItems();
       }
@@ -38,18 +50,17 @@ const ManageWishlist = () => {
 
   const loadItems = async () => {
     try {
-      // Only load non-taken items (owner can't see taken items)
+      // Load all items for the owner (but don't show taken status to maintain surprise)
       const { data, error } = await supabase
-        .from("wishlist_items")
-        .select("*")
-        .eq("wishlist_id", id)
-        .eq("is_taken", false)
-        .order("created_at", { ascending: false });
+        .from('wishlist_items')
+        .select('id, title, link, created_at')
+        .eq('wishlist_id', id)
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
       setItems(data || []);
     } catch (error: any) {
-      toast.error("Failed to load items");
+      toast.error('Failed to load items');
     } finally {
       setLoading(false);
     }
@@ -57,16 +68,16 @@ const ManageWishlist = () => {
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newTitle.trim()) {
-      toast.error("Please enter a title");
+      toast.error('Please enter a title');
       return;
     }
 
     setAdding(true);
     try {
       const { data, error } = await supabase
-        .from("wishlist_items")
+        .from('wishlist_items')
         .insert([
           {
             wishlist_id: id,
@@ -80,12 +91,12 @@ const ManageWishlist = () => {
       if (error) throw error;
 
       setItems([data, ...items]);
-      setNewTitle("");
-      setNewLink("");
+      setNewTitle('');
+      setNewLink('');
       setDialogOpen(false);
-      toast.success("Item added!");
+      toast.success('Item added!');
     } catch (error: any) {
-      toast.error("Failed to add item");
+      toast.error('Failed to add item');
     } finally {
       setAdding(false);
     }
@@ -94,16 +105,16 @@ const ManageWishlist = () => {
   const handleDeleteItem = async (itemId: string) => {
     try {
       const { error } = await supabase
-        .from("wishlist_items")
+        .from('wishlist_items')
         .delete()
-        .eq("id", itemId);
+        .eq('id', itemId);
 
       if (error) throw error;
 
       setItems(items.filter((item) => item.id !== itemId));
-      toast.success("Item deleted");
+      toast.success('Item deleted');
     } catch (error: any) {
-      toast.error("Failed to delete item");
+      toast.error('Failed to delete item');
     }
   };
 
@@ -119,7 +130,10 @@ const ManageWishlist = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <Button variant="ghost" onClick={() => navigate("/")} className="mb-2">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="mb-2">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Wishlists
           </Button>
@@ -131,7 +145,9 @@ const ManageWishlist = () => {
         <div className="mb-8">
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
                 <Plus className="w-5 h-5 mr-2" />
                 Add Item
               </Button>
@@ -158,18 +174,17 @@ const ManageWishlist = () => {
                   className="text-base"
                   disabled={adding}
                 />
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={adding}
-                >
+                  disabled={adding}>
                   {adding ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Adding...
                     </>
                   ) : (
-                    "Add Item"
+                    'Add Item'
                   )}
                 </Button>
               </form>
@@ -192,14 +207,15 @@ const ManageWishlist = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-lg break-words">{item.title}</CardTitle>
+                      <CardTitle className="text-lg break-words">
+                        {item.title}
+                      </CardTitle>
                       {item.link && (
                         <a
                           href={item.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline flex items-center gap-1 mt-2 break-all"
-                        >
+                          className="text-sm text-primary hover:underline flex items-center gap-1 mt-2 break-all">
                           View link
                           <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </a>
@@ -209,8 +225,7 @@ const ManageWishlist = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDeleteItem(item.id)}
-                      className="text-destructive hover:text-destructive flex-shrink-0"
-                    >
+                      className="text-destructive hover:text-destructive flex-shrink-0">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
