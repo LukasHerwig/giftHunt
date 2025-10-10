@@ -28,6 +28,7 @@
   },
   "dashboard": {
     "title": "Instrumentpanel",
+    "description": "Hantera dina önskelistor och visa inbjudningar",
     "createNewWishlist": "Skapa Ny Önskelista",
     "noWishlistsYet": "Inga önskelistor än",
     "createFirstWishlist": "Skapa din första önskelista för att komma igång",
@@ -190,6 +191,7 @@
   "adminWishlist": {
     "copyShareLink": "Kopiera delningslänk",
     "generateShareLink": "Generera delningslänk",
+    "generating": "Genererar...",
     "activeShareLink": "Aktiv delningslänk",
     "takenItems": "Tagna föremål",
     "itemsClaimedByGuests": "Föremål som har gjorts anspråk på av gäster",

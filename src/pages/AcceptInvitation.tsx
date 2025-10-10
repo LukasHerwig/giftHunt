@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const AcceptInvitation = () => {
   const { t } = useTranslation();
@@ -117,7 +118,10 @@ const AcceptInvitation = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -125,7 +129,10 @@ const AcceptInvitation = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Card className="max-w-md text-center">
           <CardContent className="pt-6">
             <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -144,6 +151,9 @@ const AcceptInvitation = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />

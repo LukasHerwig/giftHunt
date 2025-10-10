@@ -29,6 +29,8 @@ import {
   DollarSign,
 } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface WishlistItem {
   id: string;
@@ -206,10 +208,10 @@ const PublicWishlist = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
-      </div>
       <header className="border-b bg-card/50 backdrop-blur-sm">
+        <div className="absolute top-4 right-4 z-10">
+          <LanguageSwitcher />
+        </div>
         <div className="container mx-auto px-4 py-6 text-center">
           <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4">
             <Gift className="w-8 h-8 text-white" />

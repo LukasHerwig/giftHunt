@@ -16,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -34,7 +33,8 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { User } from '@supabase/supabase-js';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface Wishlist {
   id: string;
@@ -374,23 +374,53 @@ const Dashboard = () => {
         </div>
       )}
 
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Gift className="w-6 h-6 text-white" />
+      <AppHeader />
+
+      {/* Create Wishlist Dialog */}
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('createWishlistDialog.title')}</DialogTitle>
+            <DialogDescription>
+              {t('createWishlistDialog.description')}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateWishlist} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                placeholder={t('createWishlistDialog.titlePlaceholder')}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="text-base"
+                disabled={creating}
+              />
             </div>
-            <h1 className="text-2xl font-bold">{t('dashboard.title')}</h1>
-          </div>
-          <div className="flex items-center gap-2">
-            <LanguageSwitcher />
-            <Button variant="ghost" onClick={handleSignOut}>
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('common.signOut')}
+            <div className="space-y-2">
+              <Textarea
+                placeholder={t('createWishlistDialog.descriptionPlaceholder')}
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                className="text-base resize-none"
+                rows={3}
+                disabled={creating}
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+              disabled={creating}>
+              {creating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {t('createWishlistDialog.creating')}
+                </>
+              ) : (
+                t('createWishlistDialog.createButton')
+              )}
             </Button>
-          </div>
-        </div>
-      </header>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Pending Invitations */}
@@ -440,55 +470,55 @@ const Dashboard = () => {
 
         {/* Create New Wishlist */}
         <div className="mb-8">
-          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
-                <Plus className="w-5 h-5 mr-2" />
-                {t('dashboard.createNewWishlist')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('createWishlist.title')}</DialogTitle>
-                <DialogDescription>
-                  {t('createWishlist.description')}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleCreateWishlist} className="space-y-4">
-                <Input
-                  placeholder={t('createWishlist.titlePlaceholder')}
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="text-base"
-                  disabled={creating}
-                />
-                <Textarea
-                  placeholder={t('createWishlist.descriptionPlaceholder')}
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  className="text-base resize-none"
-                  rows={3}
-                  disabled={creating}
-                />
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={creating}>
-                  {creating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t('createWishlist.creating')}
-                    </>
-                  ) : (
-                    t('createWishlist.createButton')
-                  )}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90"
+            onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="w-5 h-5 mr-2" />
+            {t('dashboard.createNewWishlist')}
+          </Button>
         </div>
+
+        <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t('createWishlist.title')}</DialogTitle>
+              <DialogDescription>
+                {t('createWishlist.description')}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateWishlist} className="space-y-4">
+              <Input
+                placeholder={t('createWishlist.titlePlaceholder')}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="text-base"
+                disabled={creating}
+              />
+              <Textarea
+                placeholder={t('createWishlist.descriptionPlaceholder')}
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                className="text-base resize-none"
+                rows={3}
+                disabled={creating}
+              />
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                disabled={creating}>
+                {creating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {t('createWishlist.creating')}
+                  </>
+                ) : (
+                  t('createWishlist.createButton')
+                )}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* My Wishlists */}
         <div className="mb-8">

@@ -21,6 +21,8 @@ import {
   DollarSign,
   Share,
 } from 'lucide-react';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface WishlistItem {
   id: string;
@@ -239,24 +241,20 @@ const AdminWishlist = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="mb-2">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t('common.back')} {t('navigation.dashboard')}
-          </Button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">
-                {t('dashboard.admin')}: {wishlist.title}
-              </h1>
-              {wishlist.description && (
-                <p className="text-muted-foreground">{wishlist.description}</p>
-              )}
-            </div>
+      <AppHeader />
+
+      <PageSubheader
+        title={`${t('dashboard.admin')}: ${wishlist.title}`}
+        description={wishlist.description || undefined}
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('common.back')} {t('navigation.dashboard')}
+            </Button>
             <Button
               onClick={handleCopyShareLink}
               disabled={generatingLink}
@@ -264,7 +262,7 @@ const AdminWishlist = () => {
               {generatingLink ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Generating...
+                  {t('adminWishlist.generating')}
                 </>
               ) : (
                 <>
@@ -276,8 +274,8 @@ const AdminWishlist = () => {
               )}
             </Button>
           </div>
-        </div>
-      </header>
+        }
+      />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Share Link Info */}

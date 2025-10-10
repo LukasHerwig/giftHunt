@@ -28,6 +28,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
+    "description": "Manage your wishlists and view invitations",
     "createNewWishlist": "Create New Wishlist",
     "noWishlistsYet": "No wishlists yet",
     "createFirstWishlist": "Create your first wishlist to get started",
@@ -190,6 +191,7 @@
   "adminWishlist": {
     "copyShareLink": "Copy Share Link",
     "generateShareLink": "Generate Share Link",
+    "generating": "Generating...",
     "activeShareLink": "Active Share Link",
     "takenItems": "Taken Items",
     "itemsClaimedByGuests": "Items that have been claimed by guests",

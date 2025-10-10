@@ -51,7 +51,8 @@ import {
   DollarSign,
   Edit,
 } from 'lucide-react';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface WishlistItem {
   id: string;
@@ -352,9 +353,10 @@ const ManageWishlist = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between mb-2">
+      <AppHeader />
+      <PageSubheader
+        actions={
+          <div className="flex gap-2">
             <Button
               variant="ghost"
               onClick={() => navigate('/')}
@@ -362,11 +364,9 @@ const ManageWishlist = () => {
               <ArrowLeft className="w-4 h-4 mr-2" />
               {t('manageWishlist.backToWishlists')}
             </Button>
-            <LanguageSwitcher />
           </div>
-          <h1 className="text-2xl font-bold">{t('manageWishlist.title')}</h1>
-        </div>
-      </header>
+        }
+      />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
         <div className="mb-8 flex gap-4">
