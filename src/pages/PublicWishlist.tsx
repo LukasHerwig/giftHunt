@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -45,7 +45,6 @@ interface Wishlist {
 
 interface ShareLink {
   wishlist_id: string;
-  is_active: boolean;
   expires_at: string | null;
 }
 
@@ -60,30 +59,21 @@ const PublicWishlist = () => {
   const [claiming, setClaiming] = useState(false);
   const [shareLink, setShareLink] = useState<ShareLink | null>(null);
 
-  useEffect(() => {
-    if (token) {
-      loadWishlistByToken();
-    } else {
-      // Fallback for old direct wishlist access (will show access denied)
-      setLoading(false);
-    }
-  }, [token]);
-
-  const loadWishlistByToken = async () => {
+  const loadWishlistByToken = useCallback(async () => {
     try {
       // First, validate the share token and get wishlist ID
-      const { data: shareLinkData, error: shareLinkError } = await supabase
+      const { data: shareLinkData, error: shareLinkError } = (await supabase
         .from('share_links')
-        .select('wishlist_id, is_active, expires_at')
-        .eq('share_token', token)
-        .single();
+        .select('wishlist_id, expires_at')
+        .eq('token', token)
+        .maybeSingle()) as any;
 
       if (shareLinkError) {
         throw new Error('Invalid or expired share link');
       }
 
-      if (!shareLinkData.is_active) {
-        throw new Error('This share link has been deactivated');
+      if (!shareLinkData) {
+        throw new Error('Invalid or expired share link');
       }
 
       if (
@@ -123,7 +113,20 @@ const PublicWishlist = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      if (token) {
+        await loadWishlistByToken();
+      } else {
+        // Fallback for old direct wishlist access (will show access denied)
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [token, loadWishlistByToken]);
 
   const handleClaimItem = async (e: React.FormEvent) => {
     e.preventDefault();

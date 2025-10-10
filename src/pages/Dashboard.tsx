@@ -174,23 +174,20 @@ const Dashboard = () => {
 
           if (invWishlistError) throw invWishlistError;
 
-          // Get owner details for invitations
-          const invitationOwnerIds =
-            invitationWishlists?.map((wl) => wl.creator_id) || [];
-          const invitationOwnerProfiles: Record<
-            string,
-            { id: string; email: string }
-          > = {};
+          // Get inviter details for invitations (the people who sent the invitations)
+          const inviterIds = invitationData.map((inv) => inv.invited_by);
+          const inviterProfiles: Record<string, { id: string; email: string }> =
+            {};
 
-          if (invitationOwnerIds.length > 0) {
+          if (inviterIds.length > 0) {
             const { data: profileData, error: profileError } = await supabase
               .from('profiles')
               .select('id, email')
-              .in('id', invitationOwnerIds);
+              .in('id', inviterIds);
 
             if (!profileError && profileData) {
               profileData.forEach((profile) => {
-                invitationOwnerProfiles[profile.id] = profile;
+                inviterProfiles[profile.id] = profile;
               });
             }
           }
@@ -208,10 +205,8 @@ const Dashboard = () => {
               wishlists: {
                 title: wishlist?.title || 'Unknown',
                 description: wishlist?.description || null,
-                owner_profile: invitationOwnerProfiles[
-                  wishlist?.creator_id || ''
-                ] || {
-                  id: wishlist?.creator_id || '',
+                owner_profile: inviterProfiles[invitation.invited_by] || {
+                  id: invitation.invited_by,
                   email: 'Unknown',
                 },
               },
@@ -522,13 +517,6 @@ const Dashboard = () => {
                         Manage Items
                       </Button>
                       <Button
-                        variant="outline"
-                        onClick={() => handleCopyLink(wishlist.id)}
-                        className="w-full">
-                        <LinkIcon className="w-4 h-4 mr-2" />
-                        Copy Share Link
-                      </Button>
-                      <Button
                         variant="ghost"
                         onClick={() => handleDeleteWishlist(wishlist.id)}
                         className="w-full text-destructive hover:text-destructive">
@@ -577,14 +565,7 @@ const Dashboard = () => {
                         }
                         variant="outline"
                         className="w-full">
-                        Admin Dashboard
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => handleCopyLink(wishlist.id)}
-                        className="w-full">
-                        <LinkIcon className="w-4 h-4 mr-2" />
-                        Copy Share Link
+                        Manage as Admin
                       </Button>
                     </div>
                   </CardContent>

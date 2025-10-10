@@ -119,17 +119,16 @@ const AdminWishlist = () => {
     try {
       const { data, error } = await supabase
         .from('share_links')
-        .select('share_token')
+        .select('token')
         .eq('wishlist_id', id)
-        .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error) {
         throw error;
       }
 
       if (data) {
-        setShareLink(`${window.location.origin}/shared/${data.share_token}`);
+        setShareLink(`${window.location.origin}/shared/${data.token}`);
       }
     } catch (error) {
       console.error('Load share link error:', error);
@@ -159,33 +158,34 @@ const AdminWishlist = () => {
       } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Check if there's already an active share link
+      // Check if there's already an existing share link
       const { data: existingLink } = await supabase
         .from('share_links')
-        .select('share_token')
+        .select('token')
         .eq('wishlist_id', id)
-        .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (existingLink) {
-        const url = `${window.location.origin}/shared/${existingLink.share_token}`;
+        const url = `${window.location.origin}/shared/${existingLink.token}`;
         setShareLink(url);
         return url;
       }
 
       // Generate new share link
+      const shareToken = crypto.randomUUID();
       const { data, error } = await supabase
         .from('share_links')
         .insert({
           wishlist_id: id,
           created_by: user.id,
+          token: shareToken,
         })
-        .select('share_token')
+        .select('token')
         .single();
 
       if (error) throw error;
 
-      const url = `${window.location.origin}/shared/${data.share_token}`;
+      const url = `${window.location.origin}/shared/${data.token}`;
       setShareLink(url);
       return url;
     } catch (error) {
