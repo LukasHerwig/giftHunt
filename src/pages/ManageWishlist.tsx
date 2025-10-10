@@ -48,6 +48,7 @@ import {
   UserPlus,
   Star,
   DollarSign,
+  Edit,
 } from 'lucide-react';
 
 interface WishlistItem {
@@ -84,14 +85,22 @@ const ManageWishlist = () => {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newLink, setNewLink] = useState('');
   const [newPriceRange, setNewPriceRange] = useState('');
   const [newPriority, setNewPriority] = useState<number | null>(null); // Default to null (no priority)
+  const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editLink, setEditLink] = useState('');
+  const [editPriceRange, setEditPriceRange] = useState('');
+  const [editPriority, setEditPriority] = useState<number | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
   const [adding, setAdding] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [inviting, setInviting] = useState(false);
   const [admins, setAdmins] = useState<WishlistAdmin[]>([]);
   const [invitations, setInvitations] = useState<WishlistInvitation[]>([]);
@@ -153,6 +162,15 @@ const ManageWishlist = () => {
     }
   }, [id]);
 
+  const formatUrl = (url: string): string => {
+    if (!url) return url;
+    // If the URL doesn't start with http:// or https://, add https://
+    if (!url.match(/^https?:\/\//)) {
+      return `https://${url}`;
+    }
+    return url;
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -203,6 +221,58 @@ const ManageWishlist = () => {
       toast.error('Failed to add item');
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleEditItem = (item: WishlistItem) => {
+    setEditingItem(item);
+    setEditTitle(item.title);
+    setEditDescription(item.description || '');
+    setEditLink(item.link || '');
+    setEditPriceRange(item.price_range || '');
+    setEditPriority(item.priority || null);
+    setEditDialogOpen(true);
+  };
+
+  const handleUpdateItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem) return;
+
+    if (!editTitle.trim()) {
+      toast.error('Please enter a title');
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const { data, error } = await supabase
+        .from('wishlist_items')
+        .update({
+          title: editTitle.trim(),
+          description: editDescription.trim() || null,
+          link: editLink.trim() || null,
+          price_range: editPriceRange.trim() || null,
+          priority: editPriority,
+        })
+        .eq('id', editingItem.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setItems(items.map((item) => (item.id === editingItem.id ? data : item)));
+      setEditDialogOpen(false);
+      setEditingItem(null);
+      setEditTitle('');
+      setEditDescription('');
+      setEditLink('');
+      setEditPriceRange('');
+      setEditPriority(null);
+      toast.success('Item updated!');
+    } catch (error: unknown) {
+      toast.error('Failed to update item');
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -395,6 +465,98 @@ const ManageWishlist = () => {
             </DialogContent>
           </Dialog>
 
+          <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Item</DialogTitle>
+                <DialogDescription>Update your wishlist item</DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleUpdateItem} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-title">Title *</Label>
+                  <Input
+                    id="edit-title"
+                    placeholder="Item title"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="text-base"
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-description">Description</Label>
+                  <Textarea
+                    id="edit-description"
+                    placeholder="Describe the item (optional)"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="text-base resize-none"
+                    rows={3}
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-link">Link</Label>
+                  <Input
+                    id="edit-link"
+                    placeholder="Link to the item (optional)"
+                    value={editLink}
+                    onChange={(e) => setEditLink(e.target.value)}
+                    className="text-base"
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-price">Price Range</Label>
+                  <Input
+                    id="edit-price"
+                    placeholder="e.g. $50-100, Under $25 (optional)"
+                    value={editPriceRange}
+                    onChange={(e) => setEditPriceRange(e.target.value)}
+                    className="text-base"
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-priority">Priority</Label>
+                  <Select
+                    value={editPriority?.toString() || 'none'}
+                    onValueChange={(value) =>
+                      setEditPriority(value === 'none' ? null : parseInt(value))
+                    }>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Priority</SelectItem>
+                      <SelectItem value="1">Low Priority</SelectItem>
+                      <SelectItem value="2">Medium Priority</SelectItem>
+                      <SelectItem value="3">High Priority</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                  disabled={updating}>
+                  {updating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    'Update Item'
+                  )}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+
           <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
             <DialogTrigger asChild>
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
@@ -561,7 +723,7 @@ const ManageWishlist = () => {
 
                       {item.link && (
                         <a
-                          href={item.link}
+                          href={formatUrl(item.link)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline flex items-center gap-1 break-all">
@@ -570,33 +732,42 @@ const ManageWishlist = () => {
                         </a>
                       )}
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive flex-shrink-0">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Item</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{item.title}"? This
-                            action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteItem(item.id)}
-                            className="bg-destructive hover:bg-destructive/90">
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditItem(item)}
+                        className="text-muted-foreground hover:text-foreground flex-shrink-0">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive flex-shrink-0">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Delete Item</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Are you sure you want to delete "{item.title}"?
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="bg-destructive hover:bg-destructive/90">
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 </CardHeader>
               </Card>
