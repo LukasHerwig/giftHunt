@@ -1,13 +1,15 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import ManageWishlist from "./pages/ManageWishlist";
-import PublicWishlist from "./pages/PublicWishlist";
-import NotFound from "./pages/NotFound";
+import { Toaster } from '@/components/ui/toaster';
+import { Toaster as Sonner } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Index from './pages/Index';
+import Auth from './pages/Auth';
+import ManageWishlist from './pages/ManageWishlist';
+import AdminWishlist from './pages/AdminWishlist';
+import AcceptInvitation from './pages/AcceptInvitation';
+import PublicWishlist from './pages/PublicWishlist';
+import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,8 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/wishlist/:id/manage" element={<ManageWishlist />} />
+          <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
+          <Route path="/accept-invitation" element={<AcceptInvitation />} />
           <Route path="/wishlist/:id" element={<PublicWishlist />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

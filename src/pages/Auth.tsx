@@ -1,9 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { AuthPage } from "@/components/auth/AuthPage";
-import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { AuthPage } from '@/components/auth/AuthPage';
+import { Loader2 } from 'lucide-react';
+import { useState } from 'react';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -13,15 +13,31 @@ const Auth = () => {
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        // Check if there's a pending invitation token
+        const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+        if (pendingToken) {
+          sessionStorage.removeItem('pendingInvitationToken');
+          navigate(`/accept-invitation?token=${pendingToken}`);
+        } else {
+          navigate('/');
+        }
       }
       setChecking(false);
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate("/");
+        // Check if there's a pending invitation token
+        const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+        if (pendingToken) {
+          sessionStorage.removeItem('pendingInvitationToken');
+          navigate(`/accept-invitation?token=${pendingToken}`);
+        } else {
+          navigate('/');
+        }
       }
     });
 

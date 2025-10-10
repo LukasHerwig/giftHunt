@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -16,10 +16,28 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '../components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, ExternalLink, Loader2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  Plus,
+  Trash2,
+  ExternalLink,
+  Loader2,
+  UserPlus,
+} from 'lucide-react';
 
 interface WishlistItem {
   id: string;
@@ -28,27 +46,40 @@ interface WishlistItem {
   created_at: string;
 }
 
+interface WishlistAdmin {
+  id: string;
+  admin_user_id: string;
+  created_at: string;
+  profiles: {
+    email: string | null;
+  } | null;
+}
+
+interface WishlistInvitation {
+  id: string;
+  email: string;
+  token: string;
+  created_at: string;
+  expires_at: string;
+  accepted: boolean;
+}
+
 const ManageWishlist = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newLink, setNewLink] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
   const [adding, setAdding] = useState(false);
+  const [inviting, setInviting] = useState(false);
+  const [admins, setAdmins] = useState<WishlistAdmin[]>([]);
+  const [invitations, setInvitations] = useState<WishlistInvitation[]>([]);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/auth');
-      } else {
-        loadItems();
-      }
-    });
-  }, [id, navigate]);
-
-  const loadItems = async () => {
+  const loadItems = useCallback(async () => {
     try {
       // Load all items for the owner (but don't show taken status to maintain surprise)
       const { data, error } = await supabase
@@ -59,12 +90,60 @@ const ManageWishlist = () => {
 
       if (error) throw error;
       setItems(data || []);
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to load items');
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  const loadAdminData = useCallback(async () => {
+    if (!id) return;
+
+    try {
+      // Load current admins
+      const { data: adminData, error: adminError } = await supabase
+        .from('wishlist_admins')
+        .select(
+          `
+          id,
+          admin_user_id,
+          created_at,
+          profiles!admin_user_id (
+            email
+          )
+        `
+        )
+        .eq('wishlist_id', id);
+
+      if (adminError) throw adminError;
+      setAdmins(adminData || []);
+
+      // Load pending invitations
+      const { data: inviteData, error: inviteError } = await supabase
+        .from('wishlist_invitations')
+        .select('*')
+        .eq('wishlist_id', id)
+        .eq('accepted', false)
+        .gt('expires_at', new Date().toISOString());
+
+      if (inviteError) throw inviteError;
+      setInvitations(inviteData || []);
+    } catch (error: unknown) {
+      console.error('Failed to load admin data:', error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/auth');
+      } else {
+        loadItems();
+        loadAdminData();
+      }
+    });
+  }, [navigate, loadItems, loadAdminData]);
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -95,10 +174,56 @@ const ManageWishlist = () => {
       setNewLink('');
       setDialogOpen(false);
       toast.success('Item added!');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to add item');
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleInviteAdmin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim() || !id) return;
+
+    setInviting(true);
+    try {
+      // Create invitation
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const token = crypto.randomUUID();
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
+
+      const { error: inviteError } = await supabase
+        .from('wishlist_invitations')
+        .insert({
+          wishlist_id: id,
+          email: inviteEmail.trim(),
+          token,
+          expires_at: expiresAt.toISOString(),
+          invited_by: user.id,
+        });
+
+      if (inviteError) throw inviteError;
+
+      // Send invitation link
+      const inviteLink = `${window.location.origin}/accept-invitation?token=${token}`;
+
+      // For now, copy to clipboard (later we could integrate email service)
+      await navigator.clipboard.writeText(inviteLink);
+
+      toast.success('Invitation created! Link copied to clipboard');
+      setInviteEmail('');
+      setInviteDialogOpen(false);
+      loadAdminData(); // Reload admin data to show new invitation
+    } catch (error: unknown) {
+      toast.error('Failed to create invitation');
+      console.error(error);
+    } finally {
+      setInviting(false);
     }
   };
 
@@ -113,7 +238,7 @@ const ManageWishlist = () => {
 
       setItems(items.filter((item) => item.id !== itemId));
       toast.success('Item deleted');
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.error('Failed to delete item');
     }
   };
@@ -142,7 +267,7 @@ const ManageWishlist = () => {
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <div className="mb-8">
+        <div className="mb-8 flex gap-4">
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
               <Button
@@ -190,7 +315,115 @@ const ManageWishlist = () => {
               </form>
             </DialogContent>
           </Dialog>
+
+          <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                <UserPlus className="w-5 h-5 mr-2" />
+                Invite Admin
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Invite Admin</DialogTitle>
+                <DialogDescription>
+                  Invite someone to help manage your wishlist and share it with
+                  others
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleInviteAdmin} className="space-y-4">
+                <Input
+                  type="email"
+                  placeholder="Email address"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  className="text-base"
+                  disabled={inviting}
+                />
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                  disabled={inviting}>
+                  {inviting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send Invitation'
+                  )}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
+
+        {/* Admin Status Section */}
+        {(admins.length > 0 || invitations.length > 0) && (
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle className="text-lg">Admin Status</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {admins.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                    Current Admins
+                  </h4>
+                  <div className="space-y-2">
+                    {admins.map((admin) => (
+                      <div
+                        key={admin.id}
+                        className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                        <div>
+                          <p className="font-medium">
+                            {admin.profiles?.email || 'Unknown email'}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Admin since{' '}
+                            {new Date(admin.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {invitations.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                    Pending Invitations
+                  </h4>
+                  <div className="space-y-2">
+                    {invitations.map((invitation) => (
+                      <div
+                        key={invitation.id}
+                        className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+                        <div>
+                          <p className="font-medium">{invitation.email}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Invited{' '}
+                            {new Date(
+                              invitation.created_at
+                            ).toLocaleDateString()}{' '}
+                            • Expires{' '}
+                            {new Date(
+                              invitation.expires_at
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                          Pending
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {items.length === 0 ? (
           <Card className="text-center py-12">
@@ -221,13 +454,33 @@ const ManageWishlist = () => {
                         </a>
                       )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteItem(item.id)}
-                      className="text-destructive hover:text-destructive flex-shrink-0">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-destructive hover:text-destructive flex-shrink-0">
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Item</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{item.title}"? This
+                            action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDeleteItem(item.id)}
+                            className="bg-destructive hover:bg-destructive/90">
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </CardHeader>
               </Card>
