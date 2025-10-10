@@ -80,6 +80,8 @@ interface WishlistInvitation {
   created_at: string;
   expires_at: string;
   accepted: boolean;
+  wishlist_id: string;
+  invited_by: string;
 }
 
 const ManageWishlist = () => {
@@ -134,6 +136,7 @@ const ManageWishlist = () => {
 
     try {
       // Load current admins
+      console.log('Querying wishlist_admins for wishlist_id:', id);
       const { data: adminData, error: adminError } = await supabase
         .from('wishlist_admins')
         .select(
@@ -148,16 +151,19 @@ const ManageWishlist = () => {
         )
         .eq('wishlist_id', id);
 
+      console.log('Admin query result:', { adminData, adminError });
       if (adminError) throw adminError;
       setAdmins(adminData || []);
 
       // Load pending invitations AND accepted ones (for showing completion status)
+      console.log('Querying admin_invitations for wishlist_id:', id);
       const { data: inviteData, error: inviteError } = await supabase
         .from('admin_invitations')
         .select('*')
         .eq('wishlist_id', id)
         .gt('expires_at', new Date().toISOString());
 
+      console.log('Invitation query result:', { inviteData, inviteError });
       if (inviteError) throw inviteError;
       setInvitations(inviteData || []);
     } catch (error: unknown) {
@@ -359,6 +365,57 @@ const ManageWishlist = () => {
     );
   }
 
+  // Debug logging
+  console.log('Debug - admins:', admins, 'admins.length:', admins.length);
+  console.log('Debug - invitations:', invitations);
+  console.log(
+    'Debug - pending invitations:',
+    invitations.filter((inv) => !inv.accepted)
+  );
+  console.log(
+    'Debug - accepted invitations:',
+    invitations.filter((inv) => inv.accepted)
+  );
+  console.log(
+    'Debug - should show invite button:',
+    admins.length === 0 &&
+      invitations.filter((inv) => !inv.accepted).length === 0
+  );
+
+  // Helper function to manually create admin record for accepted invitations
+  const fixAcceptedInvitation = async () => {
+    const acceptedInvitation = invitations.find((inv) => inv.accepted);
+    if (!acceptedInvitation) return;
+
+    try {
+      // Find the user ID for the accepted invitation email
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', acceptedInvitation.email)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // Create the missing admin record
+      const { error: adminError } = await supabase
+        .from('wishlist_admins')
+        .insert({
+          wishlist_id: acceptedInvitation.wishlist_id,
+          admin_id: profileData.id,
+          invited_by: acceptedInvitation.invited_by,
+        });
+
+      if (adminError) throw adminError;
+
+      toast.success('Fixed admin record');
+      loadAdminData();
+    } catch (error) {
+      console.error('Fix error:', error);
+      toast.error('Failed to fix admin record');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <AppHeader />
@@ -377,6 +434,30 @@ const ManageWishlist = () => {
       />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
+        {/* Temporary debug/fix section */}
+        {invitations.some((inv) => inv.accepted) && admins.length === 0 && (
+          <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
+                  Debug: Missing Admin Record
+                </h3>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  There's an accepted invitation but no admin record. This
+                  should be fixed.
+                </p>
+              </div>
+              <Button
+                onClick={fixAcceptedInvitation}
+                variant="outline"
+                size="sm"
+                className="border-yellow-300 text-yellow-700 hover:bg-yellow-100">
+                Fix Admin Record
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="mb-8 flex gap-4">
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -584,45 +665,53 @@ const ManageWishlist = () => {
             </DialogContent>
           </Dialog>
 
-          <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                <UserPlus className="w-5 h-5 mr-2" />
-                {t('manageWishlist.inviteAdmin')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('inviteDialog.title')}</DialogTitle>
-                <DialogDescription>
-                  {t('inviteDialog.description')}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleInviteAdmin} className="space-y-4">
-                <Input
-                  type="email"
-                  placeholder="Email address"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  className="text-base"
-                  disabled={inviting}
-                />
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={inviting}>
-                  {inviting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Sending...
-                    </>
-                  ) : (
-                    'Send Invitation'
-                  )}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          {admins.length === 0 &&
+            invitations.filter((inv) => !inv.accepted).length === 0 && (
+              <Dialog
+                open={inviteDialogOpen}
+                onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto">
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    {t('manageWishlist.inviteAdmin')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('inviteDialog.title')}</DialogTitle>
+                    <DialogDescription>
+                      {t('inviteDialog.description')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleInviteAdmin} className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Email address"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="text-base"
+                      disabled={inviting}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                      disabled={inviting}>
+                      {inviting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Invitation'
+                      )}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            )}
         </div>
 
         {/* Admin Status Section */}
