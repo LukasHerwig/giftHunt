@@ -89,7 +89,7 @@ const ManageWishlist = () => {
   const [newDescription, setNewDescription] = useState('');
   const [newLink, setNewLink] = useState('');
   const [newPriceRange, setNewPriceRange] = useState('');
-  const [newPriority, setNewPriority] = useState(2); // Default to medium priority
+  const [newPriority, setNewPriority] = useState<number | null>(null); // Default to null (no priority)
   const [inviteEmail, setInviteEmail] = useState('');
   const [adding, setAdding] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -196,7 +196,7 @@ const ManageWishlist = () => {
       setNewDescription('');
       setNewLink('');
       setNewPriceRange('');
-      setNewPriority(2);
+      setNewPriority(null);
       setDialogOpen(false);
       toast.success('Item added!');
     } catch (error: unknown) {
@@ -362,12 +362,15 @@ const ManageWishlist = () => {
                 <div className="space-y-2">
                   <Label htmlFor="priority">Priority</Label>
                   <Select
-                    value={newPriority.toString()}
-                    onValueChange={(value) => setNewPriority(parseInt(value))}>
+                    value={newPriority?.toString() || 'none'}
+                    onValueChange={(value) =>
+                      setNewPriority(value === 'none' ? null : parseInt(value))
+                    }>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue placeholder="Select priority (optional)" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="none">No Priority</SelectItem>
                       <SelectItem value="1">Low Priority</SelectItem>
                       <SelectItem value="2">Medium Priority</SelectItem>
                       <SelectItem value="3">High Priority</SelectItem>
@@ -538,20 +541,22 @@ const ManageWishlist = () => {
                             {item.price_range}
                           </span>
                         )}
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            item.priority === 3
-                              ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                        {item.priority && item.priority > 0 && (
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              item.priority === 3
+                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                                : item.priority === 2
+                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                            }`}>
+                            {item.priority === 3
+                              ? 'High Priority'
                               : item.priority === 2
-                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
-                          }`}>
-                          {item.priority === 3
-                            ? 'High Priority'
-                            : item.priority === 2
-                            ? 'Medium Priority'
-                            : 'Low Priority'}
-                        </span>
+                              ? 'Medium Priority'
+                              : 'Low Priority'}
+                          </span>
+                        )}
                       </div>
 
                       {item.link && (
