@@ -151,12 +151,11 @@ const ManageWishlist = () => {
       if (adminError) throw adminError;
       setAdmins(adminData || []);
 
-      // Load pending invitations
+      // Load pending invitations AND accepted ones (for showing completion status)
       const { data: inviteData, error: inviteError } = await supabase
         .from('admin_invitations')
         .select('*')
         .eq('wishlist_id', id)
-        .eq('accepted', false)
         .gt('expires_at', new Date().toISOString());
 
       if (inviteError) throw inviteError;
@@ -185,6 +184,15 @@ const ManageWishlist = () => {
       }
     });
   }, [navigate, loadItems, loadAdminData]);
+
+  // Refresh admin data every 30 seconds to catch accepted invitations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadAdminData();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [loadAdminData]);
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -653,33 +661,74 @@ const ManageWishlist = () => {
 
               {invitations.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                    {t('manageWishlist.pendingInvitations')}
-                  </h4>
-                  <div className="space-y-2">
-                    {invitations.map((invitation) => (
-                      <div
-                        key={invitation.id}
-                        className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
-                        <div>
-                          <p className="font-medium">{invitation.email}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {t('inviteDialog.invited')}{' '}
-                            {new Date(
-                              invitation.created_at
-                            ).toLocaleDateString()}{' '}
-                            • {t('inviteDialog.expires')}{' '}
-                            {new Date(
-                              invitation.expires_at
-                            ).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                          {t('manageWishlist.pending')}
-                        </span>
+                  {invitations.filter((inv) => !inv.accepted).length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        {t('manageWishlist.pendingInvitations')}
+                      </h4>
+                      <div className="space-y-2">
+                        {invitations
+                          .filter((inv) => !inv.accepted)
+                          .map((invitation) => (
+                            <div
+                              key={invitation.id}
+                              className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+                              <div>
+                                <p className="font-medium">
+                                  {invitation.email}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {t('inviteDialog.invited')}{' '}
+                                  {new Date(
+                                    invitation.created_at
+                                  ).toLocaleDateString()}{' '}
+                                  • {t('inviteDialog.expires')}{' '}
+                                  {new Date(
+                                    invitation.expires_at
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                                {t('manageWishlist.pending')}
+                              </span>
+                            </div>
+                          ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
+
+                  {invitations.filter((inv) => inv.accepted).length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        {t('manageWishlist.acceptedInvitations')}
+                      </h4>
+                      <div className="space-y-2">
+                        {invitations
+                          .filter((inv) => inv.accepted)
+                          .map((invitation) => (
+                            <div
+                              key={invitation.id}
+                              className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
+                              <div>
+                                <p className="font-medium">
+                                  {invitation.email}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {t('inviteDialog.invited')}{' '}
+                                  {new Date(
+                                    invitation.created_at
+                                  ).toLocaleDateString()}{' '}
+                                  • {t('manageWishlist.accepted')} ✓
+                                </p>
+                              </div>
+                              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                                {t('manageWishlist.accepted')}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

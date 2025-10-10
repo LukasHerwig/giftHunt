@@ -19,7 +19,10 @@
     "title": "Titel",
     "description": "Beskrivning",
     "optional": "valfritt",
-    "required": "obligatoriskt"
+    "required": "obligatoriskt",
+    "priceRange": "Prisklass",
+    "priority": "Prioritet",
+    "link": "Länk"
   },
   "navigation": {
     "dashboard": "Instrumentpanel",
@@ -93,10 +96,13 @@
     "adminStatus": "Admin Status",
     "currentAdmins": "Nuvarande Administratörer",
     "pendingInvitations": "Väntande Inbjudningar",
+    "acceptedInvitations": "Accepterade Inbjudningar",
+    "invitationStatus": "Inbjudningsstatus",
     "adminSince": "Admin sedan",
     "invited": "Inbjuden",
     "expires": "Upphör",
     "pending": "Väntande",
+    "accepted": "Accepterad",
     "viewLink": "Visa länk"
   },
   "addItemDialog": {
@@ -126,7 +132,8 @@
     "description": "Bjud in någon att hjälpa till att hantera din önskelista och dela den med andra",
     "emailPlaceholder": "E-postadress",
     "sendButton": "Skicka Inbjudan",
-    "sending": "Skickar..."
+    "sending": "Skickar...",
+    "invited": "Inbjuden"
   },
   "deleteDialog": {
     "title": "Ta bort Önskning",

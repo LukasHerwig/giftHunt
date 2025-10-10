@@ -19,7 +19,10 @@
     "title": "Title",
     "description": "Description",
     "optional": "optional",
-    "required": "required"
+    "required": "required",
+    "priceRange": "Price range",
+    "priority": "Priority",
+    "link": "Link"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -93,10 +96,13 @@
     "adminStatus": "Admin Status",
     "currentAdmins": "Current Admins",
     "pendingInvitations": "Pending Invitations",
+    "acceptedInvitations": "Accepted Invitations",
+    "invitationStatus": "Invitation Status",
     "adminSince": "Admin since",
     "invited": "Invited",
     "expires": "Expires",
     "pending": "Pending",
+    "accepted": "Accepted",
     "viewLink": "View link"
   },
   "addItemDialog": {
@@ -126,7 +132,8 @@
     "description": "Invite someone to help manage your wishlist and share it with others",
     "emailPlaceholder": "Email address",
     "sendButton": "Send Invitation",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "invited": "Invited"
   },
   "deleteDialog": {
     "title": "Delete Item",

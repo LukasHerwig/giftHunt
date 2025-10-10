@@ -37,7 +37,7 @@ const AppHeader = () => {
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
             <Gift className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold">WishList</h1>
+          <h1 className="text-2xl font-bold">Wishlist</h1>
         </div>
 
         {/* Hamburger Menu */}
