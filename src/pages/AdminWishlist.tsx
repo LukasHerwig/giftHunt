@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +42,7 @@ interface Wishlist {
 }
 
 const AdminWishlist = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const [wishlist, setWishlist] = useState<Wishlist | null>(null);
@@ -244,11 +246,13 @@ const AdminWishlist = () => {
             onClick={() => navigate('/')}
             className="mb-2">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
+            {t('common.back')} {t('navigation.dashboard')}
           </Button>
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold">Admin: {wishlist.title}</h1>
+              <h1 className="text-2xl font-bold">
+                {t('dashboard.admin')}: {wishlist.title}
+              </h1>
               {wishlist.description && (
                 <p className="text-muted-foreground">{wishlist.description}</p>
               )}
@@ -265,7 +269,9 @@ const AdminWishlist = () => {
               ) : (
                 <>
                   <Share className="w-4 h-4 mr-2" />
-                  {shareLink ? 'Copy Share Link' : 'Generate Share Link'}
+                  {shareLink
+                    ? t('adminWishlist.copyShareLink')
+                    : t('adminWishlist.generateShareLink')}
                 </>
               )}
             </Button>
@@ -281,7 +287,7 @@ const AdminWishlist = () => {
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                    Active Share Link
+                    {t('adminWishlist.activeShareLink')}
                   </h3>
                   <p className="text-sm text-blue-700 dark:text-blue-300 break-all font-mono">
                     {shareLink}
@@ -378,16 +384,16 @@ const AdminWishlist = () => {
           <Card>
             <CardHeader>
               <CardTitle className="text-orange-600">
-                Taken Items ({takenItems.length})
+                {t('adminWishlist.takenItems')} ({takenItems.length})
               </CardTitle>
               <CardDescription>
-                Items that have been claimed by guests
+                {t('adminWishlist.itemsClaimedByGuests')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {takenItems.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">
-                  No items have been taken yet
+                  {t('adminWishlist.noItemsTakenYet')}
                 </p>
               ) : (
                 takenItems.map((item) => (

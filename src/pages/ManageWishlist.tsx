@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -50,6 +51,7 @@ import {
   DollarSign,
   Edit,
 } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface WishlistItem {
   id: string;
@@ -82,6 +84,7 @@ interface WishlistInvitation {
 const ManageWishlist = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -119,11 +122,11 @@ const ManageWishlist = () => {
       if (error) throw error;
       setItems(data || []);
     } catch (error: unknown) {
-      toast.error('Failed to load items');
+      toast.error(t('messages.failedToLoad'));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   const loadAdminData = useCallback(async () => {
     if (!id) return;
@@ -186,7 +189,7 @@ const ManageWishlist = () => {
     e.preventDefault();
 
     if (!newTitle.trim()) {
-      toast.error('Please enter a title');
+      toast.error(t('messages.enterTitle'));
       return;
     }
 
@@ -216,9 +219,9 @@ const ManageWishlist = () => {
       setNewPriceRange('');
       setNewPriority(null);
       setDialogOpen(false);
-      toast.success('Item added!');
+      toast.success(t('messages.itemAdded'));
     } catch (error: unknown) {
-      toast.error('Failed to add item');
+      toast.error(t('messages.failedToAdd'));
     } finally {
       setAdding(false);
     }
@@ -239,7 +242,7 @@ const ManageWishlist = () => {
     if (!editingItem) return;
 
     if (!editTitle.trim()) {
-      toast.error('Please enter a title');
+      toast.error(t('messages.enterTitle'));
       return;
     }
 
@@ -268,9 +271,9 @@ const ManageWishlist = () => {
       setEditLink('');
       setEditPriceRange('');
       setEditPriority(null);
-      toast.success('Item updated!');
+      toast.success(t('messages.itemUpdated'));
     } catch (error: unknown) {
-      toast.error('Failed to update item');
+      toast.error(t('messages.failedToUpdate'));
     } finally {
       setUpdating(false);
     }
@@ -310,12 +313,12 @@ const ManageWishlist = () => {
       // For now, copy to clipboard (later we could integrate email service)
       await navigator.clipboard.writeText(inviteLink);
 
-      toast.success('Invitation created! Link copied to clipboard');
+      toast.success(t('messages.invitationCreated'));
       setInviteEmail('');
       setInviteDialogOpen(false);
       loadAdminData(); // Reload admin data to show new invitation
     } catch (error: unknown) {
-      toast.error('Failed to create invitation');
+      toast.error(t('messages.failedToInvite'));
       console.error(error);
     } finally {
       setInviting(false);
@@ -332,9 +335,9 @@ const ManageWishlist = () => {
       if (error) throw error;
 
       setItems(items.filter((item) => item.id !== itemId));
-      toast.success('Item deleted');
+      toast.success(t('messages.itemDeleted'));
     } catch (error: unknown) {
-      toast.error('Failed to delete item');
+      toast.error(t('messages.failedToDelete'));
     }
   };
 
@@ -342,6 +345,7 @@ const ManageWishlist = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <span className="ml-2">{t('manageWishlist.loading')}</span>
       </div>
     );
   }
@@ -350,14 +354,17 @@ const ManageWishlist = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="mb-2">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Wishlists
-          </Button>
-          <h1 className="text-2xl font-bold">Manage Items</h1>
+          <div className="flex items-center justify-between mb-2">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('manageWishlist.backToWishlists')}
+            </Button>
+            <LanguageSwitcher />
+          </div>
+          <h1 className="text-2xl font-bold">{t('manageWishlist.title')}</h1>
         </div>
       </header>
 
@@ -369,22 +376,24 @@ const ManageWishlist = () => {
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
                 <Plus className="w-5 h-5 mr-2" />
-                Add Item
+                {t('manageWishlist.addItem')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add Wishlist Item</DialogTitle>
+                <DialogTitle>{t('addItemDialog.title')}</DialogTitle>
                 <DialogDescription>
-                  Add something you'd like to receive
+                  {t('addItemDialog.description')}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddItem} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title *</Label>
+                  <Label htmlFor="title">
+                    {t('addItemDialog.titleLabel')} *
+                  </Label>
                   <Input
                     id="title"
-                    placeholder="Item title"
+                    placeholder={t('addItemDialog.titlePlaceholder')}
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     className="text-base"
@@ -393,10 +402,12 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">
+                    {t('addItemDialog.descriptionLabel')}
+                  </Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe the item (optional)"
+                    placeholder={t('addItemDialog.descriptionPlaceholder')}
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
                     className="text-base resize-none"
@@ -406,10 +417,10 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="link">Link</Label>
+                  <Label htmlFor="link">{t('addItemDialog.linkLabel')}</Label>
                   <Input
                     id="link"
-                    placeholder="Link to the item (optional)"
+                    placeholder={t('addItemDialog.linkPlaceholder')}
                     value={newLink}
                     onChange={(e) => setNewLink(e.target.value)}
                     className="text-base"
@@ -418,10 +429,10 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price Range</Label>
+                  <Label htmlFor="price">{t('addItemDialog.priceLabel')}</Label>
                   <Input
                     id="price"
-                    placeholder="e.g. $50-100, Under $25 (optional)"
+                    placeholder={t('addItemDialog.pricePlaceholder')}
                     value={newPriceRange}
                     onChange={(e) => setNewPriceRange(e.target.value)}
                     className="text-base"
@@ -430,20 +441,24 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="priority">Priority</Label>
+                  <Label htmlFor="priority">
+                    {t('addItemDialog.priorityLabel')}
+                  </Label>
                   <Select
                     value={newPriority?.toString() || 'none'}
                     onValueChange={(value) =>
                       setNewPriority(value === 'none' ? null : parseInt(value))
                     }>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority (optional)" />
+                      <SelectValue
+                        placeholder={t('addItemDialog.priorityPlaceholder')}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No Priority</SelectItem>
-                      <SelectItem value="1">Low Priority</SelectItem>
-                      <SelectItem value="2">Medium Priority</SelectItem>
-                      <SelectItem value="3">High Priority</SelectItem>
+                      <SelectItem value="none">{t('priority.none')}</SelectItem>
+                      <SelectItem value="1">{t('priority.low')}</SelectItem>
+                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
+                      <SelectItem value="3">{t('priority.high')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -455,10 +470,10 @@ const ManageWishlist = () => {
                   {adding ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Adding...
+                      {t('addItemDialog.adding')}
                     </>
                   ) : (
-                    'Add Item'
+                    t('addItemDialog.addButton')
                   )}
                 </Button>
               </form>
@@ -468,8 +483,10 @@ const ManageWishlist = () => {
           <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Edit Item</DialogTitle>
-                <DialogDescription>Update your wishlist item</DialogDescription>
+                <DialogTitle>{t('editItemDialog.title')}</DialogTitle>
+                <DialogDescription>
+                  {t('editItemDialog.description')}
+                </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleUpdateItem} className="space-y-4">
                 <div className="space-y-2">
@@ -485,7 +502,9 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-description">Description</Label>
+                  <Label htmlFor="edit-description">
+                    {t('common.description')}
+                  </Label>
                   <Textarea
                     id="edit-description"
                     placeholder="Describe the item (optional)"
@@ -498,7 +517,7 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-link">Link</Label>
+                  <Label htmlFor="edit-link">{t('common.link')}</Label>
                   <Input
                     id="edit-link"
                     placeholder="Link to the item (optional)"
@@ -510,7 +529,7 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-price">Price Range</Label>
+                  <Label htmlFor="edit-price">{t('common.priceRange')}</Label>
                   <Input
                     id="edit-price"
                     placeholder="e.g. $50-100, Under $25 (optional)"
@@ -522,7 +541,7 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="edit-priority">Priority</Label>
+                  <Label htmlFor="edit-priority">{t('common.priority')}</Label>
                   <Select
                     value={editPriority?.toString() || 'none'}
                     onValueChange={(value) =>
@@ -532,10 +551,10 @@ const ManageWishlist = () => {
                       <SelectValue placeholder="Select priority (optional)" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="none">No Priority</SelectItem>
-                      <SelectItem value="1">Low Priority</SelectItem>
-                      <SelectItem value="2">Medium Priority</SelectItem>
-                      <SelectItem value="3">High Priority</SelectItem>
+                      <SelectItem value="none">{t('priority.none')}</SelectItem>
+                      <SelectItem value="1">{t('priority.low')}</SelectItem>
+                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
+                      <SelectItem value="3">{t('priority.high')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -561,15 +580,14 @@ const ManageWishlist = () => {
             <DialogTrigger asChild>
               <Button variant="outline" size="lg" className="w-full sm:w-auto">
                 <UserPlus className="w-5 h-5 mr-2" />
-                Invite Admin
+                {t('manageWishlist.inviteAdmin')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Invite Admin</DialogTitle>
+                <DialogTitle>{t('inviteDialog.title')}</DialogTitle>
                 <DialogDescription>
-                  Invite someone to help manage your wishlist and share it with
-                  others
+                  {t('inviteDialog.description')}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleInviteAdmin} className="space-y-4">
@@ -603,13 +621,15 @@ const ManageWishlist = () => {
         {(admins.length > 0 || invitations.length > 0) && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="text-lg">Admin Status</CardTitle>
+              <CardTitle className="text-lg">
+                {t('manageWishlist.adminStatus')}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {admins.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                    Current Admins
+                    {t('manageWishlist.currentAdmins')}
                   </h4>
                   <div className="space-y-2">
                     {admins.map((admin) => (
@@ -621,7 +641,7 @@ const ManageWishlist = () => {
                             {admin.profiles?.email || 'Unknown email'}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Admin since{' '}
+                            {t('manageWishlist.adminSince')}{' '}
                             {new Date(admin.created_at).toLocaleDateString()}
                           </p>
                         </div>
@@ -634,7 +654,7 @@ const ManageWishlist = () => {
               {invitations.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                    Pending Invitations
+                    {t('manageWishlist.pendingInvitations')}
                   </h4>
                   <div className="space-y-2">
                     {invitations.map((invitation) => (
@@ -644,18 +664,18 @@ const ManageWishlist = () => {
                         <div>
                           <p className="font-medium">{invitation.email}</p>
                           <p className="text-sm text-muted-foreground">
-                            Invited{' '}
+                            {t('inviteDialog.invited')}{' '}
                             {new Date(
                               invitation.created_at
                             ).toLocaleDateString()}{' '}
-                            • Expires{' '}
+                            • {t('inviteDialog.expires')}{' '}
                             {new Date(
                               invitation.expires_at
                             ).toLocaleDateString()}
                           </p>
                         </div>
                         <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                          Pending
+                          {t('manageWishlist.pending')}
                         </span>
                       </div>
                     ))}
@@ -670,7 +690,7 @@ const ManageWishlist = () => {
           <Card className="text-center py-12">
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                No items yet. Add your first wish!
+                {t('manageWishlist.noItemsYet')}
               </p>
             </CardContent>
           </Card>
@@ -713,10 +733,10 @@ const ManageWishlist = () => {
                                 : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
                             }`}>
                             {item.priority === 3
-                              ? 'High Priority'
+                              ? t('priority.high')
                               : item.priority === 2
-                              ? 'Medium Priority'
-                              : 'Low Priority'}
+                              ? t('priority.medium')
+                              : t('priority.low')}
                           </span>
                         )}
                       </div>
@@ -727,7 +747,7 @@ const ManageWishlist = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline flex items-center gap-1 break-all">
-                          View link
+                          {t('manageWishlist.viewLink')}
                           <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </a>
                       )}
@@ -751,18 +771,23 @@ const ManageWishlist = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Item</AlertDialogTitle>
+                            <AlertDialogTitle>
+                              {t('deleteDialog.title')}
+                            </AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete "{item.title}"?
-                              This action cannot be undone.
+                              {t('deleteDialog.description', {
+                                title: item.title,
+                              })}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>
+                              {t('deleteDialog.cancel')}
+                            </AlertDialogCancel>
                             <AlertDialogAction
                               onClick={() => handleDeleteItem(item.id)}
                               className="bg-destructive hover:bg-destructive/90">
-                              Delete
+                              {t('deleteDialog.delete')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
