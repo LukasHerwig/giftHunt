@@ -106,15 +106,13 @@ const Dashboard = () => {
         }
 
         let adminWishlistsFormatted: AdminWishlist[] = [];
-        
+
         if (adminRelations && adminRelations.length > 0) {
-          const wishlistIds = adminRelations.map(rel => rel.wishlist_id);
-          
+          const wishlistIds = adminRelations.map((rel) => rel.wishlist_id);
+
           // Get the wishlists separately
-          const { data: adminWishlistData, error: adminWishlistError } = await supabase
-            .from('wishlists')
-            .select('*')
-            .in('id', wishlistIds);
+          const { data: adminWishlistData, error: adminWishlistError } =
+            await supabase.from('wishlists').select('*').in('id', wishlistIds);
 
           if (adminWishlistError) {
             console.error('Admin wishlists error:', adminWishlistError);
@@ -122,8 +120,10 @@ const Dashboard = () => {
           }
 
           // Get owner details for each wishlist
-          const wishlistUserIds = adminWishlistData?.map((wl) => wl.creator_id) || [];
-          const ownerProfiles: Record<string, { id: string; email: string }> = {};
+          const wishlistUserIds =
+            adminWishlistData?.map((wl) => wl.creator_id) || [];
+          const ownerProfiles: Record<string, { id: string; email: string }> =
+            {};
 
           if (wishlistUserIds.length > 0) {
             const { data: profileData, error: profileError } = await supabase
@@ -138,15 +138,16 @@ const Dashboard = () => {
             }
           }
 
-          adminWishlistsFormatted = adminWishlistData?.map((wishlist) => ({
-            id: wishlist.id,
-            title: wishlist.title,
-            description: wishlist.description,
-            owner_profile: ownerProfiles[wishlist.creator_id] || {
-              id: wishlist.creator_id,
-              email: 'Unknown',
-            },
-          })) || [];
+          adminWishlistsFormatted =
+            adminWishlistData?.map((wishlist) => ({
+              id: wishlist.id,
+              title: wishlist.title,
+              description: wishlist.description,
+              owner_profile: ownerProfiles[wishlist.creator_id] || {
+                id: wishlist.creator_id,
+                email: 'Unknown',
+              },
+            })) || [];
         }
 
         setAdminWishlists(adminWishlistsFormatted);
@@ -161,20 +162,25 @@ const Dashboard = () => {
         if (invitationError) throw invitationError;
 
         let formattedInvitations: PendingInvitation[] = [];
-        
+
         if (invitationData && invitationData.length > 0) {
           // Get wishlist details separately
-          const wishlistIds = invitationData.map(inv => inv.wishlist_id);
-          const { data: invitationWishlists, error: invWishlistError } = await supabase
-            .from('wishlists')
-            .select('id, title, description, creator_id')
-            .in('id', wishlistIds);
+          const wishlistIds = invitationData.map((inv) => inv.wishlist_id);
+          const { data: invitationWishlists, error: invWishlistError } =
+            await supabase
+              .from('wishlists')
+              .select('id, title, description, creator_id')
+              .in('id', wishlistIds);
 
           if (invWishlistError) throw invWishlistError;
 
           // Get owner details for invitations
-          const invitationOwnerIds = invitationWishlists?.map((wl) => wl.creator_id) || [];
-          const invitationOwnerProfiles: Record<string, { id: string; email: string }> = {};
+          const invitationOwnerIds =
+            invitationWishlists?.map((wl) => wl.creator_id) || [];
+          const invitationOwnerProfiles: Record<
+            string,
+            { id: string; email: string }
+          > = {};
 
           if (invitationOwnerIds.length > 0) {
             const { data: profileData, error: profileError } = await supabase
@@ -190,7 +196,9 @@ const Dashboard = () => {
           }
 
           formattedInvitations = invitationData.map((invitation) => {
-            const wishlist = invitationWishlists?.find(wl => wl.id === invitation.wishlist_id);
+            const wishlist = invitationWishlists?.find(
+              (wl) => wl.id === invitation.wishlist_id
+            );
             return {
               id: invitation.id,
               wishlist_id: invitation.wishlist_id,
@@ -200,7 +208,9 @@ const Dashboard = () => {
               wishlists: {
                 title: wishlist?.title || 'Unknown',
                 description: wishlist?.description || null,
-                owner_profile: invitationOwnerProfiles[wishlist?.creator_id || ''] || {
+                owner_profile: invitationOwnerProfiles[
+                  wishlist?.creator_id || ''
+                ] || {
                   id: wishlist?.creator_id || '',
                   email: 'Unknown',
                 },

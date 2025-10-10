@@ -11,7 +11,10 @@ const AcceptInvitation = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentUser, setCurrentUser] = useState<{ id: string; email?: string } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{
+    id: string;
+    email?: string;
+  } | null>(null);
   const [invitationValid, setInvitationValid] = useState(false);
   const [inviterEmail, setInviterEmail] = useState<string | null>(null);
 
@@ -45,7 +48,10 @@ const AcceptInvitation = () => {
           return;
         }
 
-        if (inviteData.expires_at && new Date(inviteData.expires_at) < new Date()) {
+        if (
+          inviteData.expires_at &&
+          new Date(inviteData.expires_at) < new Date()
+        ) {
           setError('This invitation has expired');
           setLoading(false);
           return;
@@ -76,7 +82,9 @@ const AcceptInvitation = () => {
         }
 
         // Check if user is already logged in
-        const { data: { user } } = await supabase.auth.getUser();
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
         setCurrentUser(user);
 
         // If user is logged in, redirect to dashboard so they can see the invitation
@@ -86,7 +94,6 @@ const AcceptInvitation = () => {
           navigate('/dashboard');
           return;
         }
-
       } catch (error) {
         console.error('Error checking invitation:', error);
         setError('Unable to verify invitation');
@@ -145,13 +152,16 @@ const AcceptInvitation = () => {
             {inviterEmail && (
               <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <span className="font-medium">Invited by:</span> {inviterEmail === 'Someone' ? 'Someone' : inviterEmail}
+                  <span className="font-medium">Invited by:</span>{' '}
+                  {inviterEmail === 'Someone' ? 'Someone' : inviterEmail}
                 </p>
               </div>
             )}
-            
+
             <div className="bg-muted/50 p-4 rounded-lg">
-              <h4 className="font-medium mb-2">As an admin, you'll be able to:</h4>
+              <h4 className="font-medium mb-2">
+                As an admin, you'll be able to:
+              </h4>
               <ul className="text-sm space-y-1 text-muted-foreground">
                 <li>• See which items have been taken and by whom</li>
                 <li>• Share the wishlist link with others</li>
@@ -164,17 +174,17 @@ const AcceptInvitation = () => {
               <p className="text-sm text-muted-foreground">
                 Please sign in or create an account to accept this invitation.
               </p>
-              
+
               <Button
                 onClick={handleSignIn}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                size="lg"
-              >
+                size="lg">
                 Sign In / Create Account
               </Button>
-              
+
               <p className="text-xs text-muted-foreground">
-                After signing in, you'll see the invitation on your dashboard where you can accept it.
+                After signing in, you'll see the invitation on your dashboard
+                where you can accept it.
               </p>
             </div>
           </div>
