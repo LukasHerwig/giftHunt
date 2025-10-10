@@ -88,125 +88,130 @@ const Dashboard = () => {
         const { data: ownedData, error: ownedError } = await supabase
           .from('wishlists')
           .select('*')
-          .eq('user_id', userId)
+          .eq('creator_id', userId)
           .order('created_at', { ascending: false });
 
         if (ownedError) throw ownedError;
         setWishlists(ownedData || []);
 
-        // Load admin wishlists
-        const { data: adminData, error: adminError } = await supabase
+        // Load admin wishlists - simplified approach without joins
+        const { data: adminRelations, error: adminRelError } = await supabase
           .from('wishlist_admins')
-          .select(
-            `
-          wishlist_id,
-          wishlists!inner (
-            id,
-            title,
-            description,
-            user_id
-          )
-        `
-          )
-          .eq('admin_user_id', userId);
+          .select('wishlist_id')
+          .eq('admin_id', userId);
 
-        if (adminError) throw adminError;
-
-        // Get owner details for each wishlist
-        const wishlistUserIds =
-          adminData?.map((item) => item.wishlists.user_id) || [];
-        const ownerProfiles: Record<string, { id: string; email: string }> = {};
-
-        if (wishlistUserIds.length > 0) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, email')
-            .in('id', wishlistUserIds);
-
-          if (!profileError && profileData) {
-            profileData.forEach((profile) => {
-              ownerProfiles[profile.id] = profile;
-            });
-          }
+        if (adminRelError) {
+          console.error('Admin relations error:', adminRelError);
+          throw adminRelError;
         }
 
-        const adminWishlistsFormatted =
-          adminData?.map((item: any) => ({
-            id: item.wishlists.id,
-            title: item.wishlists.title,
-            description: item.wishlists.description,
-            owner_profile: ownerProfiles[item.wishlists.user_id] || {
-              id: item.wishlists.user_id,
+        let adminWishlistsFormatted: AdminWishlist[] = [];
+        
+        if (adminRelations && adminRelations.length > 0) {
+          const wishlistIds = adminRelations.map(rel => rel.wishlist_id);
+          
+          // Get the wishlists separately
+          const { data: adminWishlistData, error: adminWishlistError } = await supabase
+            .from('wishlists')
+            .select('*')
+            .in('id', wishlistIds);
+
+          if (adminWishlistError) {
+            console.error('Admin wishlists error:', adminWishlistError);
+            throw adminWishlistError;
+          }
+
+          // Get owner details for each wishlist
+          const wishlistUserIds = adminWishlistData?.map((wl) => wl.creator_id) || [];
+          const ownerProfiles: Record<string, { id: string; email: string }> = {};
+
+          if (wishlistUserIds.length > 0) {
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('id, email')
+              .in('id', wishlistUserIds);
+
+            if (!profileError && profileData) {
+              profileData.forEach((profile) => {
+                ownerProfiles[profile.id] = profile;
+              });
+            }
+          }
+
+          adminWishlistsFormatted = adminWishlistData?.map((wishlist) => ({
+            id: wishlist.id,
+            title: wishlist.title,
+            description: wishlist.description,
+            owner_profile: ownerProfiles[wishlist.creator_id] || {
+              id: wishlist.creator_id,
               email: 'Unknown',
             },
           })) || [];
+        }
 
         setAdminWishlists(adminWishlistsFormatted);
 
-        // Load pending invitations
+        // Load pending invitations - simplified approach
         const { data: invitationData, error: invitationError } = await supabase
-          .from('wishlist_invitations')
-          .select(
-            `
-          id,
-          wishlist_id,
-          token,
-          created_at,
-          invited_by,
-          wishlists!inner (
-            title,
-            description,
-            user_id
-          )
-        `
-          )
+          .from('admin_invitations')
+          .select('id, wishlist_id, invitation_token, created_at, invited_by')
           .eq('email', user?.email)
           .eq('accepted', false);
 
         if (invitationError) throw invitationError;
 
-        // Get owner details for invitations
-        const invitationOwnerIds =
-          invitationData?.map((item) => item.wishlists.user_id) || [];
-        const invitationOwnerProfiles: Record<
-          string,
-          { id: string; email: string }
-        > = {};
+        let formattedInvitations: PendingInvitation[] = [];
+        
+        if (invitationData && invitationData.length > 0) {
+          // Get wishlist details separately
+          const wishlistIds = invitationData.map(inv => inv.wishlist_id);
+          const { data: invitationWishlists, error: invWishlistError } = await supabase
+            .from('wishlists')
+            .select('id, title, description, creator_id')
+            .in('id', wishlistIds);
 
-        if (invitationOwnerIds.length > 0) {
-          const { data: profileData, error: profileError } = await supabase
-            .from('profiles')
-            .select('id, email')
-            .in('id', invitationOwnerIds);
+          if (invWishlistError) throw invWishlistError;
 
-          if (!profileError && profileData) {
-            profileData.forEach((profile) => {
-              invitationOwnerProfiles[profile.id] = profile;
-            });
+          // Get owner details for invitations
+          const invitationOwnerIds = invitationWishlists?.map((wl) => wl.creator_id) || [];
+          const invitationOwnerProfiles: Record<string, { id: string; email: string }> = {};
+
+          if (invitationOwnerIds.length > 0) {
+            const { data: profileData, error: profileError } = await supabase
+              .from('profiles')
+              .select('id, email')
+              .in('id', invitationOwnerIds);
+
+            if (!profileError && profileData) {
+              profileData.forEach((profile) => {
+                invitationOwnerProfiles[profile.id] = profile;
+              });
+            }
           }
+
+          formattedInvitations = invitationData.map((invitation) => {
+            const wishlist = invitationWishlists?.find(wl => wl.id === invitation.wishlist_id);
+            return {
+              id: invitation.id,
+              wishlist_id: invitation.wishlist_id,
+              token: invitation.invitation_token,
+              created_at: invitation.created_at,
+              invited_by: invitation.invited_by,
+              wishlists: {
+                title: wishlist?.title || 'Unknown',
+                description: wishlist?.description || null,
+                owner_profile: invitationOwnerProfiles[wishlist?.creator_id || ''] || {
+                  id: wishlist?.creator_id || '',
+                  email: 'Unknown',
+                },
+              },
+            };
+          });
         }
 
-        const pendingInvitationsFormatted =
-          invitationData?.map((item: any) => ({
-            id: item.id,
-            wishlist_id: item.wishlist_id,
-            token: item.token,
-            created_at: item.created_at,
-            invited_by: item.invited_by,
-            wishlists: {
-              title: item.wishlists.title,
-              description: item.wishlists.description,
-              owner_profile: invitationOwnerProfiles[
-                item.wishlists.user_id
-              ] || {
-                id: item.wishlists.user_id,
-                email: 'Unknown',
-              },
-            },
-          })) || [];
-
-        setPendingInvitations(pendingInvitationsFormatted);
+        setPendingInvitations(formattedInvitations);
       } catch (error) {
+        console.error('Error loading dashboard data:', error);
         toast.error('Failed to load dashboard data');
       } finally {
         setLoading(false);
@@ -259,7 +264,7 @@ const Dashboard = () => {
         .from('wishlists')
         .insert([
           {
-            user_id: user?.id,
+            creator_id: user?.id,
             title: newTitle.trim(),
             description: newDescription.trim() || null,
           },
@@ -274,7 +279,8 @@ const Dashboard = () => {
       setNewDescription('');
       setCreateDialogOpen(false);
       toast.success('Wishlist created!');
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Create wishlist error:', error);
       toast.error('Failed to create wishlist');
     } finally {
       setCreating(false);
@@ -289,7 +295,8 @@ const Dashboard = () => {
 
       setWishlists(wishlists.filter((w) => w.id !== id));
       toast.success('Wishlist deleted');
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Delete wishlist error:', error);
       toast.error('Failed to delete wishlist');
     }
   };
@@ -316,7 +323,7 @@ const Dashboard = () => {
           .from('wishlist_admins')
           .insert({
             wishlist_id: invitation.wishlist_id,
-            admin_user_id: user.id,
+            admin_id: user.id,
             invited_by: invitation.invited_by,
           });
 
@@ -324,7 +331,7 @@ const Dashboard = () => {
 
         // Then mark invitation as accepted
         const { error } = await supabase
-          .from('wishlist_invitations')
+          .from('admin_invitations')
           .update({ accepted: true })
           .eq('id', invitationId);
 
@@ -337,7 +344,8 @@ const Dashboard = () => {
           'Invitation accepted! You are now an admin for this wishlist.'
         );
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Accept invitation error:', error);
       toast.error('Failed to accept invitation');
     }
   };
@@ -554,10 +562,12 @@ const Dashboard = () => {
                   <CardContent>
                     <div className="flex flex-col gap-2">
                       <Button
-                        onClick={() => navigate(`/wishlist/${wishlist.id}`)}
+                        onClick={() =>
+                          navigate(`/wishlist/${wishlist.id}/admin`)
+                        }
                         variant="outline"
                         className="w-full">
-                        View List
+                        Admin Dashboard
                       </Button>
                       <Button
                         variant="outline"

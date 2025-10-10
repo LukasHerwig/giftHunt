@@ -25,7 +25,7 @@ const App = () => (
           <Route path="/wishlist/:id/manage" element={<ManageWishlist />} />
           <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
           <Route path="/accept-invitation" element={<AcceptInvitation />} />
-          <Route path="/wishlist/:id" element={<PublicWishlist />} />
+          <Route path="/shared/:token" element={<PublicWishlist />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

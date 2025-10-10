@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -16,12 +16,18 @@ import {
   Check,
   Loader2,
   Copy,
+  Star,
+  DollarSign,
+  Share,
 } from 'lucide-react';
 
 interface WishlistItem {
   id: string;
   title: string;
+  description: string | null;
   link: string | null;
+  price_range: string | null;
+  priority: number;
   is_taken: boolean;
   taken_by_name: string | null;
   taken_at: string | null;
@@ -41,20 +47,10 @@ const AdminWishlist = () => {
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [shareLink, setShareLink] = useState<string | null>(null);
+  const [generatingLink, setGeneratingLink] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/auth');
-      } else {
-        checkAdminAccess();
-        loadWishlist();
-        loadItems();
-      }
-    });
-  }, [id, navigate]);
-
-  const checkAdminAccess = async () => {
+  const checkAdminAccess = useCallback(async () => {
     try {
       const {
         data: { user },
@@ -65,7 +61,7 @@ const AdminWishlist = () => {
         .from('wishlist_admins')
         .select('id')
         .eq('wishlist_id', id)
-        .eq('admin_user_id', user.id)
+        .eq('admin_id', user.id)
         .single();
 
       if (error && error.code !== 'PGRST116') {
@@ -78,13 +74,14 @@ const AdminWishlist = () => {
         toast.error('You do not have admin access to this wishlist');
         navigate('/');
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Admin access check error:', error);
       toast.error('Failed to verify admin access');
       navigate('/');
     }
-  };
+  }, [id, navigate]);
 
-  const loadWishlist = async () => {
+  const loadWishlist = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('wishlists')
@@ -94,12 +91,13 @@ const AdminWishlist = () => {
 
       if (error) throw error;
       setWishlist(data);
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Load wishlist error:', error);
       toast.error('Failed to load wishlist');
     }
-  };
+  }, [id]);
 
-  const loadItems = async () => {
+  const loadItems = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('wishlist_items')
@@ -109,17 +107,107 @@ const AdminWishlist = () => {
 
       if (error) throw error;
       setItems(data || []);
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Load items error:', error);
       toast.error('Failed to load items');
     } finally {
       setLoading(false);
     }
+  }, [id]);
+
+  const loadShareLink = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('share_links')
+        .select('share_token')
+        .eq('wishlist_id', id)
+        .eq('is_active', true)
+        .single();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      if (data) {
+        setShareLink(`${window.location.origin}/shared/${data.share_token}`);
+      }
+    } catch (error) {
+      console.error('Load share link error:', error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/auth');
+      } else {
+        checkAdminAccess();
+        loadWishlist();
+        loadItems();
+        loadShareLink();
+      }
+    });
+  }, [navigate, checkAdminAccess, loadWishlist, loadItems, loadShareLink]);
+
+  const generateShareLink = async () => {
+    if (!id) return;
+
+    setGeneratingLink(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      // Check if there's already an active share link
+      const { data: existingLink } = await supabase
+        .from('share_links')
+        .select('share_token')
+        .eq('wishlist_id', id)
+        .eq('is_active', true)
+        .single();
+
+      if (existingLink) {
+        const url = `${window.location.origin}/shared/${existingLink.share_token}`;
+        setShareLink(url);
+        return url;
+      }
+
+      // Generate new share link
+      const { data, error } = await supabase
+        .from('share_links')
+        .insert({
+          wishlist_id: id,
+          created_by: user.id,
+        })
+        .select('share_token')
+        .single();
+
+      if (error) throw error;
+
+      const url = `${window.location.origin}/shared/${data.share_token}`;
+      setShareLink(url);
+      return url;
+    } catch (error) {
+      console.error('Generate share link error:', error);
+      toast.error('Failed to generate share link');
+      return null;
+    } finally {
+      setGeneratingLink(false);
+    }
   };
 
-  const handleCopyShareLink = () => {
-    const url = `${window.location.origin}/wishlist/${id}`;
-    navigator.clipboard.writeText(url);
-    toast.success('Share link copied to clipboard!');
+  const handleCopyShareLink = async () => {
+    let linkToCopy = shareLink;
+
+    if (!linkToCopy) {
+      linkToCopy = await generateShareLink();
+    }
+
+    if (linkToCopy) {
+      await navigator.clipboard.writeText(linkToCopy);
+      toast.success('Share link copied to clipboard!');
+    }
   };
 
   if (loading) {
@@ -167,15 +255,50 @@ const AdminWishlist = () => {
             </div>
             <Button
               onClick={handleCopyShareLink}
+              disabled={generatingLink}
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
-              <Copy className="w-4 h-4 mr-2" />
-              Copy Share Link
+              {generatingLink ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Share className="w-4 h-4 mr-2" />
+                  {shareLink ? 'Copy Share Link' : 'Generate Share Link'}
+                </>
+              )}
             </Button>
           </div>
         </div>
       </header>
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
+        {/* Share Link Info */}
+        {shareLink && (
+          <Card className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                    Active Share Link
+                  </h3>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 break-all font-mono">
+                    {shareLink}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigator.clipboard.writeText(shareLink)}
+                  className="flex-shrink-0">
+                  <Copy className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid gap-6 md:grid-cols-2">
           {/* Available Items */}
           <Card>
@@ -197,13 +320,48 @@ const AdminWishlist = () => {
                   <Card key={item.id} className="p-3">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h4 className="font-medium">{item.title}</h4>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium">{item.title}</h4>
+                          {item.priority === 3 && (
+                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                          )}
+                        </div>
+
+                        {item.description && (
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {item.description}
+                          </p>
+                        )}
+
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {item.price_range && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                              <DollarSign className="w-3 h-3" />
+                              {item.price_range}
+                            </span>
+                          )}
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              item.priority === 3
+                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                                : item.priority === 2
+                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                            }`}>
+                            {item.priority === 3
+                              ? 'High'
+                              : item.priority === 2
+                              ? 'Medium'
+                              : 'Low'}
+                          </span>
+                        </div>
+
                         {item.link && (
                           <a
                             href={item.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-primary hover:underline flex items-center gap-1 mt-1">
+                            className="text-sm text-primary hover:underline flex items-center gap-1">
                             <LinkIcon className="w-3 h-3" />
                             View link
                           </a>
@@ -236,21 +394,55 @@ const AdminWishlist = () => {
                   <Card key={item.id} className="p-3 bg-muted/30">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
-                        <h4 className="font-medium flex items-center gap-2">
-                          {item.title}
+                        <div className="flex items-center gap-2 mb-1">
+                          <h4 className="font-medium">{item.title}</h4>
                           <Check className="w-4 h-4 text-green-600" />
-                        </h4>
+                          {item.priority === 3 && (
+                            <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                          )}
+                        </div>
+
+                        {item.description && (
+                          <p className="text-sm text-muted-foreground mb-2">
+                            {item.description}
+                          </p>
+                        )}
+
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {item.price_range && (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                              <DollarSign className="w-3 h-3" />
+                              {item.price_range}
+                            </span>
+                          )}
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              item.priority === 3
+                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                                : item.priority === 2
+                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                            }`}>
+                            {item.priority === 3
+                              ? 'High'
+                              : item.priority === 2
+                              ? 'Medium'
+                              : 'Low'}
+                          </span>
+                        </div>
+
                         {item.link && (
                           <a
                             href={item.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-primary hover:underline flex items-center gap-1 mt-1">
+                            className="text-sm text-primary hover:underline flex items-center gap-1 mb-2">
                             <LinkIcon className="w-3 h-3" />
                             View link
                           </a>
                         )}
-                        <div className="mt-2 text-sm text-muted-foreground">
+
+                        <div className="text-sm text-muted-foreground">
                           <span className="font-medium">Taken by:</span>{' '}
                           {item.taken_by_name || 'Anonymous'}
                           {item.taken_at && (

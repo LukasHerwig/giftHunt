@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -6,105 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 
-interface Invitation {
-  id: string;
-  wishlist_id: string;
-  email: string;
-  invited_by: string;
-  accepted: boolean;
-  expires_at: string;
-  wishlists: {
-    title: string;
-    description: string | null;
-    profiles: {
-      email: string;
-    };
-  };
-}
-
 const AcceptInvitation = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [invitation, setInvitation] = useState<Invitation | null>(null);
   const [loading, setLoading] = useState(true);
-  const [accepting, setAccepting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [needsAuth, setNeedsAuth] = useState(false);
-  const [currentUser, setCurrentUser] = useState<{
-    id: string;
-    email?: string;
-  } | null>(null);
+  const [currentUser, setCurrentUser] = useState<{ id: string; email?: string } | null>(null);
+  const [invitationValid, setInvitationValid] = useState(false);
+  const [inviterEmail, setInviterEmail] = useState<string | null>(null);
 
   const token = searchParams.get('token');
-
-  const loadInvitation = useCallback(async () => {
-    try {
-      console.log('Loading invitation with token:', token);
-
-      // First, try to load just the invitation
-      const { data: inviteData, error: inviteError } = await supabase
-        .from('wishlist_invitations')
-        .select('*')
-        .eq('token', token)
-        .single();
-
-      console.log('Invitation data:', inviteData);
-      console.log('Invitation error:', inviteError);
-
-      if (inviteError) {
-        console.error('Database error:', inviteError);
-        throw inviteError;
-      }
-
-      if (!inviteData) {
-        throw new Error('No invitation found');
-      }
-
-      if (inviteData.accepted) {
-        setError('This invitation has already been accepted');
-        setLoading(false);
-        return;
-      }
-
-      if (new Date(inviteData.expires_at) < new Date()) {
-        setError('This invitation has expired');
-        setLoading(false);
-        return;
-      }
-
-      // Then load the wishlist separately
-      const { data: wishlistData, error: wishlistError } = await supabase
-        .from('wishlists')
-        .select(
-          `
-          title,
-          description,
-          profiles!wishlists_user_id_fkey (
-            email
-          )
-        `
-        )
-        .eq('id', inviteData.wishlist_id)
-        .single();
-
-      console.log('Wishlist data:', wishlistData);
-      console.log('Wishlist error:', wishlistError);
-
-      // Combine the data
-      const combinedData = {
-        ...inviteData,
-        wishlists: wishlistData,
-      };
-
-      console.log('Combined data:', combinedData);
-      setInvitation(combinedData);
-    } catch (error: unknown) {
-      console.error('Failed to load invitation:', error);
-      setError('Invalid or expired invitation');
-    } finally {
-      setLoading(false);
-    }
-  }, [token]);
 
   useEffect(() => {
     if (!token) {
@@ -113,67 +24,86 @@ const AcceptInvitation = () => {
       return;
     }
 
-    // Check if user is already logged in
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setCurrentUser(user);
-      if (!user) {
-        setNeedsAuth(true);
+    const checkInvitation = async () => {
+      try {
+        // Just check if the invitation token exists and is valid
+        const { data: inviteData, error: inviteError } = await supabase
+          .from('admin_invitations')
+          .select('id, email, accepted, expires_at, invited_by')
+          .eq('invitation_token', token)
+          .single();
+
+        if (inviteError || !inviteData) {
+          setError('Invalid or expired invitation');
+          setLoading(false);
+          return;
+        }
+
+        if (inviteData.accepted) {
+          setError('This invitation has already been accepted');
+          setLoading(false);
+          return;
+        }
+
+        if (inviteData.expires_at && new Date(inviteData.expires_at) < new Date()) {
+          setError('This invitation has expired');
+          setLoading(false);
+          return;
+        }
+
+        setInvitationValid(true);
+
+        // Get the inviter's profile information
+        if (inviteData.invited_by) {
+          try {
+            const { data: inviterData, error: inviterError } = await supabase
+              .from('profiles')
+              .select('email')
+              .eq('id', inviteData.invited_by)
+              .single();
+
+            if (!inviterError && inviterData) {
+              setInviterEmail(inviterData.email);
+            } else {
+              console.log('Could not fetch inviter profile:', inviterError);
+              // Set a fallback message instead of email
+              setInviterEmail('Someone');
+            }
+          } catch (error) {
+            console.log('Error fetching inviter profile:', error);
+            setInviterEmail('Someone');
+          }
+        }
+
+        // Check if user is already logged in
+        const { data: { user } } = await supabase.auth.getUser();
+        setCurrentUser(user);
+
+        // If user is logged in, redirect to dashboard so they can see the invitation
+        if (user) {
+          // Store the token so they can process it from dashboard if needed
+          sessionStorage.setItem('pendingInvitationToken', token);
+          navigate('/dashboard');
+          return;
+        }
+
+      } catch (error) {
+        console.error('Error checking invitation:', error);
+        setError('Unable to verify invitation');
+      } finally {
+        setLoading(false);
       }
-      loadInvitation();
-    });
-  }, [token, loadInvitation]);
+    };
 
-  const handleAcceptInvitation = async () => {
-    if (!invitation) return;
+    checkInvitation();
+  }, [token, navigate]);
 
-    // If user is not logged in, redirect to auth
-    if (!currentUser) {
-      // Store the token in sessionStorage so we can return here after auth
-      sessionStorage.setItem('pendingInvitationToken', token!);
-      navigate('/auth');
-      return;
+  const handleSignIn = () => {
+    // Store the token so user can complete the invitation after signing in
+    if (token) {
+      sessionStorage.setItem('pendingInvitationToken', token);
     }
-
-    // Check if user's email matches invitation email
-    if (currentUser.email !== invitation.email) {
-      setError(
-        `You must be logged in with the email ${invitation.email} to accept this invitation.`
-      );
-      return;
-    }
-
-    setAccepting(true);
-    try {
-      // Create admin relationship
-      const { error: adminError } = await supabase
-        .from('wishlist_admins')
-        .insert([
-          {
-            wishlist_id: invitation.wishlist_id,
-            admin_user_id: currentUser.id,
-            invited_by: invitation.invited_by,
-          },
-        ]);
-
-      if (adminError) throw adminError;
-
-      // Mark invitation as accepted
-      const { error: updateError } = await supabase
-        .from('wishlist_invitations')
-        .update({ accepted: true })
-        .eq('id', invitation.id);
-
-      if (updateError) throw updateError;
-
-      toast.success(
-        'Invitation accepted! You are now an admin for this wishlist.'
-      );
-      navigate(`/wishlist/${invitation.wishlist_id}/admin`);
-    } catch (error: unknown) {
-      toast.error('Failed to accept invitation');
-    } finally {
-      setAccepting(false);
-    }
+    navigate('/auth');
   };
 
   if (loading) {
@@ -192,7 +122,7 @@ const AcceptInvitation = () => {
             <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold mb-2">Invalid Invitation</h2>
             <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => navigate('/')}>Go to Dashboard</Button>
+            <Button onClick={() => navigate('/')}>Go to Home</Button>
           </CardContent>
         </Card>
       </div>
@@ -206,100 +136,48 @@ const AcceptInvitation = () => {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <CardTitle className="text-2xl">You've been invited!</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {invitation && invitation.wishlists && (
-            <>
-              <div className="text-center space-y-2">
-                <h3 className="font-semibold text-lg">
-                  {invitation.wishlists.title}
-                </h3>
-                {invitation.wishlists.description && (
-                  <p className="text-muted-foreground">
-                    {invitation.wishlists.description}
-                  </p>
-                )}
-                <p className="text-sm text-muted-foreground">
-                  by {invitation.wishlists.profiles?.email || 'Unknown'}
+        <CardContent className="space-y-6">
+          <div className="text-center space-y-4">
+            <p className="text-muted-foreground">
+              You've been invited to help manage a wishlist as an admin.
+            </p>
+
+            {inviterEmail && (
+              <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <span className="font-medium">Invited by:</span> {inviterEmail === 'Someone' ? 'Someone' : inviterEmail}
                 </p>
               </div>
-
-              <div className="bg-muted/50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">
-                  As an admin, you'll be able to:
-                </h4>
-                <ul className="text-sm space-y-1 text-muted-foreground">
-                  <li>• See which items have been taken and by whom</li>
-                  <li>• Share the wishlist link with others</li>
-                  <li>• Coordinate gift-giving efforts</li>
-                </ul>
-              </div>
-
-              <div className="text-center space-y-2">
-                <p className="text-sm text-muted-foreground">
-                  Invited:{' '}
-                  <span className="font-medium">{invitation.email}</span>
-                </p>
-
-                {!currentUser ? (
-                  <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
-                      Please log in or create an account with the email{' '}
-                      <strong>{invitation.email}</strong> to accept this
-                      invitation.
-                    </p>
-                    <Button
-                      onClick={handleAcceptInvitation}
-                      className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90">
-                      Log In / Sign Up to Accept
-                    </Button>
-                  </div>
-                ) : currentUser.email !== invitation.email ? (
-                  <div className="space-y-3 text-center">
-                    <p className="text-sm text-destructive">
-                      You're logged in as <strong>{currentUser.email}</strong>,
-                      but this invitation was sent to{' '}
-                      <strong>{invitation.email}</strong>.
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Please log out and sign in with the correct email address.
-                    </p>
-                    <Button
-                      onClick={() => {
-                        supabase.auth.signOut();
-                        navigate('/auth');
-                      }}
-                      variant="outline"
-                      className="w-full">
-                      Sign Out & Log In with Correct Email
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    onClick={handleAcceptInvitation}
-                    disabled={accepting}
-                    className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90">
-                    {accepting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Accepting...
-                      </>
-                    ) : (
-                      'Accept Invitation'
-                    )}
-                  </Button>
-                )}
-              </div>
-            </>
-          )}
-
-          {invitation && !invitation.wishlists && (
-            <div className="text-center space-y-4">
-              <p className="text-destructive">
-                Unable to load wishlist details.
-              </p>
-              <Button onClick={() => navigate('/')}>Go to Dashboard</Button>
+            )}
+            
+            <div className="bg-muted/50 p-4 rounded-lg">
+              <h4 className="font-medium mb-2">As an admin, you'll be able to:</h4>
+              <ul className="text-sm space-y-1 text-muted-foreground">
+                <li>• See which items have been taken and by whom</li>
+                <li>• Share the wishlist link with others</li>
+                <li>• Coordinate gift-giving efforts</li>
+                <li>• Help manage the wishlist</li>
+              </ul>
             </div>
-          )}
+
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Please sign in or create an account to accept this invitation.
+              </p>
+              
+              <Button
+                onClick={handleSignIn}
+                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                size="lg"
+              >
+                Sign In / Create Account
+              </Button>
+              
+              <p className="text-xs text-muted-foreground">
+                After signing in, you'll see the invitation on your dashboard where you can accept it.
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -18,6 +18,15 @@ import {
   DialogTrigger,
 } from '../components/ui/dialog';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,18 +46,23 @@ import {
   ExternalLink,
   Loader2,
   UserPlus,
+  Star,
+  DollarSign,
 } from 'lucide-react';
 
 interface WishlistItem {
   id: string;
   title: string;
+  description: string | null;
   link: string | null;
+  price_range: string | null;
+  priority: number;
   created_at: string;
 }
 
 interface WishlistAdmin {
   id: string;
-  admin_user_id: string;
+  admin_id: string;
   created_at: string;
   profiles: {
     email: string | null;
@@ -58,7 +72,7 @@ interface WishlistAdmin {
 interface WishlistInvitation {
   id: string;
   email: string;
-  token: string;
+  invitation_token: string;
   created_at: string;
   expires_at: string;
   accepted: boolean;
@@ -72,7 +86,10 @@ const ManageWishlist = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
+  const [newDescription, setNewDescription] = useState('');
   const [newLink, setNewLink] = useState('');
+  const [newPriceRange, setNewPriceRange] = useState('');
+  const [newPriority, setNewPriority] = useState(2); // Default to medium priority
   const [inviteEmail, setInviteEmail] = useState('');
   const [adding, setAdding] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -84,7 +101,9 @@ const ManageWishlist = () => {
       // Load all items for the owner (but don't show taken status to maintain surprise)
       const { data, error } = await supabase
         .from('wishlist_items')
-        .select('id, title, link, created_at')
+        .select(
+          'id, title, description, link, price_range, priority, created_at'
+        )
         .eq('wishlist_id', id)
         .order('created_at', { ascending: false });
 
@@ -107,9 +126,9 @@ const ManageWishlist = () => {
         .select(
           `
           id,
-          admin_user_id,
+          admin_id,
           created_at,
-          profiles!admin_user_id (
+          profiles!admin_id (
             email
           )
         `
@@ -121,7 +140,7 @@ const ManageWishlist = () => {
 
       // Load pending invitations
       const { data: inviteData, error: inviteError } = await supabase
-        .from('wishlist_invitations')
+        .from('admin_invitations')
         .select('*')
         .eq('wishlist_id', id)
         .eq('accepted', false)
@@ -161,7 +180,10 @@ const ManageWishlist = () => {
           {
             wishlist_id: id,
             title: newTitle.trim(),
+            description: newDescription.trim() || null,
             link: newLink.trim() || null,
+            price_range: newPriceRange.trim() || null,
+            priority: newPriority,
           },
         ])
         .select()
@@ -171,7 +193,10 @@ const ManageWishlist = () => {
 
       setItems([data, ...items]);
       setNewTitle('');
+      setNewDescription('');
       setNewLink('');
+      setNewPriceRange('');
+      setNewPriority(2);
       setDialogOpen(false);
       toast.success('Item added!');
     } catch (error: unknown) {
@@ -198,11 +223,11 @@ const ManageWishlist = () => {
       expiresAt.setDate(expiresAt.getDate() + 7); // 7 days expiry
 
       const { error: inviteError } = await supabase
-        .from('wishlist_invitations')
+        .from('admin_invitations')
         .insert({
           wishlist_id: id,
           email: inviteEmail.trim(),
-          token,
+          invitation_token: token,
           expires_at: expiresAt.toISOString(),
           invited_by: user.id,
         });
@@ -285,20 +310,71 @@ const ManageWishlist = () => {
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddItem} className="space-y-4">
-                <Input
-                  placeholder="Item title"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="text-base"
-                  disabled={adding}
-                />
-                <Input
-                  placeholder="Link (optional)"
-                  value={newLink}
-                  onChange={(e) => setNewLink(e.target.value)}
-                  className="text-base"
-                  disabled={adding}
-                />
+                <div className="space-y-2">
+                  <Label htmlFor="title">Title *</Label>
+                  <Input
+                    id="title"
+                    placeholder="Item title"
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    className="text-base"
+                    disabled={adding}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="Describe the item (optional)"
+                    value={newDescription}
+                    onChange={(e) => setNewDescription(e.target.value)}
+                    className="text-base resize-none"
+                    rows={3}
+                    disabled={adding}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="link">Link</Label>
+                  <Input
+                    id="link"
+                    placeholder="Link to the item (optional)"
+                    value={newLink}
+                    onChange={(e) => setNewLink(e.target.value)}
+                    className="text-base"
+                    disabled={adding}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="price">Price Range</Label>
+                  <Input
+                    id="price"
+                    placeholder="e.g. $50-100, Under $25 (optional)"
+                    value={newPriceRange}
+                    onChange={(e) => setNewPriceRange(e.target.value)}
+                    className="text-base"
+                    disabled={adding}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select
+                    value={newPriority.toString()}
+                    onValueChange={(value) => setNewPriority(parseInt(value))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">Low Priority</SelectItem>
+                      <SelectItem value="2">Medium Priority</SelectItem>
+                      <SelectItem value="3">High Priority</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
@@ -440,15 +516,50 @@ const ManageWishlist = () => {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <CardTitle className="text-lg break-words">
-                        {item.title}
-                      </CardTitle>
+                      <div className="flex items-center gap-2 mb-1">
+                        <CardTitle className="text-lg break-words">
+                          {item.title}
+                        </CardTitle>
+                        {item.priority === 3 && (
+                          <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                        )}
+                      </div>
+
+                      {item.description && (
+                        <p className="text-sm text-muted-foreground mb-2 break-words">
+                          {item.description}
+                        </p>
+                      )}
+
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        {item.price_range && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                            <DollarSign className="w-3 h-3" />
+                            {item.price_range}
+                          </span>
+                        )}
+                        <span
+                          className={`px-2 py-1 text-xs rounded-full ${
+                            item.priority === 3
+                              ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                              : item.priority === 2
+                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                              : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                          }`}>
+                          {item.priority === 3
+                            ? 'High Priority'
+                            : item.priority === 2
+                            ? 'Medium Priority'
+                            : 'Low Priority'}
+                        </span>
+                      </div>
+
                       {item.link && (
                         <a
                           href={item.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-sm text-primary hover:underline flex items-center gap-1 mt-2 break-all">
+                          className="text-sm text-primary hover:underline flex items-center gap-1 break-all">
                           View link
                           <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </a>
