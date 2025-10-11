@@ -365,6 +365,62 @@ const ManageWishlist = () => {
     }
   };
 
+  const handleRemoveInvitation = async (invitationId: string) => {
+    try {
+      const { error } = await supabase
+        .from('admin_invitations')
+        .delete()
+        .eq('id', invitationId);
+
+      if (error) throw error;
+
+      setInvitations(invitations.filter((inv) => inv.id !== invitationId));
+      toast.success(t('messages.invitationRemoved'));
+    } catch (error: unknown) {
+      toast.error(t('messages.failedToRemoveInvitation'));
+      console.error('Error removing invitation:', error);
+    }
+  };
+
+  const handleRemoveAdmin = async (adminId: string) => {
+    try {
+      // First, find the admin to get their email for invitation cleanup
+      const adminToRemove = admins.find((admin) => admin.id === adminId);
+      const adminEmail = adminToRemove?.profiles?.email;
+
+      // Remove the admin record
+      const { error: adminError } = await supabase
+        .from('wishlist_admins')
+        .delete()
+        .eq('id', adminId);
+
+      if (adminError) throw adminError;
+
+      // Also remove their invitation record to allow re-inviting
+      if (adminEmail && id) {
+        const { error: inviteError } = await supabase
+          .from('admin_invitations')
+          .delete()
+          .eq('email', adminEmail)
+          .eq('wishlist_id', id);
+
+        // Log invitation cleanup (don't fail if invitation doesn't exist)
+        if (inviteError) {
+          console.log(
+            'Note: Could not find invitation record to clean up:',
+            inviteError
+          );
+        }
+      }
+
+      setAdmins(admins.filter((admin) => admin.id !== adminId));
+      toast.success(t('messages.adminRemoved'));
+    } catch (error: unknown) {
+      toast.error(t('messages.failedToRemoveAdmin'));
+      console.error('Error removing admin:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -661,78 +717,131 @@ const ManageWishlist = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {invitations.length > 0 && (
-                <div>
-                  {invitations.filter((inv) => !inv.accepted).length > 0 && (
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                        {t('manageWishlist.pendingInvitations')}
-                      </h4>
-                      <div className="space-y-2">
-                        {invitations
-                          .filter((inv) => !inv.accepted)
-                          .map((invitation) => (
-                            <div
-                              key={invitation.id}
-                              className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
-                              <div>
-                                <p className="font-medium">
-                                  {invitation.email}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {t('inviteDialog.invited')}{' '}
-                                  {new Date(
-                                    invitation.created_at
-                                  ).toLocaleDateString()}{' '}
-                                  • {t('inviteDialog.expires')}{' '}
-                                  {new Date(
-                                    invitation.expires_at
-                                  ).toLocaleDateString()}
-                                </p>
-                              </div>
-                              <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                                {t('manageWishlist.pending')}
-                              </span>
-                            </div>
-                          ))}
+              <div>
+                <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                  {t('manageWishlist.adminAccess')}
+                </h4>
+                <div className="space-y-2">
+                  {/* Show pending invitations */}
+                  {invitations
+                    .filter((inv) => !inv.accepted)
+                    .map((invitation) => (
+                      <div
+                        key={invitation.id}
+                        className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+                        <div>
+                          <p className="font-medium">{invitation.email}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {t('inviteDialog.invited')}{' '}
+                            {new Date(
+                              invitation.created_at
+                            ).toLocaleDateString()}{' '}
+                            • {t('inviteDialog.expires')}{' '}
+                            {new Date(
+                              invitation.expires_at
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                            {t('manageWishlist.pending')}
+                          </span>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive">
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t('removeInvitationDialog.title')}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {t('removeInvitationDialog.description', {
+                                    email: invitation.email,
+                                  })}
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                  {t('removeInvitationDialog.cancel')}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() =>
+                                    handleRemoveInvitation(invitation.id)
+                                  }
+                                  className="bg-destructive hover:bg-destructive/90">
+                                  {t('removeInvitationDialog.remove')}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    ))}
 
-                  {invitations.filter((inv) => inv.accepted).length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                        {t('manageWishlist.acceptedInvitations')}
-                      </h4>
-                      <div className="space-y-2">
-                        {invitations
-                          .filter((inv) => inv.accepted)
-                          .map((invitation) => (
-                            <div
-                              key={invitation.id}
-                              className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
-                              <div>
-                                <p className="font-medium">
-                                  {invitation.email}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                  {t('inviteDialog.invited')}{' '}
-                                  {new Date(
-                                    invitation.created_at
-                                  ).toLocaleDateString()}{' '}
-                                  • {t('manageWishlist.accepted')} ✓
-                                </p>
-                              </div>
-                              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
-                                {t('manageWishlist.accepted')}
-                              </span>
-                            </div>
-                          ))}
+                  {/* Show current admins */}
+                  {admins.map((admin) => (
+                    <div
+                      key={admin.id}
+                      className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                      <div>
+                        <p className="font-medium">
+                          {admin.profiles?.email ||
+                            t('manageWishlist.unknownUser')}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {t('manageWishlist.adminSince')}{' '}
+                          {new Date(admin.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                          {t('manageWishlist.activeAdmin')}
+                        </span>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                {t('removeAdminDialog.title')}
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {t('removeAdminDialog.description', {
+                                  email:
+                                    admin.profiles?.email ||
+                                    t('manageWishlist.unknownUser'),
+                                })}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>
+                                {t('removeAdminDialog.cancel')}
+                              </AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleRemoveAdmin(admin.id)}
+                                className="bg-destructive hover:bg-destructive/90">
+                                {t('removeAdminDialog.remove')}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
-                  )}
+                  ))}
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
         )}

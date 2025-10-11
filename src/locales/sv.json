@@ -94,6 +94,7 @@
     "noItemsYet": "Inga önskningar än. Lägg till din första önskning!",
     "loading": "Laddar...",
     "adminStatus": "Admin Status",
+    "adminAccess": "Admin Åtkomst",
     "currentAdmins": "Nuvarande Administratörer",
     "pendingInvitations": "Väntande Inbjudningar",
     "acceptedInvitations": "Accepterade Inbjudningar",
@@ -103,6 +104,8 @@
     "expires": "Upphör",
     "pending": "Väntande",
     "accepted": "Accepterad",
+    "activeAdmin": "Aktiv Admin",
+    "unknownUser": "Okänd Användare",
     "viewLink": "Visa länk"
   },
   "addItemDialog": {
@@ -141,11 +144,17 @@
     "cancel": "Avbryt",
     "delete": "Ta bort"
   },
-  "deleteWishlistDialog": {
-    "title": "Ta bort Önskelista",
-    "description": "Är du säker på att du vill ta bort denna önskelista? Denna åtgärd kan inte ångras.",
+  "removeInvitationDialog": {
+    "title": "Ta bort Inbjudan",
+    "description": "Är du säker på att du vill ta bort inbjudan för {{email}}? De kommer inte längre att kunna acceptera denna inbjudan.",
     "cancel": "Avbryt",
-    "delete": "Ta bort"
+    "remove": "Ta bort Inbjudan"
+  },
+  "removeAdminDialog": {
+    "title": "Ta bort Admin",
+    "description": "Är du säker på att du vill ta bort {{email}} som administratör? De kommer att förlora åtkomst till adminfunktioner för denna önskelista.",
+    "cancel": "Avbryt",
+    "remove": "Ta bort Admin"
   },
   "priority": {
     "none": "Ingen Prioritet",
@@ -167,6 +176,10 @@
     "failedToDeleteWishlist": "Misslyckades att ta bort önskelista",
     "invitationCreated": "Inbjudan skapad! Länk kopierad till urklipp",
     "failedToInvite": "Misslyckades att skapa inbjudan",
+    "invitationRemoved": "Inbjudan borttagen framgångsrikt",
+    "failedToRemoveInvitation": "Misslyckades att ta bort inbjudan",
+    "adminRemoved": "Admin borttagen framgångsrikt",
+    "failedToRemoveAdmin": "Misslyckades att ta bort admin",
     "invitationAccepted": "Inbjudan accepterad! Du är nu admin för denna önskelista.",
     "failedToAcceptInvitation": "Misslyckades att acceptera inbjudan",
     "linkCopied": "Länk kopierad till urklipp!",

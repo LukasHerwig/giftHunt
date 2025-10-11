@@ -94,6 +94,7 @@
     "noItemsYet": "No items yet. Add your first wish!",
     "loading": "Loading...",
     "adminStatus": "Admin Status",
+    "adminAccess": "Admin Access",
     "currentAdmins": "Current Admins",
     "pendingInvitations": "Pending Invitations",
     "acceptedInvitations": "Accepted Invitations",
@@ -103,6 +104,8 @@
     "expires": "Expires",
     "pending": "Pending",
     "accepted": "Accepted",
+    "activeAdmin": "Active Admin",
+    "unknownUser": "Unknown User",
     "viewLink": "View link"
   },
   "addItemDialog": {
@@ -141,11 +144,17 @@
     "cancel": "Cancel",
     "delete": "Delete"
   },
-  "deleteWishlistDialog": {
-    "title": "Delete Wishlist",
-    "description": "Are you sure you want to delete this wishlist? This action cannot be undone.",
+  "removeInvitationDialog": {
+    "title": "Remove Invitation",
+    "description": "Are you sure you want to remove the invitation for {{email}}? They will no longer be able to accept this invitation.",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "remove": "Remove Invitation"
+  },
+  "removeAdminDialog": {
+    "title": "Remove Admin",
+    "description": "Are you sure you want to remove {{email}} as an admin? They will lose access to admin features for this wishlist.",
+    "cancel": "Cancel",
+    "remove": "Remove Admin"
   },
   "priority": {
     "none": "No Priority",
@@ -167,6 +176,10 @@
     "failedToDeleteWishlist": "Failed to delete wishlist",
     "invitationCreated": "Invitation created! Link copied to clipboard",
     "failedToInvite": "Failed to create invitation",
+    "invitationRemoved": "Invitation removed successfully",
+    "failedToRemoveInvitation": "Failed to remove invitation",
+    "adminRemoved": "Admin removed successfully",
+    "failedToRemoveAdmin": "Failed to remove admin",
     "invitationAccepted": "Invitation accepted! You are now an admin for this wishlist.",
     "failedToAcceptInvitation": "Failed to accept invitation",
     "linkCopied": "Link copied to clipboard!",
