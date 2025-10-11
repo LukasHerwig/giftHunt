@@ -11,7 +11,7 @@ This project uses Supabase for the database with a local development setup for s
 - **Database**: Local Supabase Docker container
 - **URL**: `http://127.0.0.1:54321`
 - **Studio**: `http://127.0.0.1:54323`
-- **Environment file**: `.env.local`
+- **Environment file**: `.env.dev`
 
 ### Production Environment
 
@@ -31,7 +31,7 @@ git checkout -b feature/your-feature-name
 npx supabase start
 
 # 3. Ensure you're using local environment
-# Make sure .env.local exists and contains local Supabase settings
+# Make sure .env.dev exists and contains local Supabase settings
 
 # 4. Start development server
 npm run dev
@@ -81,7 +81,7 @@ When you're satisfied with your changes:
 
 ```bash
 # 1. Switch to production environment
-mv .env.local .env.local.backup
+mv .env.dev .env.dev.backup
 
 # 2. Push migrations to production
 npx supabase db push
@@ -96,7 +96,7 @@ git commit -m "Add your feature"
 git push origin feature/your-feature-name
 
 # 5. Switch back to local development
-mv .env.local.backup .env.local
+mv .env.dev.backup .env.dev
 ```
 
 ### 5. Merging to Main
@@ -150,10 +150,10 @@ npx supabase migration list
 
 ```bash
 # Switch to LOCAL development
-mv .env.local.backup .env.local 2>/dev/null || echo "Already using local"
+mv .env.dev.backup .env.dev 2>/dev/null || echo "Already using local"
 
 # Switch to PRODUCTION
-mv .env.local .env.local.backup 2>/dev/null || echo "Already using production"
+mv .env.dev .env.dev.backup 2>/dev/null || echo "Already using production"
 ```
 
 ## How to Know Which Environment You're Using
@@ -207,17 +207,17 @@ If unsure which environment you're using:
 
 ```bash
 # Force switch to local
-cp .env.local.example .env.local
-# (Make sure .env.local contains local Supabase settings)
+cp .env.dev.example .env.dev
+# (Make sure .env.dev contains local Supabase settings)
 
 # Force switch to production
-rm .env.local
+rm .env.dev
 ```
 
 ## Safety Rules
 
 1. **Always test locally first** - Never push migrations directly to production
-2. **Keep .env.local for local development** - Only remove when deploying
+2. **Keep .env.dev for local development** - Only remove when deploying
 3. **Use feature branches** - Never develop directly on main
 4. **Reset local database regularly** - Ensures clean migration testing
 5. **Pull before new features** - Keep local database synced with production
@@ -226,8 +226,8 @@ rm .env.local
 
 ```
 ├── .env                     # Production environment variables
-├── .env.local              # Local environment variables (when developing)
-├── .env.local.backup       # Backup of local env (when using production)
+├── .env.dev              # Local environment variables (when developing)
+├── .env.dev.backup       # Backup of local env (when using production)
 ├── supabase/
 │   ├── config.toml        # Supabase configuration
 │   └── migrations/        # All database migrations
