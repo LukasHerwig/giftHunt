@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/components/auth/useAuth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -32,7 +33,6 @@ import {
   Check,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import type { User } from '@supabase/supabase-js';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
 
@@ -70,8 +70,9 @@ interface PendingInvitation {
 }
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { t } = useTranslation();
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useAuth();
   const [wishlists, setWishlists] = useState<Wishlist[]>([]);
   const [adminWishlists, setAdminWishlists] = useState<AdminWishlist[]>([]);
   const [pendingInvitations, setPendingInvitations] = useState<
@@ -82,7 +83,6 @@ const Dashboard = () => {
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [creating, setCreating] = useState(false);
-  const navigate = useNavigate();
 
   const loadAllData = useCallback(
     async (userId: string) => {
@@ -229,34 +229,10 @@ const Dashboard = () => {
   );
 
   useEffect(() => {
-    const checkUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) {
-        navigate('/auth');
-      } else {
-        setUser(session.user);
-        await loadAllData(session.user.id);
-      }
-    };
-
-    // Get initial session
-    checkUser();
-
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session) {
-        navigate('/auth');
-      } else {
-        setUser(session.user);
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate, loadAllData]);
+    if (user) {
+      loadAllData(user.id);
+    }
+  }, [user, loadAllData]);
 
   const handleCreateWishlist = async (e: React.FormEvent) => {
     e.preventDefault();
