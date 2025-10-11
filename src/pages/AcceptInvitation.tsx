@@ -19,7 +19,14 @@ const AcceptInvitation = () => {
     email?: string;
   } | null>(null);
   const [invitationValid, setInvitationValid] = useState(false);
-  const [inviterEmail, setInviterEmail] = useState<string | null>(null);
+  const [invitationData, setInvitationData] = useState<{
+    email: string;
+    wishlist_id: string;
+    invited_by: string;
+    inviterEmail?: string;
+    wishlistTitle?: string;
+    wishlistDescription?: string;
+  } | null>(null);
 
   const token = searchParams.get('token');
 
@@ -32,14 +39,17 @@ const AcceptInvitation = () => {
 
     const checkInvitation = async () => {
       try {
-        // Just check if the invitation token exists and is valid
+        // First, get the basic invitation data
         const { data: inviteData, error: inviteError } = await supabase
           .from('admin_invitations')
-          .select('id, email, accepted, expires_at, invited_by')
+          .select('id, email, accepted, expires_at, invited_by, wishlist_id')
           .eq('invitation_token', token)
           .single();
 
+        console.log('Invitation query result:', { inviteData, inviteError });
+
         if (inviteError || !inviteData) {
+          console.error('Invitation error:', inviteError);
           setError('Invalid or expired invitation');
           setLoading(false);
           return;
@@ -62,27 +72,46 @@ const AcceptInvitation = () => {
 
         setInvitationValid(true);
 
-        // Get the inviter's profile information
-        if (inviteData.invited_by) {
-          try {
-            const { data: inviterData, error: inviterError } = await supabase
-              .from('profiles')
-              .select('email')
-              .eq('id', inviteData.invited_by)
-              .single();
+        // Get the inviter's profile information separately
+        const { data: inviterProfile, error: inviterError } = await supabase
+          .from('profiles')
+          .select('email, full_name')
+          .eq('id', inviteData.invited_by)
+          .single();
 
-            if (!inviterError && inviterData) {
-              setInviterEmail(inviterData.email);
-            } else {
-              console.log('Could not fetch inviter profile:', inviterError);
-              // Set a fallback message instead of email
-              setInviterEmail('Someone');
-            }
-          } catch (error) {
-            console.log('Error fetching inviter profile:', error);
-            setInviterEmail('Someone');
-          }
-        }
+        console.log('Inviter profile query result:', {
+          inviterProfile,
+          inviterError,
+        });
+
+        // Get the wishlist information separately
+        const { data: wishlistData, error: wishlistError } = await supabase
+          .from('wishlists')
+          .select('title, description')
+          .eq('id', inviteData.wishlist_id)
+          .single();
+
+        console.log('Wishlist query result:', { wishlistData, wishlistError });
+
+        // Set the invitation data
+        const inviterEmail = inviterProfile?.email || 'Someone';
+        const wishlistTitle = wishlistData?.title || 'Untitled Wishlist';
+        const wishlistDescription = wishlistData?.description || '';
+
+        setInvitationData({
+          email: inviteData.email,
+          wishlist_id: inviteData.wishlist_id,
+          invited_by: inviteData.invited_by,
+          inviterEmail,
+          wishlistTitle,
+          wishlistDescription,
+        });
+
+        console.log('Invitation data set:', {
+          inviterEmail,
+          wishlistTitle,
+          wishlistDescription,
+        });
 
         // Check if user is already logged in
         const {
@@ -167,15 +196,30 @@ const AcceptInvitation = () => {
               {t('acceptInvitation.invitedToManage')}
             </p>
 
-            {inviterEmail && (
+            {/* Wishlist Information */}
+            {invitationData?.wishlistTitle && (
+              <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+                <h3 className="font-semibold text-green-800 mb-1">
+                  {invitationData.wishlistTitle}
+                </h3>
+                {invitationData.wishlistDescription && (
+                  <p className="text-sm text-green-700">
+                    {invitationData.wishlistDescription}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Inviter Information */}
+            {invitationData?.inviterEmail && (
               <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
                 <p className="text-sm text-blue-800">
                   <span className="font-medium">
                     {t('acceptInvitation.invitedBy')}:
                   </span>{' '}
-                  {inviterEmail === 'Someone'
+                  {invitationData.inviterEmail === 'Someone'
                     ? t('acceptInvitation.someone')
-                    : inviterEmail}
+                    : invitationData.inviterEmail}
                 </p>
               </div>
             )}
