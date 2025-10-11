@@ -25,7 +25,7 @@ This is a React + TypeScript wishlist application using Supabase as the backend,
 - **Production**: Remote Supabase cloud database
 - **Environment Files**:
   - `.env.local` - Local development (Docker)
-  - `.env.production` - Production (Cloud)
+  - `.env.prod` - Production (Cloud)
 
 ### Migration Workflow
 
