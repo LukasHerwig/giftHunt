@@ -1,50 +1,27 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/use-auth';
 import { AuthPage } from '@/components/auth/AuthPage';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [checking, setChecking] = useState(true);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    // Check if user is already logged in
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        // Check if there's a pending invitation token
-        const pendingToken = sessionStorage.getItem('pendingInvitationToken');
-        if (pendingToken) {
-          sessionStorage.removeItem('pendingInvitationToken');
-          navigate(`/accept-invitation?token=${pendingToken}`);
-        } else {
-          navigate('/');
-        }
+    if (!loading && user) {
+      // Check if there's a pending invitation token
+      const pendingToken = sessionStorage.getItem('pendingInvitationToken');
+      if (pendingToken) {
+        sessionStorage.removeItem('pendingInvitationToken');
+        navigate(`/accept-invitation?token=${pendingToken}`);
+      } else {
+        navigate('/');
       }
-      setChecking(false);
-    });
+    }
+  }, [navigate, user, loading]);
 
-    // Listen for auth changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        // Check if there's a pending invitation token
-        const pendingToken = sessionStorage.getItem('pendingInvitationToken');
-        if (pendingToken) {
-          sessionStorage.removeItem('pendingInvitationToken');
-          navigate(`/accept-invitation?token=${pendingToken}`);
-        } else {
-          navigate('/');
-        }
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  if (checking) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />

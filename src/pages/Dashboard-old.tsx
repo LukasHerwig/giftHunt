@@ -2,11 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/use-auth';
-import {
-  apiClient,
-  type WishlistDto,
-  type AdminInvitationDto,
-} from '@/lib/api-client';
+import { apiClient, type WishlistDto, type AdminInvitationDto } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -70,9 +66,7 @@ const Dashboard = () => {
   const { user, logout } = useAuth();
   const [wishlists, setWishlists] = useState<Wishlist[]>([]);
   const [adminWishlists, setAdminWishlists] = useState<AdminWishlist[]>([]);
-  const [pendingInvitations, setPendingInvitations] = useState<
-    PendingInvitation[]
-  >([]);
+  const [pendingInvitations, setPendingInvitations] = useState<PendingInvitation[]>([]);
   const [loading, setLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -87,7 +81,7 @@ const Dashboard = () => {
       // Load owned wishlists
       const ownedResponse = await apiClient.getWishlists();
       if (ownedResponse.data) {
-        const formattedWishlists = ownedResponse.data.map((wl) => ({
+        const formattedWishlists = ownedResponse.data.map(wl => ({
           id: wl.id,
           title: wl.title,
           description: wl.description || null,
@@ -102,7 +96,7 @@ const Dashboard = () => {
       // Load admin wishlists
       const adminResponse = await apiClient.getAdminWishlists();
       if (adminResponse.data) {
-        const formattedAdminWishlists = adminResponse.data.map((wl) => ({
+        const formattedAdminWishlists = adminResponse.data.map(wl => ({
           id: wl.id,
           title: wl.title,
           description: wl.description || null,
@@ -117,7 +111,7 @@ const Dashboard = () => {
       // Load pending invitations
       const invitationsResponse = await apiClient.getPendingInvitations();
       if (invitationsResponse.data) {
-        const formattedInvitations = invitationsResponse.data.map((inv) => ({
+        const formattedInvitations = invitationsResponse.data.map(inv => ({
           id: inv.id,
           wishlistId: inv.wishlistId,
           invitationToken: inv.invitationToken,
@@ -215,14 +209,10 @@ const Dashboard = () => {
 
   const handleAcceptInvitation = async (invitationId: string) => {
     try {
-      const invitation = pendingInvitations.find(
-        (inv) => inv.id === invitationId
-      );
+      const invitation = pendingInvitations.find(inv => inv.id === invitationId);
       if (invitation) {
-        const response = await apiClient.acceptInvitation(
-          invitation.invitationToken
-        );
-
+        const response = await apiClient.acceptInvitation(invitation.invitationToken);
+        
         if (!response.error) {
           // Reload data to refresh the lists
           await loadAllData();
