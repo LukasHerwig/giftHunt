@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,7 +49,10 @@ import {
   UserPlus,
   Star,
   DollarSign,
+  Edit,
 } from 'lucide-react';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface WishlistItem {
   id: string;
@@ -76,22 +80,33 @@ interface WishlistInvitation {
   created_at: string;
   expires_at: string;
   accepted: boolean;
+  wishlist_id: string;
+  invited_by: string;
 }
 
 const ManageWishlist = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newLink, setNewLink] = useState('');
   const [newPriceRange, setNewPriceRange] = useState('');
-  const [newPriority, setNewPriority] = useState(2); // Default to medium priority
+  const [newPriority, setNewPriority] = useState<number | null>(null); // Default to null (no priority)
+  const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+  const [editLink, setEditLink] = useState('');
+  const [editPriceRange, setEditPriceRange] = useState('');
+  const [editPriority, setEditPriority] = useState<number | null>(null);
   const [inviteEmail, setInviteEmail] = useState('');
   const [adding, setAdding] = useState(false);
+  const [updating, setUpdating] = useState(false);
   const [inviting, setInviting] = useState(false);
   const [admins, setAdmins] = useState<WishlistAdmin[]>([]);
   const [invitations, setInvitations] = useState<WishlistInvitation[]>([]);
@@ -110,17 +125,18 @@ const ManageWishlist = () => {
       if (error) throw error;
       setItems(data || []);
     } catch (error: unknown) {
-      toast.error('Failed to load items');
+      toast.error(t('messages.failedToLoad'));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   const loadAdminData = useCallback(async () => {
     if (!id) return;
 
     try {
       // Load current admins
+      console.log('Querying wishlist_admins for wishlist_id:', id);
       const { data: adminData, error: adminError } = await supabase
         .from('wishlist_admins')
         .select(
@@ -135,23 +151,34 @@ const ManageWishlist = () => {
         )
         .eq('wishlist_id', id);
 
+      console.log('Admin query result:', { adminData, adminError });
       if (adminError) throw adminError;
       setAdmins(adminData || []);
 
-      // Load pending invitations
+      // Load pending invitations AND accepted ones (for showing completion status)
+      console.log('Querying admin_invitations for wishlist_id:', id);
       const { data: inviteData, error: inviteError } = await supabase
         .from('admin_invitations')
         .select('*')
         .eq('wishlist_id', id)
-        .eq('accepted', false)
         .gt('expires_at', new Date().toISOString());
 
+      console.log('Invitation query result:', { inviteData, inviteError });
       if (inviteError) throw inviteError;
       setInvitations(inviteData || []);
     } catch (error: unknown) {
       console.error('Failed to load admin data:', error);
     }
   }, [id]);
+
+  const formatUrl = (url: string): string => {
+    if (!url) return url;
+    // If the URL doesn't start with http:// or https://, add https://
+    if (!url.match(/^https?:\/\//)) {
+      return `https://${url}`;
+    }
+    return url;
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -164,11 +191,20 @@ const ManageWishlist = () => {
     });
   }, [navigate, loadItems, loadAdminData]);
 
+  // Refresh admin data every 30 seconds to catch accepted invitations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      loadAdminData();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [loadAdminData]);
+
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!newTitle.trim()) {
-      toast.error('Please enter a title');
+      toast.error(t('messages.enterTitle'));
       return;
     }
 
@@ -196,13 +232,65 @@ const ManageWishlist = () => {
       setNewDescription('');
       setNewLink('');
       setNewPriceRange('');
-      setNewPriority(2);
+      setNewPriority(null);
       setDialogOpen(false);
-      toast.success('Item added!');
+      toast.success(t('messages.itemAdded'));
     } catch (error: unknown) {
-      toast.error('Failed to add item');
+      toast.error(t('messages.failedToAdd'));
     } finally {
       setAdding(false);
+    }
+  };
+
+  const handleEditItem = (item: WishlistItem) => {
+    setEditingItem(item);
+    setEditTitle(item.title);
+    setEditDescription(item.description || '');
+    setEditLink(item.link || '');
+    setEditPriceRange(item.price_range || '');
+    setEditPriority(item.priority || null);
+    setEditDialogOpen(true);
+  };
+
+  const handleUpdateItem = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingItem) return;
+
+    if (!editTitle.trim()) {
+      toast.error(t('messages.enterTitle'));
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const { data, error } = await supabase
+        .from('wishlist_items')
+        .update({
+          title: editTitle.trim(),
+          description: editDescription.trim() || null,
+          link: editLink.trim() || null,
+          price_range: editPriceRange.trim() || null,
+          priority: editPriority,
+        })
+        .eq('id', editingItem.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setItems(items.map((item) => (item.id === editingItem.id ? data : item)));
+      setEditDialogOpen(false);
+      setEditingItem(null);
+      setEditTitle('');
+      setEditDescription('');
+      setEditLink('');
+      setEditPriceRange('');
+      setEditPriority(null);
+      toast.success(t('messages.itemUpdated'));
+    } catch (error: unknown) {
+      toast.error(t('messages.failedToUpdate'));
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -240,12 +328,12 @@ const ManageWishlist = () => {
       // For now, copy to clipboard (later we could integrate email service)
       await navigator.clipboard.writeText(inviteLink);
 
-      toast.success('Invitation created! Link copied to clipboard');
+      toast.success(t('messages.invitationCreated'));
       setInviteEmail('');
       setInviteDialogOpen(false);
       loadAdminData(); // Reload admin data to show new invitation
     } catch (error: unknown) {
-      toast.error('Failed to create invitation');
+      toast.error(t('messages.failedToInvite'));
       console.error(error);
     } finally {
       setInviting(false);
@@ -262,9 +350,9 @@ const ManageWishlist = () => {
       if (error) throw error;
 
       setItems(items.filter((item) => item.id !== itemId));
-      toast.success('Item deleted');
+      toast.success(t('messages.itemDeleted'));
     } catch (error: unknown) {
-      toast.error('Failed to delete item');
+      toast.error(t('messages.failedToDelete'));
     }
   };
 
@@ -272,26 +360,104 @@ const ManageWishlist = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <span className="ml-2">{t('manageWishlist.loading')}</span>
       </div>
     );
   }
 
+  // Debug logging
+  console.log('Debug - admins:', admins, 'admins.length:', admins.length);
+  console.log('Debug - invitations:', invitations);
+  console.log(
+    'Debug - pending invitations:',
+    invitations.filter((inv) => !inv.accepted)
+  );
+  console.log(
+    'Debug - accepted invitations:',
+    invitations.filter((inv) => inv.accepted)
+  );
+  console.log(
+    'Debug - should show invite button:',
+    admins.length === 0 &&
+      invitations.filter((inv) => !inv.accepted).length === 0
+  );
+
+  // Helper function to manually create admin record for accepted invitations
+  const fixAcceptedInvitation = async () => {
+    const acceptedInvitation = invitations.find((inv) => inv.accepted);
+    if (!acceptedInvitation) return;
+
+    try {
+      // Find the user ID for the accepted invitation email
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', acceptedInvitation.email)
+        .single();
+
+      if (profileError) throw profileError;
+
+      // Create the missing admin record
+      const { error: adminError } = await supabase
+        .from('wishlist_admins')
+        .insert({
+          wishlist_id: acceptedInvitation.wishlist_id,
+          admin_id: profileData.id,
+          invited_by: acceptedInvitation.invited_by,
+        });
+
+      if (adminError) throw adminError;
+
+      toast.success('Fixed admin record');
+      loadAdminData();
+    } catch (error) {
+      console.error('Fix error:', error);
+      toast.error('Failed to fix admin record');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="mb-2">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Wishlists
-          </Button>
-          <h1 className="text-2xl font-bold">Manage Items</h1>
-        </div>
-      </header>
+      <AppHeader />
+      <PageSubheader
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('manageWishlist.backToWishlists')}
+            </Button>
+          </div>
+        }
+      />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
+        {/* Temporary debug/fix section */}
+        {invitations.some((inv) => inv.accepted) && admins.length === 0 && (
+          <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-yellow-800 dark:text-yellow-200">
+                  Debug: Missing Admin Record
+                </h3>
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                  There's an accepted invitation but no admin record. This
+                  should be fixed.
+                </p>
+              </div>
+              <Button
+                onClick={fixAcceptedInvitation}
+                variant="outline"
+                size="sm"
+                className="border-yellow-300 text-yellow-700 hover:bg-yellow-100">
+                Fix Admin Record
+              </Button>
+            </div>
+          </div>
+        )}
+
         <div className="mb-8 flex gap-4">
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
@@ -299,22 +465,24 @@ const ManageWishlist = () => {
                 size="lg"
                 className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
                 <Plus className="w-5 h-5 mr-2" />
-                Add Item
+                {t('manageWishlist.addItem')}
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Add Wishlist Item</DialogTitle>
+                <DialogTitle>{t('addItemDialog.title')}</DialogTitle>
                 <DialogDescription>
-                  Add something you'd like to receive
+                  {t('addItemDialog.description')}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleAddItem} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Title *</Label>
+                  <Label htmlFor="title">
+                    {t('addItemDialog.titleLabel')} *
+                  </Label>
                   <Input
                     id="title"
-                    placeholder="Item title"
+                    placeholder={t('addItemDialog.titlePlaceholder')}
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     className="text-base"
@@ -323,10 +491,12 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
+                  <Label htmlFor="description">
+                    {t('addItemDialog.descriptionLabel')}
+                  </Label>
                   <Textarea
                     id="description"
-                    placeholder="Describe the item (optional)"
+                    placeholder={t('addItemDialog.descriptionPlaceholder')}
                     value={newDescription}
                     onChange={(e) => setNewDescription(e.target.value)}
                     className="text-base resize-none"
@@ -336,10 +506,10 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="link">Link</Label>
+                  <Label htmlFor="link">{t('addItemDialog.linkLabel')}</Label>
                   <Input
                     id="link"
-                    placeholder="Link to the item (optional)"
+                    placeholder={t('addItemDialog.linkPlaceholder')}
                     value={newLink}
                     onChange={(e) => setNewLink(e.target.value)}
                     className="text-base"
@@ -348,10 +518,10 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="price">Price Range</Label>
+                  <Label htmlFor="price">{t('addItemDialog.priceLabel')}</Label>
                   <Input
                     id="price"
-                    placeholder="e.g. $50-100, Under $25 (optional)"
+                    placeholder={t('addItemDialog.pricePlaceholder')}
                     value={newPriceRange}
                     onChange={(e) => setNewPriceRange(e.target.value)}
                     className="text-base"
@@ -360,17 +530,24 @@ const ManageWishlist = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="priority">Priority</Label>
+                  <Label htmlFor="priority">
+                    {t('addItemDialog.priorityLabel')}
+                  </Label>
                   <Select
-                    value={newPriority.toString()}
-                    onValueChange={(value) => setNewPriority(parseInt(value))}>
+                    value={newPriority?.toString() || 'none'}
+                    onValueChange={(value) =>
+                      setNewPriority(value === 'none' ? null : parseInt(value))
+                    }>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
+                      <SelectValue
+                        placeholder={t('addItemDialog.priorityPlaceholder')}
+                      />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">Low Priority</SelectItem>
-                      <SelectItem value="2">Medium Priority</SelectItem>
-                      <SelectItem value="3">High Priority</SelectItem>
+                      <SelectItem value="none">{t('priority.none')}</SelectItem>
+                      <SelectItem value="1">{t('priority.low')}</SelectItem>
+                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
+                      <SelectItem value="3">{t('priority.high')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -382,69 +559,174 @@ const ManageWishlist = () => {
                   {adding ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Adding...
+                      {t('addItemDialog.adding')}
                     </>
                   ) : (
-                    'Add Item'
+                    t('addItemDialog.addButton')
                   )}
                 </Button>
               </form>
             </DialogContent>
           </Dialog>
 
-          <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto">
-                <UserPlus className="w-5 h-5 mr-2" />
-                Invite Admin
-              </Button>
-            </DialogTrigger>
+          <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Invite Admin</DialogTitle>
+                <DialogTitle>{t('editItemDialog.title')}</DialogTitle>
                 <DialogDescription>
-                  Invite someone to help manage your wishlist and share it with
-                  others
+                  {t('editItemDialog.description')}
                 </DialogDescription>
               </DialogHeader>
-              <form onSubmit={handleInviteAdmin} className="space-y-4">
-                <Input
-                  type="email"
-                  placeholder="Email address"
-                  value={inviteEmail}
-                  onChange={(e) => setInviteEmail(e.target.value)}
-                  className="text-base"
-                  disabled={inviting}
-                />
+              <form onSubmit={handleUpdateItem} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-title">Title *</Label>
+                  <Input
+                    id="edit-title"
+                    placeholder="Item title"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="text-base"
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-description">
+                    {t('common.description')}
+                  </Label>
+                  <Textarea
+                    id="edit-description"
+                    placeholder="Describe the item (optional)"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="text-base resize-none"
+                    rows={3}
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-link">{t('common.link')}</Label>
+                  <Input
+                    id="edit-link"
+                    placeholder="Link to the item (optional)"
+                    value={editLink}
+                    onChange={(e) => setEditLink(e.target.value)}
+                    className="text-base"
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-price">{t('common.priceRange')}</Label>
+                  <Input
+                    id="edit-price"
+                    placeholder="e.g. $50-100, Under $25 (optional)"
+                    value={editPriceRange}
+                    onChange={(e) => setEditPriceRange(e.target.value)}
+                    className="text-base"
+                    disabled={updating}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="edit-priority">{t('common.priority')}</Label>
+                  <Select
+                    value={editPriority?.toString() || 'none'}
+                    onValueChange={(value) =>
+                      setEditPriority(value === 'none' ? null : parseInt(value))
+                    }>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">{t('priority.none')}</SelectItem>
+                      <SelectItem value="1">{t('priority.low')}</SelectItem>
+                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
+                      <SelectItem value="3">{t('priority.high')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <Button
                   type="submit"
                   className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={inviting}>
-                  {inviting ? (
+                  disabled={updating}>
+                  {updating ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Sending...
+                      Updating...
                     </>
                   ) : (
-                    'Send Invitation'
+                    'Update Item'
                   )}
                 </Button>
               </form>
             </DialogContent>
           </Dialog>
+
+          {admins.length === 0 &&
+            invitations.filter((inv) => !inv.accepted).length === 0 && (
+              <Dialog
+                open={inviteDialogOpen}
+                onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto">
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    {t('manageWishlist.inviteAdmin')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('inviteDialog.title')}</DialogTitle>
+                    <DialogDescription>
+                      {t('inviteDialog.description')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleInviteAdmin} className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Email address"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="text-base"
+                      disabled={inviting}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                      disabled={inviting}>
+                      {inviting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Invitation'
+                      )}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            )}
         </div>
 
         {/* Admin Status Section */}
         {(admins.length > 0 || invitations.length > 0) && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle className="text-lg">Admin Status</CardTitle>
+              <CardTitle className="text-lg">
+                {t('manageWishlist.adminStatus')}
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {admins.length > 0 && (
                 <div>
                   <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                    Current Admins
+                    {t('manageWishlist.currentAdmins')}
                   </h4>
                   <div className="space-y-2">
                     {admins.map((admin) => (
@@ -456,7 +738,7 @@ const ManageWishlist = () => {
                             {admin.profiles?.email || 'Unknown email'}
                           </p>
                           <p className="text-sm text-muted-foreground">
-                            Admin since{' '}
+                            {t('manageWishlist.adminSince')}{' '}
                             {new Date(admin.created_at).toLocaleDateString()}
                           </p>
                         </div>
@@ -468,33 +750,74 @@ const ManageWishlist = () => {
 
               {invitations.length > 0 && (
                 <div>
-                  <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-                    Pending Invitations
-                  </h4>
-                  <div className="space-y-2">
-                    {invitations.map((invitation) => (
-                      <div
-                        key={invitation.id}
-                        className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
-                        <div>
-                          <p className="font-medium">{invitation.email}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Invited{' '}
-                            {new Date(
-                              invitation.created_at
-                            ).toLocaleDateString()}{' '}
-                            • Expires{' '}
-                            {new Date(
-                              invitation.expires_at
-                            ).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
-                          Pending
-                        </span>
+                  {invitations.filter((inv) => !inv.accepted).length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        {t('manageWishlist.pendingInvitations')}
+                      </h4>
+                      <div className="space-y-2">
+                        {invitations
+                          .filter((inv) => !inv.accepted)
+                          .map((invitation) => (
+                            <div
+                              key={invitation.id}
+                              className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+                              <div>
+                                <p className="font-medium">
+                                  {invitation.email}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {t('inviteDialog.invited')}{' '}
+                                  {new Date(
+                                    invitation.created_at
+                                  ).toLocaleDateString()}{' '}
+                                  • {t('inviteDialog.expires')}{' '}
+                                  {new Date(
+                                    invitation.expires_at
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                              <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                                {t('manageWishlist.pending')}
+                              </span>
+                            </div>
+                          ))}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  )}
+
+                  {invitations.filter((inv) => inv.accepted).length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-sm text-muted-foreground mb-2">
+                        {t('manageWishlist.acceptedInvitations')}
+                      </h4>
+                      <div className="space-y-2">
+                        {invitations
+                          .filter((inv) => inv.accepted)
+                          .map((invitation) => (
+                            <div
+                              key={invitation.id}
+                              className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/30 rounded-lg">
+                              <div>
+                                <p className="font-medium">
+                                  {invitation.email}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {t('inviteDialog.invited')}{' '}
+                                  {new Date(
+                                    invitation.created_at
+                                  ).toLocaleDateString()}{' '}
+                                  • {t('manageWishlist.accepted')} ✓
+                                </p>
+                              </div>
+                              <span className="text-sm text-green-600 dark:text-green-400 font-medium">
+                                {t('manageWishlist.accepted')}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
@@ -505,7 +828,7 @@ const ManageWishlist = () => {
           <Card className="text-center py-12">
             <CardContent>
               <p className="text-muted-foreground mb-4">
-                No items yet. Add your first wish!
+                {t('manageWishlist.noItemsYet')}
               </p>
             </CardContent>
           </Card>
@@ -538,60 +861,76 @@ const ManageWishlist = () => {
                             {item.price_range}
                           </span>
                         )}
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            item.priority === 3
-                              ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                        {item.priority && item.priority > 0 && (
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              item.priority === 3
+                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                                : item.priority === 2
+                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                            }`}>
+                            {item.priority === 3
+                              ? t('priority.high')
                               : item.priority === 2
-                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
-                          }`}>
-                          {item.priority === 3
-                            ? 'High Priority'
-                            : item.priority === 2
-                            ? 'Medium Priority'
-                            : 'Low Priority'}
-                        </span>
+                              ? t('priority.medium')
+                              : t('priority.low')}
+                          </span>
+                        )}
                       </div>
 
                       {item.link && (
                         <a
-                          href={item.link}
+                          href={formatUrl(item.link)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline flex items-center gap-1 break-all">
-                          View link
+                          {t('manageWishlist.viewLink')}
                           <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </a>
                       )}
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive flex-shrink-0">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Item</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{item.title}"? This
-                            action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteItem(item.id)}
-                            className="bg-destructive hover:bg-destructive/90">
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditItem(item)}
+                        className="text-muted-foreground hover:text-foreground flex-shrink-0">
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive flex-shrink-0">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              {t('deleteDialog.title')}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {t('deleteDialog.description', {
+                                title: item.title,
+                              })}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>
+                              {t('deleteDialog.cancel')}
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDeleteItem(item.id)}
+                              className="bg-destructive hover:bg-destructive/90">
+                              {t('deleteDialog.delete')}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 </CardHeader>
               </Card>

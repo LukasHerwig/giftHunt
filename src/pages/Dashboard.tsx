@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +16,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { User } from '@supabase/supabase-js';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface Wishlist {
   id: string;
@@ -68,6 +70,7 @@ interface PendingInvitation {
 }
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [wishlists, setWishlists] = useState<Wishlist[]>([]);
   const [adminWishlists, setAdminWishlists] = useState<AdminWishlist[]>([]);
@@ -217,12 +220,12 @@ const Dashboard = () => {
         setPendingInvitations(formattedInvitations);
       } catch (error) {
         console.error('Error loading dashboard data:', error);
-        toast.error('Failed to load dashboard data');
+        toast.error(t('messages.failedToLoadDashboard'));
       } finally {
         setLoading(false);
       }
     },
-    [user?.email]
+    [user?.email, t]
   );
 
   useEffect(() => {
@@ -259,7 +262,7 @@ const Dashboard = () => {
     e.preventDefault();
 
     if (!newTitle.trim()) {
-      toast.error('Please enter a title');
+      toast.error(t('messages.enterTitle'));
       return;
     }
 
@@ -283,10 +286,10 @@ const Dashboard = () => {
       setNewTitle('');
       setNewDescription('');
       setCreateDialogOpen(false);
-      toast.success('Wishlist created!');
+      toast.success(t('messages.wishlistCreated'));
     } catch (error) {
       console.error('Create wishlist error:', error);
-      toast.error('Failed to create wishlist');
+      toast.error(t('messages.failedToCreate'));
     } finally {
       setCreating(false);
     }
@@ -299,17 +302,17 @@ const Dashboard = () => {
       if (error) throw error;
 
       setWishlists(wishlists.filter((w) => w.id !== id));
-      toast.success('Wishlist deleted');
+      toast.success(t('messages.wishlistDeleted'));
     } catch (error) {
       console.error('Delete wishlist error:', error);
-      toast.error('Failed to delete wishlist');
+      toast.error(t('messages.failedToDeleteWishlist'));
     }
   };
 
   const handleCopyLink = (id: string) => {
     const url = `${window.location.origin}/wishlist/${id}`;
     navigator.clipboard.writeText(url);
-    toast.success('Link copied to clipboard!');
+    toast.success(t('messages.linkCopied'));
   };
 
   const handleSignOut = async () => {
@@ -345,13 +348,11 @@ const Dashboard = () => {
         // Reload data
         await loadAllData(user.id);
 
-        toast.success(
-          'Invitation accepted! You are now an admin for this wishlist.'
-        );
+        toast.success(t('messages.invitationAccepted'));
       }
     } catch (error) {
       console.error('Accept invitation error:', error);
-      toast.error('Failed to accept invitation');
+      toast.error(t('messages.failedToAcceptInvitation'));
     }
   };
 
@@ -359,6 +360,7 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <span className="ml-2">{t('common.loading')}</span>
       </div>
     );
   }
@@ -368,24 +370,57 @@ const Dashboard = () => {
       {/* Environment Indicator */}
       {import.meta.env.VITE_SUPABASE_URL?.includes('127.0.0.1') && (
         <div className="bg-orange-500 text-white text-center py-1 text-sm font-medium">
-          🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase
+          {t('dashboard.localDevMode')}
         </div>
       )}
 
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <Gift className="w-6 h-6 text-white" />
+      <AppHeader />
+
+      {/* Create Wishlist Dialog */}
+      <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('createWishlistDialog.title')}</DialogTitle>
+            <DialogDescription>
+              {t('createWishlistDialog.description')}
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateWishlist} className="space-y-4">
+            <div className="space-y-2">
+              <Input
+                placeholder={t('createWishlistDialog.titlePlaceholder')}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="text-base"
+                disabled={creating}
+              />
             </div>
-            <h1 className="text-2xl font-bold">Dashboard</h1>
-          </div>
-          <Button variant="ghost" onClick={handleSignOut}>
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
-      </header>
+            <div className="space-y-2">
+              <Textarea
+                placeholder={t('createWishlistDialog.descriptionPlaceholder')}
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                className="text-base resize-none"
+                rows={3}
+                disabled={creating}
+              />
+            </div>
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+              disabled={creating}>
+              {creating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {t('createWishlistDialog.creating')}
+                </>
+              ) : (
+                t('createWishlistDialog.createButton')
+              )}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Pending Invitations */}
@@ -393,7 +428,7 @@ const Dashboard = () => {
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <AlertCircle className="w-5 h-5 text-orange-500" />
-              Pending Invitations
+              {t('dashboard.pendingInvitations')}
             </h2>
             <div className="grid gap-4">
               {pendingInvitations.map((invitation) => (
@@ -406,7 +441,7 @@ const Dashboard = () => {
                       <Badge
                         variant="outline"
                         className="text-orange-600 border-orange-600">
-                        Admin Invitation
+                        {t('dashboard.adminInvitation')}
                       </Badge>
                     </CardTitle>
                     {invitation.wishlists.description && (
@@ -415,7 +450,8 @@ const Dashboard = () => {
                       </CardDescription>
                     )}
                     <CardDescription className="text-sm">
-                      Invited by: {invitation.wishlists.owner_profile?.email}
+                      {t('dashboard.invitedBy')}:{' '}
+                      {invitation.wishlists.owner_profile?.email}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -423,7 +459,7 @@ const Dashboard = () => {
                       onClick={() => handleAcceptInvitation(invitation.id)}
                       className="w-full bg-orange-600 hover:bg-orange-700">
                       <Check className="w-4 h-4 mr-2" />
-                      Accept Invitation
+                      {t('dashboard.acceptInvitation')}
                     </Button>
                   </CardContent>
                 </Card>
@@ -434,69 +470,71 @@ const Dashboard = () => {
 
         {/* Create New Wishlist */}
         <div className="mb-8">
-          <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
-                <Plus className="w-5 h-5 mr-2" />
-                Create New Wishlist
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Wishlist</DialogTitle>
-                <DialogDescription>
-                  Give your wishlist a name and description
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleCreateWishlist} className="space-y-4">
-                <Input
-                  placeholder="Wishlist title (e.g., Birthday 2025)"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="text-base"
-                  disabled={creating}
-                />
-                <Textarea
-                  placeholder="Description (optional)"
-                  value={newDescription}
-                  onChange={(e) => setNewDescription(e.target.value)}
-                  className="text-base resize-none"
-                  rows={3}
-                  disabled={creating}
-                />
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={creating}>
-                  {creating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    'Create Wishlist'
-                  )}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90"
+            onClick={() => setCreateDialogOpen(true)}>
+            <Plus className="w-5 h-5 mr-2" />
+            {t('dashboard.createNewWishlist')}
+          </Button>
         </div>
+
+        <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{t('createWishlist.title')}</DialogTitle>
+              <DialogDescription>
+                {t('createWishlist.description')}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleCreateWishlist} className="space-y-4">
+              <Input
+                placeholder={t('createWishlist.titlePlaceholder')}
+                value={newTitle}
+                onChange={(e) => setNewTitle(e.target.value)}
+                className="text-base"
+                disabled={creating}
+              />
+              <Textarea
+                placeholder={t('createWishlist.descriptionPlaceholder')}
+                value={newDescription}
+                onChange={(e) => setNewDescription(e.target.value)}
+                className="text-base resize-none"
+                rows={3}
+                disabled={creating}
+              />
+              <Button
+                type="submit"
+                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                disabled={creating}>
+                {creating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {t('createWishlist.creating')}
+                  </>
+                ) : (
+                  t('createWishlist.createButton')
+                )}
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* My Wishlists */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
             <Gift className="w-5 h-5" />
-            My Wishlists
+            {t('navigation.myWishlists')}
           </h2>
           {wishlists.length === 0 ? (
             <Card className="text-center py-12">
               <CardContent>
                 <Gift className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-xl font-semibold mb-2">No wishlists yet</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  {t('dashboard.noWishlistsYet')}
+                </h3>
                 <p className="text-muted-foreground mb-6">
-                  Create your first wishlist to get started
+                  {t('dashboard.createFirstWishlist')}
                 </p>
               </CardContent>
             </Card>
@@ -521,14 +559,14 @@ const Dashboard = () => {
                           navigate(`/wishlist/${wishlist.id}/manage`)
                         }
                         className="w-full">
-                        Manage Items
+                        {t('dashboard.manageItems')}
                       </Button>
                       <Button
                         variant="ghost"
                         onClick={() => handleDeleteWishlist(wishlist.id)}
                         className="w-full text-destructive hover:text-destructive">
                         <Trash2 className="w-4 h-4 mr-2" />
-                        Delete
+                        {t('common.delete')}
                       </Button>
                     </div>
                   </CardContent>
@@ -543,7 +581,7 @@ const Dashboard = () => {
           <div>
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
               <Users className="w-5 h-5" />
-              Admin Access
+              {t('navigation.adminAccess')}
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {adminWishlists.map((wishlist) => (
@@ -553,7 +591,7 @@ const Dashboard = () => {
                   <CardHeader>
                     <CardTitle className="text-xl flex items-center justify-between">
                       {wishlist.title}
-                      <Badge variant="secondary">Admin</Badge>
+                      <Badge variant="secondary">{t('dashboard.admin')}</Badge>
                     </CardTitle>
                     {wishlist.description && (
                       <CardDescription className="text-base">
@@ -561,7 +599,7 @@ const Dashboard = () => {
                       </CardDescription>
                     )}
                     <CardDescription className="text-sm">
-                      Owner: {wishlist.owner_profile?.email}
+                      {t('dashboard.owner')}: {wishlist.owner_profile?.email}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
@@ -572,7 +610,7 @@ const Dashboard = () => {
                         }
                         variant="outline"
                         className="w-full">
-                        Manage as Admin
+                        {t('dashboard.manageAsAdmin')}
                       </Button>
                     </div>
                   </CardContent>

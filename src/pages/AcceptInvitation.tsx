@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const AcceptInvitation = () => {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -115,7 +118,10 @@ const AcceptInvitation = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
@@ -123,13 +129,20 @@ const AcceptInvitation = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+        <div className="absolute top-4 right-4">
+          <LanguageSwitcher />
+        </div>
         <Card className="max-w-md text-center">
           <CardContent className="pt-6">
             <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">Invalid Invitation</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {t('acceptInvitation.invalidInvitation')}
+            </h2>
             <p className="text-muted-foreground mb-4">{error}</p>
-            <Button onClick={() => navigate('/')}>Go to Home</Button>
+            <Button onClick={() => navigate('/')}>
+              {t('acceptInvitation.goToHome')}
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -138,53 +151,61 @@ const AcceptInvitation = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-          <CardTitle className="text-2xl">You've been invited!</CardTitle>
+          <CardTitle className="text-2xl">
+            {t('acceptInvitation.youveBeenInvited')}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="text-center space-y-4">
             <p className="text-muted-foreground">
-              You've been invited to help manage a wishlist as an admin.
+              {t('acceptInvitation.invitedToManage')}
             </p>
 
             {inviterEmail && (
               <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <span className="font-medium">Invited by:</span>{' '}
-                  {inviterEmail === 'Someone' ? 'Someone' : inviterEmail}
+                  <span className="font-medium">
+                    {t('acceptInvitation.invitedBy')}:
+                  </span>{' '}
+                  {inviterEmail === 'Someone'
+                    ? t('acceptInvitation.someone')
+                    : inviterEmail}
                 </p>
               </div>
             )}
 
             <div className="bg-muted/50 p-4 rounded-lg">
               <h4 className="font-medium mb-2">
-                As an admin, you'll be able to:
+                {t('acceptInvitation.asAdminYouCan')}
               </h4>
               <ul className="text-sm space-y-1 text-muted-foreground">
-                <li>• See which items have been taken and by whom</li>
-                <li>• Share the wishlist link with others</li>
-                <li>• Coordinate gift-giving efforts</li>
-                <li>• Help manage the wishlist</li>
+                <li>• {t('acceptInvitation.seeItemsTaken')}</li>
+                <li>• {t('acceptInvitation.shareWishlistLink')}</li>
+                <li>• {t('acceptInvitation.coordinateGifts')}</li>
+                <li>• {t('acceptInvitation.helpManage')}</li>
               </ul>
             </div>
 
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
-                Please sign in or create an account to accept this invitation.
+                {t('acceptInvitation.signInToAccept')}
               </p>
 
               <Button
                 onClick={handleSignIn}
                 className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
                 size="lg">
-                Sign In / Create Account
+                {t('acceptInvitation.signInCreateAccount')}
               </Button>
 
               <p className="text-xs text-muted-foreground">
-                After signing in, you'll see the invitation on your dashboard
-                where you can accept it.
+                {t('acceptInvitation.afterSignInInfo')}
               </p>
             </div>
           </div>

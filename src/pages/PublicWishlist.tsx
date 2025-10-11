@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +28,9 @@ import {
   Star,
   DollarSign,
 } from 'lucide-react';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
 
 interface WishlistItem {
   id: string;
@@ -50,6 +54,7 @@ interface ShareLink {
 
 const PublicWishlist = () => {
   const { token } = useParams(); // This will be the share token from /shared/:token route
+  const { t } = useTranslation();
   const [wishlist, setWishlist] = useState<Wishlist | null>(null);
   const [items, setItems] = useState<WishlistItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -62,25 +67,25 @@ const PublicWishlist = () => {
   const loadWishlistByToken = useCallback(async () => {
     try {
       // First, validate the share token and get wishlist ID
-      const { data: shareLinkData, error: shareLinkError } = (await supabase
+      const { data: shareLinkData, error: shareLinkError } = await supabase
         .from('share_links')
         .select('wishlist_id, expires_at')
         .eq('token', token)
-        .maybeSingle()) as any;
+        .maybeSingle();
 
       if (shareLinkError) {
-        throw new Error('Invalid or expired share link');
+        throw new Error(t('publicWishlist.invalidOrExpiredLink'));
       }
 
       if (!shareLinkData) {
-        throw new Error('Invalid or expired share link');
+        throw new Error(t('publicWishlist.invalidOrExpiredLink'));
       }
 
       if (
         shareLinkData.expires_at &&
         new Date(shareLinkData.expires_at) < new Date()
       ) {
-        throw new Error('This share link has expired');
+        throw new Error(t('publicWishlist.linkExpired'));
       }
 
       setShareLink(shareLinkData);
@@ -108,12 +113,14 @@ const PublicWishlist = () => {
     } catch (error) {
       console.error('Load wishlist error:', error);
       toast.error(
-        error instanceof Error ? error.message : 'Failed to load wishlist'
+        error instanceof Error
+          ? error.message
+          : t('publicWishlist.failedToLoad')
       );
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, t]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -156,10 +163,10 @@ const PublicWishlist = () => {
       setBuyerName('');
       setDialogOpen(false);
       setSelectedItem(null);
-      toast.success('Item claimed! Thank you!');
+      toast.success(t('publicWishlist.itemClaimed'));
     } catch (error) {
       console.error('Claim item error:', error);
-      toast.error('Failed to claim item');
+      toast.error(t('publicWishlist.failedToClaim'));
     } finally {
       setClaiming(false);
     }
@@ -174,6 +181,7 @@ const PublicWishlist = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <span className="ml-2">{t('common.loading')}</span>
       </div>
     );
   }
@@ -184,11 +192,13 @@ const PublicWishlist = () => {
         <Card className="max-w-md text-center">
           <CardContent className="pt-6">
             <Gift className="w-16 h-16 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-xl font-semibold mb-2">Access Not Available</h3>
+            <h3 className="text-xl font-semibold mb-2">
+              {t('publicWishlist.accessNotAvailable')}
+            </h3>
             <p className="text-muted-foreground">
               {!token
-                ? 'This wishlist requires a valid share link to access'
-                : 'The share link is invalid, expired, or has been deactivated'}
+                ? t('publicWishlist.requiresShareLink')
+                : t('publicWishlist.invalidShareLink')}
             </p>
           </CardContent>
         </Card>
@@ -199,6 +209,9 @@ const PublicWishlist = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <header className="border-b bg-card/50 backdrop-blur-sm">
+        <div className="absolute top-4 right-4 z-10">
+          <LanguageSwitcher />
+        </div>
         <div className="container mx-auto px-4 py-6 text-center">
           <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4">
             <Gift className="w-8 h-8 text-white" />
@@ -217,7 +230,7 @@ const PublicWishlist = () => {
           <Card className="text-center py-12">
             <CardContent>
               <p className="text-muted-foreground">
-                No items in this wishlist yet
+                {t('publicWishlist.noItemsYet')}
               </p>
             </CardContent>
           </Card>
@@ -242,7 +255,7 @@ const PublicWishlist = () => {
                         {item.is_taken && (
                           <span className="flex items-center gap-1 text-sm font-normal text-muted-foreground">
                             <Check className="w-4 h-4 text-green-600" />
-                            Taken
+                            {t('publicWishlist.taken')}
                           </span>
                         )}
                       </div>
@@ -269,10 +282,10 @@ const PublicWishlist = () => {
                               : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
                           }`}>
                           {item.priority === 3
-                            ? 'High Priority'
+                            ? t('priority.high')
                             : item.priority === 2
-                            ? 'Medium Priority'
-                            : 'Low Priority'}
+                            ? t('priority.medium')
+                            : t('priority.low')}
                         </span>
                       </div>
 
@@ -282,7 +295,7 @@ const PublicWishlist = () => {
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-primary hover:underline flex items-center gap-1 break-all">
-                          View link
+                          {t('manageWishlist.viewLink')}
                           <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         </a>
                       )}
@@ -291,7 +304,7 @@ const PublicWishlist = () => {
                       <Button
                         onClick={() => openClaimDialog(item.id)}
                         className="flex-shrink-0">
-                        I'll get this!
+                        {t('publicWishlist.illGetThis')}
                       </Button>
                     )}
                   </div>
@@ -304,15 +317,14 @@ const PublicWishlist = () => {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Claim this item</DialogTitle>
+              <DialogTitle>{t('publicWishlist.claimItem')}</DialogTitle>
               <DialogDescription>
-                Let others know you're getting this gift. You can add your name
-                or stay anonymous.
+                {t('publicWishlist.claimDescription')}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleClaimItem} className="space-y-4">
               <Input
-                placeholder="Your name (optional)"
+                placeholder={t('publicWishlist.yourNameOptional')}
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
                 className="text-base"
@@ -325,10 +337,10 @@ const PublicWishlist = () => {
                 {claiming ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Claiming...
+                    {t('publicWishlist.claiming')}
                   </>
                 ) : (
-                  'Claim Item'
+                  t('publicWishlist.claimButton')
                 )}
               </Button>
             </form>
