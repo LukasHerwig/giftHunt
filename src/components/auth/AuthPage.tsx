@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -17,7 +17,6 @@ import LanguageSwitcher from '../LanguageSwitcher';
 
 export const AuthPage = () => {
   const { t } = useTranslation();
-  const { login, register } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,23 +40,29 @@ export const AuthPage = () => {
 
     try {
       if (isLogin) {
-        const result = await login(email, password);
-        if (result.error) {
-          toast.error(result.error);
-        } else {
-          toast.success(t('auth.welcomeBackSuccess'));
-          navigate('/');
-        }
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+        toast.success(t('auth.welcomeBackSuccess'));
+        navigate('/');
       } else {
-        const result = await register(email, password);
-        if (result.error) {
-          toast.error(result.error);
-        } else {
-          toast.success(t('auth.accountCreated'));
-          navigate('/');
-        }
+        const redirectUrl = `${window.location.origin}/`;
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: redirectUrl,
+          },
+        });
+
+        if (error) throw error;
+        toast.success(t('auth.accountCreated'));
+        navigate('/');
       }
-    } catch (error) {
+    } catch (error: unknown) {
       toast.error((error as Error)?.message || t('auth.somethingWentWrong'));
     } finally {
       setLoading(false);

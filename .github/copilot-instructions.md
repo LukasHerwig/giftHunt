@@ -24,7 +24,7 @@ This is a React + TypeScript wishlist application using Supabase as the backend,
 - **Local Development**: Uses Docker via `npx supabase start` (localhost:54321)
 - **Production**: Remote Supabase cloud database
 - **Environment Files**:
-  - `.env.dev` - Local development (Docker)
+  - `.env.local` - Local development (Docker)
   - `.env.prod` - Production (Cloud)
 
 ### Migration Workflow

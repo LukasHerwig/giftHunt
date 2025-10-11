@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/hooks/use-auth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -16,11 +16,10 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 const AppHeader = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
-    await logout();
+    await supabase.auth.signOut();
     navigate('/auth');
   };
 
