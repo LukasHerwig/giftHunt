@@ -447,7 +447,7 @@ const ManageWishlist = () => {
               onClick={() => navigate('/')}
               className="flex items-center">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('manageWishlist.backToWishlists')}
+              {t('common.back')}
             </Button>
           </div>
         }
@@ -728,7 +728,7 @@ const ManageWishlist = () => {
                     .map((invitation) => (
                       <div
                         key={invitation.id}
-                        className="flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+                        className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
                         <div>
                           <p className="font-medium">{invitation.email}</p>
                           <p className="text-sm text-muted-foreground">
@@ -743,7 +743,7 @@ const ManageWishlist = () => {
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+                          <span className="text-sm text-primary font-medium">
                             {t('manageWishlist.pending')}
                           </span>
                           <AlertDialog>
@@ -788,7 +788,7 @@ const ManageWishlist = () => {
                   {admins.map((admin) => (
                     <div
                       key={admin.id}
-                      className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                      className="flex items-center justify-between p-3 bg-accent/5 dark:bg-accent/10 rounded-lg">
                       <div>
                         <p className="font-medium">
                           {admin.profiles?.email ||
@@ -800,7 +800,7 @@ const ManageWishlist = () => {
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                        <span className="text-sm text-accent font-medium">
                           {t('manageWishlist.activeAdmin')}
                         </span>
                         <AlertDialog>

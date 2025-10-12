@@ -28,7 +28,7 @@
   "navigation": {
     "dashboard": "Instrumentpanel",
     "myWishlists": "Mina Önskelistor",
-    "adminAccess": "Admin Åtkomst"
+    "adminAccess": "Administrerade av mig"
   },
   "dashboard": {
     "title": "Instrumentpanel",
@@ -37,7 +37,7 @@
     "noWishlistsYet": "Inga önskelistor än",
     "createFirstWishlist": "Skapa din första önskelista för att komma igång",
     "manageItems": "Hantera Önskningar",
-    "manageAsAdmin": "Hantera som Admin",
+    "manageList": "Hantera listan",
     "admin": "Admin",
     "owner": "Ägare",
     "pendingInvitations": "Väntande Inbjudningar",
@@ -86,8 +86,10 @@
     "taken": "Tagen",
     "illGetThis": "Jag tar den här!",
     "claimItem": "Reservera denna önskning",
-    "claimDescription": "Låt andra veta att du skaffar denna present. Du kan lägga till ditt namn eller förbli anonym.",
+    "claimDescription": "Låt andra veta att du skaffar denna present. Ange ditt namn så att ägaren av önskelistan vet vem som tar vad.",
     "yourNameOptional": "Ditt namn (valfritt)",
+    "yourNameRequired": "Ditt namn (obligatoriskt)",
+    "nameRequired": "Vänligen ange ditt namn",
     "claimButton": "Reservera Önskning",
     "claiming": "Reserverar...",
     "itemClaimed": "Önskning reserverad! Tack!",
@@ -104,7 +106,7 @@
     "noItemsYet": "Inga önskningar än. Lägg till din första önskning!",
     "loading": "Laddar...",
     "adminStatus": "Admin Status",
-    "adminAccess": "Admin Åtkomst",
+    "adminAccess": "Administrerade av mig",
     "currentAdmins": "Nuvarande Administratörer",
     "pendingInvitations": "Väntande Inbjudningar",
     "acceptedInvitations": "Accepterade Inbjudningar",
@@ -166,6 +168,12 @@
     "cancel": "Avbryt",
     "remove": "Ta bort Admin"
   },
+  "untakeItemDialog": {
+    "title": "Ångra reservering",
+    "description": "Är du säker på att du vill markera \"{{title}}\" som tillgänglig igen? Detta kommer att ta bort reserveringen av {{takenBy}} och göra föremålet tillgängligt för andra att ta.",
+    "cancel": "Avbryt",
+    "untake": "Ångra reservering"
+  },
   "priority": {
     "none": "Ingen Prioritet",
     "low": "Låg Prioritet",
@@ -200,7 +208,15 @@
     "failedToLoadProfile": "Misslyckades att ladda profil",
     "profileUpdated": "Profil uppdaterad framgångsrikt!",
     "failedToUpdateProfile": "Misslyckades att uppdatera profil",
-    "profileNotFound": "Profil hittades inte"
+    "profileNotFound": "Profil hittades inte",
+    "noAdminAccess": "Du har inte administratörsåtkomst till denna önskelista",
+    "failedToVerifyAccess": "Misslyckades att verifiera administratörsåtkomst",
+    "failedToLoadWishlist": "Misslyckades att ladda önskelista",
+    "failedToLoadItems": "Misslyckades att ladda föremål",
+    "failedToGenerateShareLink": "Misslyckades att generera delningslänk",
+    "shareLinkCopied": "Delningslänk kopierad till urklipp!",
+    "itemUntaken": "Föremålet är nu tillgängligt igen",
+    "failedToUntakeItem": "Misslyckades att ångra reservering"
   },
   "notFound": {
     "message": "Hoppsan! Sidan hittades inte",
@@ -229,7 +245,24 @@
     "activeShareLink": "Aktiv delningslänk",
     "takenItems": "Tagna föremål",
     "itemsClaimedByGuests": "Föremål som har gjorts anspråk på av gäster",
-    "noItemsTakenYet": "Inga föremål har tagits än"
+    "noItemsTakenYet": "Inga föremål har tagits än",
+    "accessDenied": "Åtkomst nekad eller önskelista hittades inte",
+    "availableItems": "Tillgängliga föremål",
+    "availableItemsDescription": "Föremål som inte har tagits än",
+    "allItemsTaken": "Alla föremål har tagits!",
+    "high": "Hög",
+    "medium": "Medel",
+    "low": "Låg",
+    "viewLink": "Visa länk",
+    "takenBy": "Tagen av",
+    "anonymous": "Anonym",
+    "on": "den",
+    "summary": "Sammanfattning",
+    "totalItems": "Totalt föremål",
+    "available": "Tillgängliga",
+    "taken": "Tagna",
+    "untakeItem": "Ångra reservering",
+    "untaking": "Ångrar reservering..."
   },
   "profile": {
     "title": "Profil",

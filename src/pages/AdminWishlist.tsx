@@ -10,6 +10,13 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -20,6 +27,7 @@ import {
   Star,
   DollarSign,
   Share,
+  Undo2,
 } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
@@ -53,6 +61,10 @@ const AdminWishlist = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [shareLink, setShareLink] = useState<string | null>(null);
   const [generatingLink, setGeneratingLink] = useState(false);
+  const [untakeDialogOpen, setUntakeDialogOpen] = useState(false);
+  const [selectedUntakeItem, setSelectedUntakeItem] =
+    useState<WishlistItem | null>(null);
+  const [untaking, setUntaking] = useState(false);
 
   const checkAdminAccess = useCallback(async () => {
     try {
@@ -75,15 +87,15 @@ const AdminWishlist = () => {
       if (data) {
         setIsAdmin(true);
       } else {
-        toast.error('You do not have admin access to this wishlist');
+        toast.error(t('messages.noAdminAccess'));
         navigate('/');
       }
     } catch (error) {
       console.error('Admin access check error:', error);
-      toast.error('Failed to verify admin access');
+      toast.error(t('messages.failedToVerifyAccess'));
       navigate('/');
     }
-  }, [id, navigate]);
+  }, [id, navigate, t]);
 
   const loadWishlist = useCallback(async () => {
     try {
@@ -97,9 +109,9 @@ const AdminWishlist = () => {
       setWishlist(data);
     } catch (error) {
       console.error('Load wishlist error:', error);
-      toast.error('Failed to load wishlist');
+      toast.error(t('messages.failedToLoadWishlist'));
     }
-  }, [id]);
+  }, [id, t]);
 
   const loadItems = useCallback(async () => {
     try {
@@ -113,11 +125,11 @@ const AdminWishlist = () => {
       setItems(data || []);
     } catch (error) {
       console.error('Load items error:', error);
-      toast.error('Failed to load items');
+      toast.error(t('messages.failedToLoadItems'));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   const loadShareLink = useCallback(async () => {
     try {
@@ -152,7 +164,7 @@ const AdminWishlist = () => {
     });
   }, [navigate, checkAdminAccess, loadWishlist, loadItems, loadShareLink]);
 
-  const generateShareLink = async () => {
+  const generateShareLink = useCallback(async () => {
     if (!id) return;
 
     setGeneratingLink(true);
@@ -194,14 +206,14 @@ const AdminWishlist = () => {
       return url;
     } catch (error) {
       console.error('Generate share link error:', error);
-      toast.error('Failed to generate share link');
+      toast.error(t('messages.failedToGenerateShareLink'));
       return null;
     } finally {
       setGeneratingLink(false);
     }
-  };
+  }, [id, t]);
 
-  const handleCopyShareLink = async () => {
+  const handleCopyShareLink = useCallback(async () => {
     let linkToCopy = shareLink;
 
     if (!linkToCopy) {
@@ -210,8 +222,49 @@ const AdminWishlist = () => {
 
     if (linkToCopy) {
       await navigator.clipboard.writeText(linkToCopy);
-      toast.success('Share link copied to clipboard!');
+      toast.success(t('messages.shareLinkCopied'));
     }
+  }, [shareLink, generateShareLink, t]);
+
+  const handleUntakeItem = useCallback(async () => {
+    if (!selectedUntakeItem) return;
+
+    setUntaking(true);
+    try {
+      const { error } = await supabase
+        .from('wishlist_items')
+        .update({
+          is_taken: false,
+          taken_by_name: null,
+          taken_at: null,
+        })
+        .eq('id', selectedUntakeItem.id);
+
+      if (error) throw error;
+
+      // Update local state
+      setItems(
+        items.map((item) =>
+          item.id === selectedUntakeItem.id
+            ? { ...item, is_taken: false, taken_by_name: null, taken_at: null }
+            : item
+        )
+      );
+
+      setUntakeDialogOpen(false);
+      setSelectedUntakeItem(null);
+      toast.success(t('messages.itemUntaken'));
+    } catch (error) {
+      console.error('Untake item error:', error);
+      toast.error(t('messages.failedToUntakeItem'));
+    } finally {
+      setUntaking(false);
+    }
+  }, [selectedUntakeItem, items, t]);
+
+  const openUntakeDialog = (item: WishlistItem) => {
+    setSelectedUntakeItem(item);
+    setUntakeDialogOpen(true);
   };
 
   if (loading) {
@@ -228,7 +281,7 @@ const AdminWishlist = () => {
         <Card className="max-w-md text-center">
           <CardContent className="pt-6">
             <p className="text-muted-foreground">
-              Access denied or wishlist not found
+              {t('adminWishlist.accessDenied')}
             </p>
           </CardContent>
         </Card>
@@ -244,8 +297,6 @@ const AdminWishlist = () => {
       <AppHeader />
 
       <PageSubheader
-        title={`${t('dashboard.admin')}: ${wishlist.title}`}
-        description={wishlist.description || undefined}
         actions={
           <div className="flex gap-2">
             <Button
@@ -253,41 +304,43 @@ const AdminWishlist = () => {
               onClick={() => navigate('/')}
               className="flex items-center">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('common.back')} {t('navigation.dashboard')}
-            </Button>
-            <Button
-              onClick={handleCopyShareLink}
-              disabled={generatingLink}
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
-              {generatingLink ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {t('adminWishlist.generating')}
-                </>
-              ) : (
-                <>
-                  <Share className="w-4 h-4 mr-2" />
-                  {shareLink
-                    ? t('adminWishlist.copyShareLink')
-                    : t('adminWishlist.generateShareLink')}
-                </>
-              )}
+              {t('common.back')}
             </Button>
           </div>
+        }
+        children={
+          <Button
+            onClick={handleCopyShareLink}
+            disabled={generatingLink}
+            className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+            {generatingLink ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                {t('adminWishlist.generating')}
+              </>
+            ) : (
+              <>
+                <Share className="w-4 h-4 mr-2" />
+                {shareLink
+                  ? t('adminWishlist.copyShareLink')
+                  : t('adminWishlist.generateShareLink')}
+              </>
+            )}
+          </Button>
         }
       />
 
       <main className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Share Link Info */}
         {shareLink && (
-          <Card className="mb-6 border-blue-200 bg-blue-50 dark:bg-blue-950/30">
+          <Card className="mb-6 border-accent/30 bg-accent/5 dark:bg-accent/10">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
+                  <h3 className="font-semibold text-accent mb-1">
                     {t('adminWishlist.activeShareLink')}
                   </h3>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 break-all font-mono">
+                  <p className="text-sm text-accent/80 break-all font-mono">
                     {shareLink}
                   </p>
                 </div>
@@ -307,17 +360,17 @@ const AdminWishlist = () => {
           {/* Available Items */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-green-600">
-                Available Items ({availableItems.length})
+              <CardTitle className="text-primary">
+                {t('adminWishlist.availableItems')} ({availableItems.length})
               </CardTitle>
               <CardDescription>
-                Items that haven't been taken yet
+                {t('adminWishlist.availableItemsDescription')}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {availableItems.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">
-                  All items have been taken!
+                  {t('adminWishlist.allItemsTaken')}
                 </p>
               ) : (
                 availableItems.map((item) => (
@@ -339,25 +392,27 @@ const AdminWishlist = () => {
 
                         <div className="flex flex-wrap gap-2 mb-2">
                           {item.price_range && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                               <DollarSign className="w-3 h-3" />
                               {item.price_range}
                             </span>
                           )}
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              item.priority === 3
-                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                          {item.priority > 0 && (
+                            <span
+                              className={`px-2 py-1 text-xs rounded-full ${
+                                item.priority === 3
+                                  ? 'bg-destructive/10 text-destructive'
+                                  : item.priority === 2
+                                  ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                              {item.priority === 3
+                                ? t('adminWishlist.high')
                                 : item.priority === 2
-                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
-                            }`}>
-                            {item.priority === 3
-                              ? 'High'
-                              : item.priority === 2
-                              ? 'Medium'
-                              : 'Low'}
-                          </span>
+                                ? t('adminWishlist.medium')
+                                : t('adminWishlist.low')}
+                            </span>
+                          )}
                         </div>
 
                         {item.link && (
@@ -367,7 +422,7 @@ const AdminWishlist = () => {
                             rel="noopener noreferrer"
                             className="text-sm text-primary hover:underline flex items-center gap-1">
                             <LinkIcon className="w-3 h-3" />
-                            View link
+                            {t('adminWishlist.viewLink')}
                           </a>
                         )}
                       </div>
@@ -381,7 +436,7 @@ const AdminWishlist = () => {
           {/* Taken Items */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-orange-600">
+              <CardTitle className="text-accent">
                 {t('adminWishlist.takenItems')} ({takenItems.length})
               </CardTitle>
               <CardDescription>
@@ -400,7 +455,7 @@ const AdminWishlist = () => {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-medium">{item.title}</h4>
-                          <Check className="w-4 h-4 text-green-600" />
+                          <Check className="w-4 h-4 text-primary" />
                           {item.priority === 3 && (
                             <Star className="w-4 h-4 text-yellow-500 fill-current" />
                           )}
@@ -414,25 +469,27 @@ const AdminWishlist = () => {
 
                         <div className="flex flex-wrap gap-2 mb-2">
                           {item.price_range && (
-                            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                               <DollarSign className="w-3 h-3" />
                               {item.price_range}
                             </span>
                           )}
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              item.priority === 3
-                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                          {item.priority > 0 && (
+                            <span
+                              className={`px-2 py-1 text-xs rounded-full ${
+                                item.priority === 3
+                                  ? 'bg-destructive/10 text-destructive'
+                                  : item.priority === 2
+                                  ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                  : 'bg-muted text-muted-foreground'
+                              }`}>
+                              {item.priority === 3
+                                ? t('adminWishlist.high')
                                 : item.priority === 2
-                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
-                            }`}>
-                            {item.priority === 3
-                              ? 'High'
-                              : item.priority === 2
-                              ? 'Medium'
-                              : 'Low'}
-                          </span>
+                                ? t('adminWishlist.medium')
+                                : t('adminWishlist.low')}
+                            </span>
+                          )}
                         </div>
 
                         {item.link && (
@@ -442,19 +499,32 @@ const AdminWishlist = () => {
                             rel="noopener noreferrer"
                             className="text-sm text-primary hover:underline flex items-center gap-1 mb-2">
                             <LinkIcon className="w-3 h-3" />
-                            View link
+                            {t('adminWishlist.viewLink')}
                           </a>
                         )}
 
                         <div className="text-sm text-muted-foreground">
-                          <span className="font-medium">Taken by:</span>{' '}
-                          {item.taken_by_name || 'Anonymous'}
+                          <span className="font-medium">
+                            {t('adminWishlist.takenBy')}:
+                          </span>{' '}
+                          {item.taken_by_name || t('adminWishlist.anonymous')}
                           {item.taken_at && (
                             <span className="ml-2">
-                              on {new Date(item.taken_at).toLocaleDateString()}
+                              {t('adminWishlist.on')}{' '}
+                              {new Date(item.taken_at).toLocaleDateString()}
                             </span>
                           )}
                         </div>
+                      </div>
+                      <div className="flex-shrink-0 ml-3">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openUntakeDialog(item)}
+                          className="text-xs">
+                          <Undo2 className="w-3 h-3 mr-1" />
+                          {t('adminWishlist.untakeItem')}
+                        </Button>
                       </div>
                     </div>
                   </Card>
@@ -467,7 +537,7 @@ const AdminWishlist = () => {
         {/* Summary Stats */}
         <Card className="mt-6">
           <CardHeader>
-            <CardTitle>Summary</CardTitle>
+            <CardTitle>{t('adminWishlist.summary')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4 text-center">
@@ -475,24 +545,69 @@ const AdminWishlist = () => {
                 <div className="text-2xl font-bold text-primary">
                   {items.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Total Items</div>
+                <div className="text-sm text-muted-foreground">
+                  {t('adminWishlist.totalItems')}
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-green-600">
+                <div className="text-2xl font-bold text-primary">
                   {availableItems.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Available</div>
+                <div className="text-sm text-muted-foreground">
+                  {t('adminWishlist.available')}
+                </div>
               </div>
               <div>
-                <div className="text-2xl font-bold text-orange-600">
+                <div className="text-2xl font-bold text-accent">
                   {takenItems.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Taken</div>
+                <div className="text-sm text-muted-foreground">
+                  {t('adminWishlist.taken')}
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
       </main>
+
+      {/* Untake Item Confirmation Dialog */}
+      <Dialog open={untakeDialogOpen} onOpenChange={setUntakeDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('untakeItemDialog.title')}</DialogTitle>
+            <DialogDescription>
+              {selectedUntakeItem &&
+                t('untakeItemDialog.description', {
+                  title: selectedUntakeItem.title,
+                  takenBy:
+                    selectedUntakeItem.taken_by_name ||
+                    t('adminWishlist.anonymous'),
+                })}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 mt-6">
+            <Button
+              variant="outline"
+              onClick={() => setUntakeDialogOpen(false)}
+              disabled={untaking}>
+              {t('untakeItemDialog.cancel')}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleUntakeItem}
+              disabled={untaking}>
+              {untaking ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  {t('adminWishlist.untaking')}
+                </>
+              ) : (
+                t('untakeItemDialog.untake')
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

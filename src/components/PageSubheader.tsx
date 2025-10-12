@@ -22,8 +22,8 @@ const PageSubheader = ({
           {description && (
             <p className="text-muted-foreground text-sm mt-1">{description}</p>
           )}
-          {children}
         </div>
+        {children}
       </div>
     </div>
   );

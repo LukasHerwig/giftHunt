@@ -140,13 +140,19 @@ const PublicWishlist = () => {
 
     if (!selectedItem || !shareLink) return;
 
+    // Validate that name is provided
+    if (!buyerName.trim()) {
+      toast.error(t('publicWishlist.nameRequired'));
+      return;
+    }
+
     setClaiming(true);
     try {
       const { error } = await supabase
         .from('wishlist_items')
         .update({
           is_taken: true,
-          taken_by_name: buyerName.trim() || 'Anonymous',
+          taken_by_name: buyerName.trim(),
           taken_at: new Date().toISOString(),
         })
         .eq('id', selectedItem);
@@ -254,7 +260,7 @@ const PublicWishlist = () => {
                         )}
                         {item.is_taken && (
                           <span className="flex items-center gap-1 text-sm font-normal text-muted-foreground">
-                            <Check className="w-4 h-4 text-green-600" />
+                            <Check className="w-4 h-4 text-primary" />
                             {t('publicWishlist.taken')}
                           </span>
                         )}
@@ -268,7 +274,7 @@ const PublicWishlist = () => {
 
                       <div className="flex flex-wrap gap-2 mb-2">
                         {item.price_range && (
-                          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
+                          <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                             <DollarSign className="w-3 h-3" />
                             {item.price_range}
                           </span>
@@ -276,10 +282,10 @@ const PublicWishlist = () => {
                         <span
                           className={`px-2 py-1 text-xs rounded-full ${
                             item.priority === 3
-                              ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                              ? 'bg-destructive/10 text-destructive'
                               : item.priority === 2
                               ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                              : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                              : 'bg-muted text-muted-foreground'
                           }`}>
                           {item.priority === 3
                             ? t('priority.high')
@@ -324,16 +330,17 @@ const PublicWishlist = () => {
             </DialogHeader>
             <form onSubmit={handleClaimItem} className="space-y-4">
               <Input
-                placeholder={t('publicWishlist.yourNameOptional')}
+                placeholder={t('publicWishlist.yourNameRequired')}
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
                 className="text-base"
                 disabled={claiming}
+                required
               />
               <Button
                 type="submit"
                 className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                disabled={claiming}>
+                disabled={claiming || !buyerName.trim()}>
                 {claiming ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

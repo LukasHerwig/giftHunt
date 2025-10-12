@@ -403,20 +403,20 @@ const Dashboard = () => {
         {pendingInvitations.length > 0 && (
           <div className="mb-8">
             <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5 text-orange-500" />
+              <AlertCircle className="w-5 h-5 text-primary" />
               {t('dashboard.pendingInvitations')}
             </h2>
             <div className="grid gap-4">
               {pendingInvitations.map((invitation) => (
                 <Card
                   key={invitation.id}
-                  className="border-orange-200 bg-orange-50">
+                  className="border-primary/20 bg-primary/5">
                   <CardHeader>
                     <CardTitle className="text-lg flex items-center justify-between">
                       {invitation.wishlists.title}
                       <Badge
                         variant="outline"
-                        className="text-orange-600 border-orange-600">
+                        className="text-primary border-primary">
                         {t('dashboard.adminInvitation')}
                       </Badge>
                     </CardTitle>
@@ -433,7 +433,7 @@ const Dashboard = () => {
                   <CardContent>
                     <Button
                       onClick={() => handleAcceptInvitation(invitation.id)}
-                      className="w-full bg-orange-600 hover:bg-orange-700">
+                      className="w-full bg-primary hover:bg-primary/90">
                       <Check className="w-4 h-4 mr-2" />
                       {t('dashboard.acceptInvitation')}
                     </Button>
@@ -586,7 +586,7 @@ const Dashboard = () => {
                         }
                         variant="outline"
                         className="w-full">
-                        {t('dashboard.manageAsAdmin')}
+                        {t('dashboard.manageList')}
                       </Button>
                     </div>
                   </CardContent>
