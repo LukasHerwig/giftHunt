@@ -23,7 +23,9 @@
     "priceRange": "Price range",
     "priority": "Priority",
     "link": "Link",
-    "profile": "Profile"
+    "profile": "Profile",
+    "updating": "Updating...",
+    "saveChanges": "Save Changes"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -36,6 +38,10 @@
     "createNewWishlist": "Create New Wishlist",
     "noWishlistsYet": "No wishlists yet",
     "createFirstWishlist": "Create your first wishlist to get started",
+    "itemCount": "{{count}} item",
+    "itemCount_other": "{{count}} items",
+    "createdOn": "Created {{date}}",
+    "manageAction": "Manage →",
     "manageItems": "Manage Items",
     "manageList": "Manage list",
     "admin": "Admin",
@@ -51,6 +57,24 @@
     "description": "Give your wishlist a name and description",
     "titlePlaceholder": "Wishlist title (e.g., Birthday 2025)",
     "descriptionPlaceholder": "Description (optional)",
+    "enableLinks": "Enable links",
+    "enableLinksDescription": "Allow adding links to products",
+    "enablePrice": "Enable price ranges",
+    "enablePriceDescription": "Allow setting price ranges for items",
+    "enablePriority": "Enable priority levels",
+    "enablePriorityDescription": "Allow setting priority levels on items",
+    "createButton": "Create Wishlist",
+    "creating": "Creating..."
+  },
+  "createWishlistDialog": {
+    "title": "Create New Wishlist",
+    "description": "Give your wishlist a name and description",
+    "titlePlaceholder": "Wishlist title (e.g., Birthday 2025)",
+    "descriptionPlaceholder": "Description (optional)",
+    "itemFeatures": "Item Features",
+    "enableLinks": "Enable links",
+    "enablePrice": "Enable price ranges",
+    "enablePriority": "Enable priority levels",
     "createButton": "Create Wishlist",
     "creating": "Creating..."
   },
@@ -103,6 +127,11 @@
     "backToWishlists": "Back to Wishlists",
     "addItem": "Add Item",
     "inviteAdmin": "Invite Admin",
+    "settings": "Settings",
+    "settingsTitle": "Wishlist Settings",
+    "settingsDescription": "Configure what information is included in your wishlist items",
+    "dangerZone": "Danger Zone",
+    "deleteWishlist": "Delete Wishlist",
     "noItemsYet": "No items yet. Add your first wish!",
     "loading": "Loading...",
     "adminStatus": "Admin Status",
@@ -156,6 +185,12 @@
     "cancel": "Cancel",
     "delete": "Delete"
   },
+  "deleteWishlistDialog": {
+    "title": "Delete Wishlist",
+    "description": "Are you sure you want to delete \"{{title}}\"? This will permanently delete all items and cannot be undone.",
+    "cancel": "Cancel",
+    "delete": "Delete Wishlist"
+  },
   "removeInvitationDialog": {
     "title": "Remove Invitation",
     "description": "Are you sure you want to remove the invitation for {{email}}? They will no longer be able to accept this invitation.",
@@ -192,6 +227,8 @@
     "failedToCreate": "Failed to create wishlist",
     "wishlistDeleted": "Wishlist deleted",
     "failedToDeleteWishlist": "Failed to delete wishlist",
+    "settingsUpdated": "Settings updated successfully!",
+    "failedToUpdateSettings": "Failed to update settings",
     "invitationCreated": "Invitation created! Link copied to clipboard",
     "failedToInvite": "Failed to create invitation",
     "invitationRemoved": "Invitation removed successfully",

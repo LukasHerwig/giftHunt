@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -49,6 +50,9 @@ interface Wishlist {
   id: string;
   title: string;
   description: string | null;
+  enable_links: boolean | null;
+  enable_price: boolean | null;
+  enable_priority: boolean | null;
 }
 
 const AdminWishlist = () => {
@@ -101,7 +105,9 @@ const AdminWishlist = () => {
     try {
       const { data, error } = await supabase
         .from('wishlists')
-        .select('id, title, description')
+        .select(
+          'id, title, description, enable_links, enable_price, enable_priority'
+        )
         .eq('id', id)
         .single();
 
@@ -356,6 +362,41 @@ const AdminWishlist = () => {
           </Card>
         )}
 
+        {/* Summary Stats */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>{t('adminWishlist.summary')}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-primary">
+                  {items.length}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {t('adminWishlist.totalItems')}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-primary">
+                  {availableItems.length}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {t('adminWishlist.available')}
+                </div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-accent">
+                  {takenItems.length}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {t('adminWishlist.taken')}
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="grid gap-6 md:grid-cols-2">
           {/* Available Items */}
           <Card>
@@ -391,13 +432,13 @@ const AdminWishlist = () => {
                         )}
 
                         <div className="flex flex-wrap gap-2 mb-2">
-                          {item.price_range && (
+                          {wishlist?.enable_price && item.price_range && (
                             <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                               <DollarSign className="w-3 h-3" />
                               {item.price_range}
                             </span>
                           )}
-                          {item.priority > 0 && (
+                          {wishlist?.enable_priority && item.priority > 0 && (
                             <span
                               className={`px-2 py-1 text-xs rounded-full ${
                                 item.priority === 3
@@ -415,7 +456,7 @@ const AdminWishlist = () => {
                           )}
                         </div>
 
-                        {item.link && (
+                        {wishlist?.enable_links && item.link && (
                           <a
                             href={item.link}
                             target="_blank"
@@ -468,13 +509,13 @@ const AdminWishlist = () => {
                         )}
 
                         <div className="flex flex-wrap gap-2 mb-2">
-                          {item.price_range && (
+                          {wishlist?.enable_price && item.price_range && (
                             <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                               <DollarSign className="w-3 h-3" />
                               {item.price_range}
                             </span>
                           )}
-                          {item.priority > 0 && (
+                          {wishlist?.enable_priority && item.priority > 0 && (
                             <span
                               className={`px-2 py-1 text-xs rounded-full ${
                                 item.priority === 3
@@ -492,7 +533,7 @@ const AdminWishlist = () => {
                           )}
                         </div>
 
-                        {item.link && (
+                        {wishlist?.enable_links && item.link && (
                           <a
                             href={item.link}
                             target="_blank"
@@ -533,41 +574,6 @@ const AdminWishlist = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Summary Stats */}
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>{t('adminWishlist.summary')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div>
-                <div className="text-2xl font-bold text-primary">
-                  {items.length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {t('adminWishlist.totalItems')}
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-primary">
-                  {availableItems.length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {t('adminWishlist.available')}
-                </div>
-              </div>
-              <div>
-                <div className="text-2xl font-bold text-accent">
-                  {takenItems.length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {t('adminWishlist.taken')}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </main>
 
       {/* Untake Item Confirmation Dialog */}

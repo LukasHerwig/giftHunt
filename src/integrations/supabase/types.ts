@@ -7,10 +7,30 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -19,7 +39,7 @@ export type Database = {
           accepted: boolean
           created_at: string
           email: string
-          expires_at: string
+          expires_at: string | null
           id: string
           invitation_token: string
           invited_by: string
@@ -29,9 +49,9 @@ export type Database = {
           accepted?: boolean
           created_at?: string
           email: string
-          expires_at?: string
+          expires_at?: string | null
           id?: string
-          invitation_token?: string
+          invitation_token: string
           invited_by: string
           wishlist_id: string
         }
@@ -39,7 +59,7 @@ export type Database = {
           accepted?: boolean
           created_at?: string
           email?: string
-          expires_at?: string
+          expires_at?: string | null
           id?: string
           invitation_token?: string
           invited_by?: string
@@ -68,21 +88,18 @@ export type Database = {
           email: string
           full_name: string | null
           id: string
-          updated_at: string
         }
         Insert: {
           created_at?: string
           email: string
           full_name?: string | null
           id: string
-          updated_at?: string
         }
         Update: {
           created_at?: string
           email?: string
           full_name?: string | null
           id?: string
-          updated_at?: string
         }
         Relationships: []
       }
@@ -92,8 +109,7 @@ export type Database = {
           created_by: string
           expires_at: string | null
           id: string
-          is_active: boolean
-          share_token: string
+          token: string
           wishlist_id: string
         }
         Insert: {
@@ -101,8 +117,7 @@ export type Database = {
           created_by: string
           expires_at?: string | null
           id?: string
-          is_active?: boolean
-          share_token?: string
+          token: string
           wishlist_id: string
         }
         Update: {
@@ -110,8 +125,7 @@ export type Database = {
           created_by?: string
           expires_at?: string | null
           id?: string
-          is_active?: boolean
-          share_token?: string
+          token?: string
           wishlist_id?: string
         }
         Relationships: [
@@ -125,7 +139,7 @@ export type Database = {
           {
             foreignKeyName: "share_links_wishlist_id_fkey"
             columns: ["wishlist_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "wishlists"
             referencedColumns: ["id"]
           },
@@ -179,6 +193,8 @@ export type Database = {
       }
       wishlist_items: {
         Row: {
+          claimed_at: string | null
+          claimed_by: string | null
           created_at: string
           description: string | null
           id: string
@@ -190,9 +206,12 @@ export type Database = {
           taken_by_name: string | null
           title: string
           updated_at: string
+          url: string | null
           wishlist_id: string
         }
         Insert: {
+          claimed_at?: string | null
+          claimed_by?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -204,9 +223,12 @@ export type Database = {
           taken_by_name?: string | null
           title: string
           updated_at?: string
+          url?: string | null
           wishlist_id: string
         }
         Update: {
+          claimed_at?: string | null
+          claimed_by?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -218,9 +240,17 @@ export type Database = {
           taken_by_name?: string | null
           title?: string
           updated_at?: string
+          url?: string | null
           wishlist_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "wishlist_items_claimed_by_fkey"
+            columns: ["claimed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "wishlist_items_wishlist_id_fkey"
             columns: ["wishlist_id"]
@@ -235,25 +265,31 @@ export type Database = {
           created_at: string
           creator_id: string
           description: string | null
+          enable_links: boolean | null
+          enable_price: boolean | null
+          enable_priority: boolean | null
           id: string
           title: string
-          updated_at: string
         }
         Insert: {
           created_at?: string
           creator_id: string
           description?: string | null
+          enable_links?: boolean | null
+          enable_price?: boolean | null
+          enable_priority?: boolean | null
           id?: string
           title: string
-          updated_at?: string
         }
         Update: {
           created_at?: string
           creator_id?: string
           description?: string | null
+          enable_links?: boolean | null
+          enable_price?: boolean | null
+          enable_priority?: boolean | null
           id?: string
           title?: string
-          updated_at?: string
         }
         Relationships: [
           {
@@ -399,7 +435,11 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
 } as const
+

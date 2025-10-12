@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -45,6 +46,9 @@ interface WishlistItem {
 interface Wishlist {
   title: string;
   description: string | null;
+  enable_links: boolean | null;
+  enable_price: boolean | null;
+  enable_priority: boolean | null;
 }
 
 interface ShareLink {
@@ -93,7 +97,9 @@ const PublicWishlist = () => {
       // Load wishlist info
       const { data: wishlistData, error: wishlistError } = await supabase
         .from('wishlists')
-        .select('title, description')
+        .select(
+          'title, description, enable_links, enable_price, enable_priority'
+        )
         .eq('id', shareLinkData.wishlist_id)
         .single();
 
@@ -273,29 +279,31 @@ const PublicWishlist = () => {
                       )}
 
                       <div className="flex flex-wrap gap-2 mb-2">
-                        {item.price_range && (
+                        {wishlist?.enable_price && item.price_range && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                             <DollarSign className="w-3 h-3" />
                             {item.price_range}
                           </span>
                         )}
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            item.priority === 3
-                              ? 'bg-destructive/10 text-destructive'
+                        {wishlist?.enable_priority && item.priority > 0 && (
+                          <span
+                            className={`px-2 py-1 text-xs rounded-full ${
+                              item.priority === 3
+                                ? 'bg-destructive/10 text-destructive'
+                                : item.priority === 2
+                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                : 'bg-muted text-muted-foreground'
+                            }`}>
+                            {item.priority === 3
+                              ? t('priority.high')
                               : item.priority === 2
-                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                              : 'bg-muted text-muted-foreground'
-                          }`}>
-                          {item.priority === 3
-                            ? t('priority.high')
-                            : item.priority === 2
-                            ? t('priority.medium')
-                            : t('priority.low')}
-                        </span>
+                              ? t('priority.medium')
+                              : t('priority.low')}
+                          </span>
+                        )}
                       </div>
 
-                      {item.link && (
+                      {wishlist?.enable_links && item.link && (
                         <a
                           href={item.link}
                           target="_blank"

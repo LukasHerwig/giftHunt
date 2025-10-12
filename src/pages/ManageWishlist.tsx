@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -21,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -50,6 +52,7 @@ import {
   Star,
   DollarSign,
   Edit,
+  Settings,
 } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
@@ -63,6 +66,8 @@ interface WishlistItem {
   priority: number;
   created_at: string;
 }
+
+type Wishlist = Database['public']['Tables']['wishlists']['Row'];
 
 interface WishlistAdmin {
   id: string;
@@ -89,10 +94,12 @@ const ManageWishlist = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [items, setItems] = useState<WishlistItem[]>([]);
+  const [wishlist, setWishlist] = useState<Wishlist | null>(null);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [newLink, setNewLink] = useState('');
@@ -108,11 +115,31 @@ const ManageWishlist = () => {
   const [adding, setAdding] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [inviting, setInviting] = useState(false);
+  const [updatingSettings, setUpdatingSettings] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [settingsEnableLinks, setSettingsEnableLinks] = useState(true);
+  const [settingsEnablePrice, setSettingsEnablePrice] = useState(false);
+  const [settingsEnablePriority, setSettingsEnablePriority] = useState(false);
   const [admins, setAdmins] = useState<WishlistAdmin[]>([]);
   const [invitations, setInvitations] = useState<WishlistInvitation[]>([]);
 
   const loadItems = useCallback(async () => {
     try {
+      // Load wishlist configuration
+      const { data: wishlistData, error: wishlistError } = await supabase
+        .from('wishlists')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (wishlistError) throw wishlistError;
+      setWishlist(wishlistData);
+
+      // Set settings form state
+      setSettingsEnableLinks(wishlistData?.enable_links ?? true);
+      setSettingsEnablePrice(wishlistData?.enable_price ?? false);
+      setSettingsEnablePriority(wishlistData?.enable_priority ?? false);
+
       // Load all items for the owner (but don't show taken status to maintain surprise)
       const { data, error } = await supabase
         .from('wishlist_items')
@@ -421,6 +448,51 @@ const ManageWishlist = () => {
     }
   };
 
+  const handleUpdateSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id) return;
+
+    setUpdatingSettings(true);
+    try {
+      const { data, error } = await supabase
+        .from('wishlists')
+        .update({
+          enable_links: settingsEnableLinks,
+          enable_price: settingsEnablePrice,
+          enable_priority: settingsEnablePriority,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setWishlist(data);
+      setSettingsDialogOpen(false);
+      toast.success(t('messages.settingsUpdated'));
+    } catch (error: unknown) {
+      toast.error(t('messages.failedToUpdateSettings'));
+      console.error('Error updating settings:', error);
+    } finally {
+      setUpdatingSettings(false);
+    }
+  };
+
+  const handleDeleteWishlist = async () => {
+    if (!id) return;
+
+    try {
+      const { error } = await supabase.from('wishlists').delete().eq('id', id);
+      if (error) throw error;
+
+      toast.success(t('messages.wishlistDeleted'));
+      navigate('/');
+    } catch (error: unknown) {
+      toast.error(t('messages.failedToDeleteWishlist'));
+      console.error('Error deleting wishlist:', error);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -454,257 +526,421 @@ const ManageWishlist = () => {
       />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
-        <div className="mb-8 flex gap-4">
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
-                <Plus className="w-5 h-5 mr-2" />
-                {t('manageWishlist.addItem')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('addItemDialog.title')}</DialogTitle>
-                <DialogDescription>
-                  {t('addItemDialog.description')}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleAddItem} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="title">
-                    {t('addItemDialog.titleLabel')} *
-                  </Label>
-                  <Input
-                    id="title"
-                    placeholder={t('addItemDialog.titlePlaceholder')}
-                    value={newTitle}
-                    onChange={(e) => setNewTitle(e.target.value)}
-                    className="text-base"
-                    disabled={adding}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description">
-                    {t('addItemDialog.descriptionLabel')}
-                  </Label>
-                  <Textarea
-                    id="description"
-                    placeholder={t('addItemDialog.descriptionPlaceholder')}
-                    value={newDescription}
-                    onChange={(e) => setNewDescription(e.target.value)}
-                    className="text-base resize-none"
-                    rows={3}
-                    disabled={adding}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="link">{t('addItemDialog.linkLabel')}</Label>
-                  <Input
-                    id="link"
-                    placeholder={t('addItemDialog.linkPlaceholder')}
-                    value={newLink}
-                    onChange={(e) => setNewLink(e.target.value)}
-                    className="text-base"
-                    disabled={adding}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="price">{t('addItemDialog.priceLabel')}</Label>
-                  <Input
-                    id="price"
-                    placeholder={t('addItemDialog.pricePlaceholder')}
-                    value={newPriceRange}
-                    onChange={(e) => setNewPriceRange(e.target.value)}
-                    className="text-base"
-                    disabled={adding}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="priority">
-                    {t('addItemDialog.priorityLabel')}
-                  </Label>
-                  <Select
-                    value={newPriority?.toString() || 'none'}
-                    onValueChange={(value) =>
-                      setNewPriority(value === 'none' ? null : parseInt(value))
-                    }>
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={t('addItemDialog.priorityPlaceholder')}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t('priority.none')}</SelectItem>
-                      <SelectItem value="1">{t('priority.low')}</SelectItem>
-                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
-                      <SelectItem value="3">{t('priority.high')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={adding}>
-                  {adding ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      {t('addItemDialog.adding')}
-                    </>
-                  ) : (
-                    t('addItemDialog.addButton')
-                  )}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-
-          <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>{t('editItemDialog.title')}</DialogTitle>
-                <DialogDescription>
-                  {t('editItemDialog.description')}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleUpdateItem} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="edit-title">Title *</Label>
-                  <Input
-                    id="edit-title"
-                    placeholder="Item title"
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="text-base"
-                    disabled={updating}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-description">
-                    {t('common.description')}
-                  </Label>
-                  <Textarea
-                    id="edit-description"
-                    placeholder="Describe the item (optional)"
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    className="text-base resize-none"
-                    rows={3}
-                    disabled={updating}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-link">{t('common.link')}</Label>
-                  <Input
-                    id="edit-link"
-                    placeholder="Link to the item (optional)"
-                    value={editLink}
-                    onChange={(e) => setEditLink(e.target.value)}
-                    className="text-base"
-                    disabled={updating}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-price">{t('common.priceRange')}</Label>
-                  <Input
-                    id="edit-price"
-                    placeholder="e.g. $50-100, Under $25 (optional)"
-                    value={editPriceRange}
-                    onChange={(e) => setEditPriceRange(e.target.value)}
-                    className="text-base"
-                    disabled={updating}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="edit-priority">{t('common.priority')}</Label>
-                  <Select
-                    value={editPriority?.toString() || 'none'}
-                    onValueChange={(value) =>
-                      setEditPriority(value === 'none' ? null : parseInt(value))
-                    }>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority (optional)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">{t('priority.none')}</SelectItem>
-                      <SelectItem value="1">{t('priority.low')}</SelectItem>
-                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
-                      <SelectItem value="3">{t('priority.high')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                  disabled={updating}>
-                  {updating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Updating...
-                    </>
-                  ) : (
-                    'Update Item'
-                  )}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-
-          {canInviteAdmin && (
-            <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+        <div className="mb-8 flex gap-4 justify-between">
+          <div className="flex gap-4">
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <DialogTrigger asChild>
                 <Button
-                  variant="outline"
                   size="lg"
-                  className="w-full sm:w-auto">
-                  <UserPlus className="w-5 h-5 mr-2" />
-                  {t('manageWishlist.inviteAdmin')}
+                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                  <Plus className="w-5 h-5 mr-2" />
+                  {t('manageWishlist.addItem')}
                 </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
-                  <DialogTitle>{t('inviteDialog.title')}</DialogTitle>
+                  <DialogTitle>{t('addItemDialog.title')}</DialogTitle>
                   <DialogDescription>
-                    {t('inviteDialog.description')}
+                    {t('addItemDialog.description')}
                   </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleInviteAdmin} className="space-y-4">
-                  <Input
-                    type="email"
-                    placeholder="Email address"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    className="text-base"
-                    disabled={inviting}
-                  />
+                <form onSubmit={handleAddItem} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="title">
+                      {t('addItemDialog.titleLabel')} *
+                    </Label>
+                    <Input
+                      id="title"
+                      placeholder={t('addItemDialog.titlePlaceholder')}
+                      value={newTitle}
+                      onChange={(e) => setNewTitle(e.target.value)}
+                      className="text-base"
+                      disabled={adding}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="description">
+                      {t('addItemDialog.descriptionLabel')}
+                    </Label>
+                    <Textarea
+                      id="description"
+                      placeholder={t('addItemDialog.descriptionPlaceholder')}
+                      value={newDescription}
+                      onChange={(e) => setNewDescription(e.target.value)}
+                      className="text-base resize-none"
+                      rows={3}
+                      disabled={adding}
+                    />
+                  </div>
+
+                  {wishlist?.enable_links && (
+                    <div className="space-y-2">
+                      <Label htmlFor="link">
+                        {t('addItemDialog.linkLabel')}
+                      </Label>
+                      <Input
+                        id="link"
+                        placeholder={t('addItemDialog.linkPlaceholder')}
+                        value={newLink}
+                        onChange={(e) => setNewLink(e.target.value)}
+                        className="text-base"
+                        disabled={adding}
+                      />
+                    </div>
+                  )}
+
+                  {wishlist?.enable_price && (
+                    <div className="space-y-2">
+                      <Label htmlFor="price">
+                        {t('addItemDialog.priceLabel')}
+                      </Label>
+                      <Input
+                        id="price"
+                        placeholder={t('addItemDialog.pricePlaceholder')}
+                        value={newPriceRange}
+                        onChange={(e) => setNewPriceRange(e.target.value)}
+                        className="text-base"
+                        disabled={adding}
+                      />
+                    </div>
+                  )}
+
+                  {wishlist?.enable_priority && (
+                    <div className="space-y-2">
+                      <Label htmlFor="priority">
+                        {t('addItemDialog.priorityLabel')}
+                      </Label>
+                      <Select
+                        value={newPriority?.toString() || 'none'}
+                        onValueChange={(value) =>
+                          setNewPriority(
+                            value === 'none' ? null : parseInt(value)
+                          )
+                        }>
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t('addItemDialog.priorityPlaceholder')}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">
+                            {t('priority.none')}
+                          </SelectItem>
+                          <SelectItem value="1">{t('priority.low')}</SelectItem>
+                          <SelectItem value="2">
+                            {t('priority.medium')}
+                          </SelectItem>
+                          <SelectItem value="3">
+                            {t('priority.high')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
                   <Button
                     type="submit"
                     className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                    disabled={inviting}>
-                    {inviting ? (
+                    disabled={adding}>
+                    {adding ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Sending...
+                        {t('addItemDialog.adding')}
                       </>
                     ) : (
-                      'Send Invitation'
+                      t('addItemDialog.addButton')
                     )}
                   </Button>
                 </form>
               </DialogContent>
             </Dialog>
-          )}
+
+            <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>{t('editItemDialog.title')}</DialogTitle>
+                  <DialogDescription>
+                    {t('editItemDialog.description')}
+                  </DialogDescription>
+                </DialogHeader>
+                <form onSubmit={handleUpdateItem} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-title">Title *</Label>
+                    <Input
+                      id="edit-title"
+                      placeholder="Item title"
+                      value={editTitle}
+                      onChange={(e) => setEditTitle(e.target.value)}
+                      className="text-base"
+                      disabled={updating}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-description">
+                      {t('common.description')}
+                    </Label>
+                    <Textarea
+                      id="edit-description"
+                      placeholder="Describe the item (optional)"
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      className="text-base resize-none"
+                      rows={3}
+                      disabled={updating}
+                    />
+                  </div>
+
+                  {wishlist?.enable_links && (
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-link">{t('common.link')}</Label>
+                      <Input
+                        id="edit-link"
+                        placeholder="Link to the item (optional)"
+                        value={editLink}
+                        onChange={(e) => setEditLink(e.target.value)}
+                        className="text-base"
+                        disabled={updating}
+                      />
+                    </div>
+                  )}
+
+                  {wishlist?.enable_price && (
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-price">
+                        {t('common.priceRange')}
+                      </Label>
+                      <Input
+                        id="edit-price"
+                        placeholder="e.g. $50-100, Under $25 (optional)"
+                        value={editPriceRange}
+                        onChange={(e) => setEditPriceRange(e.target.value)}
+                        className="text-base"
+                        disabled={updating}
+                      />
+                    </div>
+                  )}
+
+                  {wishlist?.enable_priority && (
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-priority">
+                        {t('common.priority')}
+                      </Label>
+                      <Select
+                        value={editPriority?.toString() || 'none'}
+                        onValueChange={(value) =>
+                          setEditPriority(
+                            value === 'none' ? null : parseInt(value)
+                          )
+                        }>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select priority (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">
+                            {t('priority.none')}
+                          </SelectItem>
+                          <SelectItem value="1">{t('priority.low')}</SelectItem>
+                          <SelectItem value="2">
+                            {t('priority.medium')}
+                          </SelectItem>
+                          <SelectItem value="3">
+                            {t('priority.high')}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                    disabled={updating}>
+                    {updating ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Updating...
+                      </>
+                    ) : (
+                      'Update Item'
+                    )}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+
+            {canInviteAdmin && (
+              <Dialog
+                open={inviteDialogOpen}
+                onOpenChange={setInviteDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full sm:w-auto">
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    {t('manageWishlist.inviteAdmin')}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t('inviteDialog.title')}</DialogTitle>
+                    <DialogDescription>
+                      {t('inviteDialog.description')}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleInviteAdmin} className="space-y-4">
+                    <Input
+                      type="email"
+                      placeholder="Email address"
+                      value={inviteEmail}
+                      onChange={(e) => setInviteEmail(e.target.value)}
+                      className="text-base"
+                      disabled={inviting}
+                    />
+                    <Button
+                      type="submit"
+                      className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                      disabled={inviting}>
+                      {inviting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        'Send Invitation'
+                      )}
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            )}
+          </div>
+
+          {/* Settings Button - Always visible for wishlist owners */}
+          <Dialog
+            open={settingsDialogOpen}
+            onOpenChange={setSettingsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto">
+                <Settings className="w-5 h-5 mr-2" />
+                {t('manageWishlist.settings')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>{t('manageWishlist.settingsTitle')}</DialogTitle>
+                <DialogDescription>
+                  {t('manageWishlist.settingsDescription')}
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleUpdateSettings} className="space-y-4">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <label className="text-sm font-medium">
+                        {t('createWishlist.enableLinks')}
+                      </label>
+                      <p className="text-xs text-muted-foreground">
+                        {t('createWishlist.enableLinksDescription')}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settingsEnableLinks}
+                      onCheckedChange={setSettingsEnableLinks}
+                      disabled={updatingSettings}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <label className="text-sm font-medium">
+                        {t('createWishlist.enablePrice')}
+                      </label>
+                      <p className="text-xs text-muted-foreground">
+                        {t('createWishlist.enablePriceDescription')}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settingsEnablePrice}
+                      onCheckedChange={setSettingsEnablePrice}
+                      disabled={updatingSettings}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <label className="text-sm font-medium">
+                        {t('createWishlist.enablePriority')}
+                      </label>
+                      <p className="text-xs text-muted-foreground">
+                        {t('createWishlist.enablePriorityDescription')}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settingsEnablePriority}
+                      onCheckedChange={setSettingsEnablePriority}
+                      disabled={updatingSettings}
+                    />
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+                  disabled={updatingSettings}>
+                  {updatingSettings ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {t('common.updating')}
+                    </>
+                  ) : (
+                    t('common.saveChanges')
+                  )}
+                </Button>
+              </form>
+
+              {/* Danger Zone */}
+              <div className="pt-4 border-t border-destructive/20">
+                <h4 className="text-sm font-medium text-destructive mb-3">
+                  {t('manageWishlist.dangerZone')}
+                </h4>
+                <AlertDialog
+                  open={deleteDialogOpen}
+                  onOpenChange={setDeleteDialogOpen}>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="destructive" className="w-full">
+                      <Trash2 className="w-4 h-4 mr-2" />
+                      {t('manageWishlist.deleteWishlist')}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        {t('deleteWishlistDialog.title')}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        {t('deleteWishlistDialog.description', {
+                          title: wishlist?.title,
+                        })}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        {t('common.cancel')}
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDeleteWishlist}
+                        className="bg-destructive hover:bg-destructive/90">
+                        {t('common.delete')}
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Admin Status Section - Shows current admin and invitation status
@@ -877,31 +1113,33 @@ const ManageWishlist = () => {
                       )}
 
                       <div className="flex flex-wrap gap-2 mb-2">
-                        {item.price_range && (
+                        {wishlist?.enable_price && item.price_range && (
                           <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
                             <DollarSign className="w-3 h-3" />
                             {item.price_range}
                           </span>
                         )}
-                        {item.priority && item.priority > 0 && (
-                          <span
-                            className={`px-2 py-1 text-xs rounded-full ${
-                              item.priority === 3
-                                ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                        {wishlist?.enable_priority &&
+                          item.priority &&
+                          item.priority > 0 && (
+                            <span
+                              className={`px-2 py-1 text-xs rounded-full ${
+                                item.priority === 3
+                                  ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                                  : item.priority === 2
+                                  ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
+                                  : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                              }`}>
+                              {item.priority === 3
+                                ? t('priority.high')
                                 : item.priority === 2
-                                ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                                : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
-                            }`}>
-                            {item.priority === 3
-                              ? t('priority.high')
-                              : item.priority === 2
-                              ? t('priority.medium')
-                              : t('priority.low')}
-                          </span>
-                        )}
+                                ? t('priority.medium')
+                                : t('priority.low')}
+                            </span>
+                          )}
                       </div>
 
-                      {item.link && (
+                      {wishlist?.enable_links && item.link && (
                         <a
                           href={formatUrl(item.link)}
                           target="_blank"

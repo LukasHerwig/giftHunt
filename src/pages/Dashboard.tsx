@@ -20,13 +20,14 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import {
   Gift,
   Plus,
   LogOut,
   Link as LinkIcon,
-  Trash2,
   Loader2,
   Users,
   AlertCircle,
@@ -41,12 +42,14 @@ interface Wishlist {
   title: string;
   description: string | null;
   created_at: string;
+  item_count?: number;
 }
 
 interface AdminWishlist {
   id: string;
   title: string;
   description: string | null;
+  item_count?: number;
   owner_profile: {
     id: string;
     email: string;
@@ -82,6 +85,9 @@ const Dashboard = () => {
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const [newDescription, setNewDescription] = useState('');
+  const [enableLinks, setEnableLinks] = useState(true);
+  const [enablePrice, setEnablePrice] = useState(false);
+  const [enablePriority, setEnablePriority] = useState(false);
   const [creating, setCreating] = useState(false);
 
   const loadAllData = useCallback(
@@ -95,7 +101,25 @@ const Dashboard = () => {
           .order('created_at', { ascending: false });
 
         if (ownedError) throw ownedError;
-        setWishlists(ownedData || []);
+
+        // Load item counts for owned wishlists
+        const ownedWishlistsWithCounts = await Promise.all(
+          (ownedData || []).map(async (wishlist) => {
+            const { count, error: countError } = await supabase
+              .from('wishlist_items')
+              .select('*', { count: 'exact', head: true })
+              .eq('wishlist_id', wishlist.id);
+
+            if (countError) {
+              console.error('Error counting items:', countError);
+              return { ...wishlist, item_count: 0 };
+            }
+
+            return { ...wishlist, item_count: count || 0 };
+          })
+        );
+
+        setWishlists(ownedWishlistsWithCounts);
 
         // Load admin wishlists - simplified approach without joins
         const { data: adminRelations, error: adminRelError } = await supabase
@@ -141,16 +165,32 @@ const Dashboard = () => {
             }
           }
 
-          adminWishlistsFormatted =
-            adminWishlistData?.map((wishlist) => ({
-              id: wishlist.id,
-              title: wishlist.title,
-              description: wishlist.description,
-              owner_profile: ownerProfiles[wishlist.creator_id] || {
-                id: wishlist.creator_id,
-                email: 'Unknown',
-              },
-            })) || [];
+          // Get admin wishlists with item counts
+          const adminWishlistsWithCounts = await Promise.all(
+            (adminWishlistData || []).map(async (wishlist) => {
+              const { count, error: countError } = await supabase
+                .from('wishlist_items')
+                .select('*', { count: 'exact', head: true })
+                .eq('wishlist_id', wishlist.id);
+
+              if (countError) {
+                console.error('Error counting items:', countError);
+              }
+
+              return {
+                id: wishlist.id,
+                title: wishlist.title,
+                description: wishlist.description,
+                item_count: count || 0,
+                owner_profile: ownerProfiles[wishlist.creator_id] || {
+                  id: wishlist.creator_id,
+                  email: 'Unknown',
+                },
+              };
+            })
+          );
+
+          adminWishlistsFormatted = adminWishlistsWithCounts;
         }
 
         setAdminWishlists(adminWishlistsFormatted);
@@ -251,6 +291,9 @@ const Dashboard = () => {
             creator_id: user?.id,
             title: newTitle.trim(),
             description: newDescription.trim() || null,
+            enable_links: enableLinks,
+            enable_price: enablePrice,
+            enable_priority: enablePriority,
           },
         ])
         .select()
@@ -261,6 +304,9 @@ const Dashboard = () => {
       setWishlists([data, ...wishlists]);
       setNewTitle('');
       setNewDescription('');
+      setEnableLinks(true);
+      setEnablePrice(false);
+      setEnablePriority(false);
       setCreateDialogOpen(false);
       toast.success(t('messages.wishlistCreated'));
     } catch (error) {
@@ -268,20 +314,6 @@ const Dashboard = () => {
       toast.error(t('messages.failedToCreate'));
     } finally {
       setCreating(false);
-    }
-  };
-
-  const handleDeleteWishlist = async (id: string) => {
-    try {
-      const { error } = await supabase.from('wishlists').delete().eq('id', id);
-
-      if (error) throw error;
-
-      setWishlists(wishlists.filter((w) => w.id !== id));
-      toast.success(t('messages.wishlistDeleted'));
-    } catch (error) {
-      console.error('Delete wishlist error:', error);
-      toast.error(t('messages.failedToDeleteWishlist'));
     }
   };
 
@@ -381,6 +413,52 @@ const Dashboard = () => {
                 disabled={creating}
               />
             </div>
+
+            {/* Configuration Options */}
+            <div className="space-y-4 pt-2 border-t">
+              <h4 className="text-sm font-medium text-muted-foreground">
+                {t('createWishlistDialog.itemFeatures')}
+              </h4>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="enable-links" className="text-sm">
+                    {t('createWishlistDialog.enableLinks')}
+                  </Label>
+                  <Switch
+                    id="enable-links"
+                    checked={enableLinks}
+                    onCheckedChange={setEnableLinks}
+                    disabled={creating}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="enable-price" className="text-sm">
+                    {t('createWishlistDialog.enablePrice')}
+                  </Label>
+                  <Switch
+                    id="enable-price"
+                    checked={enablePrice}
+                    onCheckedChange={setEnablePrice}
+                    disabled={creating}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="enable-priority" className="text-sm">
+                    {t('createWishlistDialog.enablePriority')}
+                  </Label>
+                  <Switch
+                    id="enable-priority"
+                    checked={enablePriority}
+                    onCheckedChange={setEnablePriority}
+                    disabled={creating}
+                  />
+                </div>
+              </div>
+            </div>
+
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
@@ -455,47 +533,6 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{t('createWishlist.title')}</DialogTitle>
-              <DialogDescription>
-                {t('createWishlist.description')}
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleCreateWishlist} className="space-y-4">
-              <Input
-                placeholder={t('createWishlist.titlePlaceholder')}
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
-                className="text-base"
-                disabled={creating}
-              />
-              <Textarea
-                placeholder={t('createWishlist.descriptionPlaceholder')}
-                value={newDescription}
-                onChange={(e) => setNewDescription(e.target.value)}
-                className="text-base resize-none"
-                rows={3}
-                disabled={creating}
-              />
-              <Button
-                type="submit"
-                className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
-                disabled={creating}>
-                {creating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {t('createWishlist.creating')}
-                  </>
-                ) : (
-                  t('createWishlist.createButton')
-                )}
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-
         {/* My Wishlists */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -519,31 +556,41 @@ const Dashboard = () => {
               {wishlists.map((wishlist) => (
                 <Card
                   key={wishlist.id}
-                  className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <CardTitle className="text-xl">{wishlist.title}</CardTitle>
-                    {wishlist.description && (
-                      <CardDescription className="text-base">
-                        {wishlist.description}
-                      </CardDescription>
-                    )}
+                  className="hover:shadow-lg transition-all duration-200 cursor-pointer border-primary/10 hover:border-primary/30"
+                  onClick={() => navigate(`/wishlist/${wishlist.id}/manage`)}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-xl mb-1 flex items-center gap-2">
+                          <Gift className="w-5 h-5 text-primary" />
+                          {wishlist.title}
+                        </CardTitle>
+                        {wishlist.description && (
+                          <CardDescription className="text-base line-clamp-2">
+                            {wishlist.description}
+                          </CardDescription>
+                        )}
+                      </div>
+                      <Badge variant="secondary" className="shrink-0">
+                        {t('dashboard.itemCount', {
+                          count: wishlist.item_count || 0,
+                        })}
+                      </Badge>
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col gap-2">
-                      <Button
-                        onClick={() =>
-                          navigate(`/wishlist/${wishlist.id}/manage`)
-                        }
-                        className="w-full">
-                        {t('dashboard.manageItems')}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        onClick={() => handleDeleteWishlist(wishlist.id)}
-                        className="w-full text-destructive hover:text-destructive">
-                        <Trash2 className="w-4 h-4 mr-2" />
-                        {t('common.delete')}
-                      </Button>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Plus className="w-4 h-4" />
+                        {t('dashboard.createdOn', {
+                          date: new Date(
+                            wishlist.created_at
+                          ).toLocaleDateString(),
+                        })}
+                      </span>
+                      <span className="text-primary font-medium hover:underline">
+                        {t('dashboard.manageAction')}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -563,31 +610,44 @@ const Dashboard = () => {
               {adminWishlists.map((wishlist) => (
                 <Card
                   key={wishlist.id}
-                  className="hover:shadow-lg transition-shadow border-blue-200">
-                  <CardHeader>
-                    <CardTitle className="text-xl flex items-center justify-between">
-                      {wishlist.title}
-                      <Badge variant="secondary">{t('dashboard.admin')}</Badge>
-                    </CardTitle>
-                    {wishlist.description && (
-                      <CardDescription className="text-base">
-                        {wishlist.description}
-                      </CardDescription>
-                    )}
-                    <CardDescription className="text-sm">
-                      {t('dashboard.owner')}: {wishlist.owner_profile?.email}
-                    </CardDescription>
+                  className="hover:shadow-lg transition-all duration-200 cursor-pointer border-blue-200 hover:border-blue-300"
+                  onClick={() => navigate(`/wishlist/${wishlist.id}/admin`)}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <CardTitle className="text-xl mb-1 flex items-center gap-2">
+                          <Users className="w-5 h-5 text-blue-500" />
+                          {wishlist.title}
+                        </CardTitle>
+                        {wishlist.description && (
+                          <CardDescription className="text-base line-clamp-2">
+                            {wishlist.description}
+                          </CardDescription>
+                        )}
+                      </div>
+                      <div className="flex flex-row items-end gap-1 shrink-0">
+                        <Badge variant="secondary">
+                          {t('dashboard.admin')}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {t('dashboard.itemCount', {
+                            count: wishlist.item_count || 0,
+                          })}
+                        </Badge>
+                      </div>
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex flex-col gap-2">
-                      <Button
-                        onClick={() =>
-                          navigate(`/wishlist/${wishlist.id}/admin`)
-                        }
-                        variant="outline"
-                        className="w-full">
-                        {t('dashboard.manageList')}
-                      </Button>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground">
+                      <span className="flex items-center gap-1 truncate">
+                        <span>
+                          {t('dashboard.owner')}:{' '}
+                          {wishlist.owner_profile?.email}
+                        </span>
+                      </span>
+                      <span className="text-blue-600 font-medium hover:underline">
+                        {t('dashboard.manageAction')}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
