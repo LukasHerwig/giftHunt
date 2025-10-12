@@ -41,6 +41,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -53,6 +54,7 @@ import {
   DollarSign,
   Edit,
   Settings,
+  AlertCircle,
 } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
@@ -89,6 +91,15 @@ interface WishlistInvitation {
   invited_by: string;
 }
 
+interface ShareLink {
+  id: string;
+  wishlist_id: string;
+  token: string;
+  created_by: string;
+  expires_at: string | null;
+  created_at: string;
+}
+
 const ManageWishlist = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -122,6 +133,8 @@ const ManageWishlist = () => {
   const [settingsEnablePriority, setSettingsEnablePriority] = useState(false);
   const [admins, setAdmins] = useState<WishlistAdmin[]>([]);
   const [invitations, setInvitations] = useState<WishlistInvitation[]>([]);
+  const [hasActiveShareLink, setHasActiveShareLink] = useState(false);
+  const [shareLinks, setShareLinks] = useState<ShareLink[]>([]);
 
   const loadItems = useCallback(async () => {
     try {
@@ -139,6 +152,20 @@ const ManageWishlist = () => {
       setSettingsEnableLinks(wishlistData?.enable_links ?? true);
       setSettingsEnablePrice(wishlistData?.enable_price ?? false);
       setSettingsEnablePriority(wishlistData?.enable_priority ?? false);
+
+      // Load active share links for this wishlist
+      const { data: shareLinksData, error: shareLinksError } = await supabase
+        .from('share_links')
+        .select('*')
+        .eq('wishlist_id', id)
+        .or('expires_at.is.null,expires_at.gt.now()'); // Active links (no expiry or not expired)
+
+      if (shareLinksError) {
+        console.error('Error loading share links:', shareLinksError);
+      } else {
+        setShareLinks(shareLinksData || []);
+        setHasActiveShareLink((shareLinksData || []).length > 0);
+      }
 
       // Load all items for the owner (but don't show taken status to maintain surprise)
       const { data, error } = await supabase
@@ -415,6 +442,23 @@ const ManageWishlist = () => {
       const adminToRemove = admins.find((admin) => admin.id === adminId);
       const adminEmail = adminToRemove?.profiles?.email;
 
+      // Remove any active share links for this wishlist
+      if (id) {
+        console.log('Attempting to delete share links for wishlist:', id);
+        const { data: deletedLinks, error: shareLinkError } = await supabase
+          .from('share_links')
+          .delete()
+          .eq('wishlist_id', id)
+          .select();
+
+        if (shareLinkError) {
+          console.error('Error removing share links:', shareLinkError);
+          // Don't fail the operation, but log the error
+        } else {
+          console.log('Successfully deleted share links:', deletedLinks);
+        }
+      }
+
       // Remove the admin record
       const { error: adminError } = await supabase
         .from('wishlist_admins')
@@ -440,8 +484,15 @@ const ManageWishlist = () => {
         }
       }
 
+      // Update state
       setAdmins(admins.filter((admin) => admin.id !== adminId));
-      toast.success(t('messages.adminRemoved'));
+      setHasActiveShareLink(false); // Share links were removed
+
+      if (hasActiveShareLink) {
+        toast.success(t('messages.adminRemovedAndShareLinksDeleted'));
+      } else {
+        toast.success(t('messages.adminRemoved'));
+      }
     } catch (error: unknown) {
       toast.error(t('messages.failedToRemoveAdmin'));
       console.error('Error removing admin:', error);
@@ -526,6 +577,18 @@ const ManageWishlist = () => {
       />
 
       <main className="container mx-auto px-4 py-8 max-w-3xl">
+        {/* Share Link Warning Banner */}
+        {hasActiveShareLink && (
+          <Alert className="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50">
+            <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            <AlertDescription className="text-amber-700 dark:text-amber-300">
+              {t('messages.shareLinkActive')}
+              <br />
+              {t('messages.editingRestricted')}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="mb-8 flex gap-4 justify-between">
           <div className="flex gap-4">
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -1059,6 +1122,15 @@ const ManageWishlist = () => {
                                     admin.profiles?.email ||
                                     t('manageWishlist.unknownUser'),
                                 })}
+                                {hasActiveShareLink && (
+                                  <>
+                                    <br />
+                                    <br />
+                                    <strong className="text-destructive">
+                                      {t('removeAdminDialog.shareLinkWarning')}
+                                    </strong>
+                                  </>
+                                )}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
@@ -1155,7 +1227,8 @@ const ManageWishlist = () => {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEditItem(item)}
-                        className="text-muted-foreground hover:text-foreground flex-shrink-0">
+                        disabled={hasActiveShareLink}
+                        className="text-muted-foreground hover:text-foreground flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
                         <Edit className="w-4 h-4" />
                       </Button>
                       <AlertDialog>
@@ -1163,7 +1236,8 @@ const ManageWishlist = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-destructive hover:text-destructive flex-shrink-0">
+                            disabled={hasActiveShareLink}
+                            className="text-destructive hover:text-destructive flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
                             <Trash2 className="w-4 h-4" />
                           </Button>
                         </AlertDialogTrigger>

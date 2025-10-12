@@ -200,6 +200,7 @@
   "removeAdminDialog": {
     "title": "Ta bort Admin",
     "description": "Är du säker på att du vill ta bort {{email}} som administratör? De kommer att förlora åtkomst till adminfunktioner för denna önskelista.",
+    "shareLinkWarning": "Varning: Detta kommer också att permanent ta bort alla aktiva delningslänkar för denna önskelista. Personer som har länken kommer inte längre att kunna komma åt önskelistan.",
     "cancel": "Avbryt",
     "remove": "Ta bort Admin"
   },
@@ -234,6 +235,7 @@
     "invitationRemoved": "Inbjudan borttagen framgångsrikt",
     "failedToRemoveInvitation": "Misslyckades att ta bort inbjudan",
     "adminRemoved": "Admin borttagen framgångsrikt",
+    "adminRemovedAndShareLinksDeleted": "Admin borttagen och alla delningslänkar raderade. Önskelistan är inte längre offentligt tillgänglig.",
     "failedToRemoveAdmin": "Misslyckades att ta bort admin",
     "invitationAccepted": "Inbjudan accepterad! Du är nu admin för denna önskelista.",
     "failedToAcceptInvitation": "Misslyckades att acceptera inbjudan",
@@ -252,6 +254,8 @@
     "failedToLoadItems": "Misslyckades att ladda föremål",
     "failedToGenerateShareLink": "Misslyckades att generera delningslänk",
     "shareLinkCopied": "Delningslänk kopierad till urklipp!",
+    "shareLinkActive": "Denna önskelista har en aktiv delningslänk och redigering är begränsad",
+    "editingRestricted": "Redigering och borttagning av föremål är inaktiverat när en delningslänk är aktiv",
     "itemUntaken": "Föremålet är nu tillgängligt igen",
     "failedToUntakeItem": "Misslyckades att ångra reservering"
   },
