@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import { Loader2, Save, User } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
+import { ThemeSettings } from '@/components/ThemeSettings';
 
 interface ProfileData {
   id: string;
@@ -129,7 +130,7 @@ const Profile = () => {
         description={t('profile.description')}
       />
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl">
+      <main className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

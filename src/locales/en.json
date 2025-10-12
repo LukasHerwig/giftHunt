@@ -245,5 +245,16 @@
     "lastUpdated": "Last updated",
     "saveChanges": "Save Changes",
     "saving": "Saving..."
+  },
+  "theme": {
+    "title": "Theme Settings",
+    "description": "Customize the appearance of your application",
+    "colorScheme": "Pastel Color",
+    "appearance": "Appearance",
+    "preview": "Preview",
+    "currentTheme": "Current Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   }
 }

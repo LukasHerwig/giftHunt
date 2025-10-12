@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Gift, Menu, LogOut, Languages, User } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const AppHeader = () => {
   const { t, i18n } = useTranslation();
@@ -40,35 +41,38 @@ const AppHeader = () => {
           <h1 className="text-2xl font-bold">Wishlist</h1>
         </div>
 
-        {/* Hamburger Menu */}
-        <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <Menu className="w-5 h-5" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem
-              onClick={() => navigate('/profile')}
-              className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              {t('common.profile')}
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={toggleLanguage}
-              className="flex items-center gap-2">
-              <Languages className="w-4 h-4" />
-              {i18n.language === 'en' ? 'Svenska' : 'English'}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={handleSignOut}
-              className="flex items-center gap-2 text-destructive">
-              <LogOut className="w-4 h-4" />
-              {t('common.signOut')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Action buttons and Hamburger Menu */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Menu className="w-5 h-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem
+                onClick={() => navigate('/profile')}
+                className="flex items-center gap-2">
+                <User className="w-4 h-4" />
+                {t('common.profile')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={toggleLanguage}
+                className="flex items-center gap-2">
+                <Languages className="w-4 h-4" />
+                {i18n.language === 'en' ? 'Svenska' : 'English'}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleSignOut}
+                className="flex items-center gap-2 text-destructive">
+                <LogOut className="w-4 h-4" />
+                {t('common.signOut')}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

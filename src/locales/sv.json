@@ -245,5 +245,16 @@
     "lastUpdated": "Senast uppdaterad",
     "saveChanges": "Spara Ändringar",
     "saving": "Sparar..."
+  },
+  "theme": {
+    "title": "Temainställningar",
+    "description": "Anpassa utseendet på din applikation",
+    "colorScheme": "Pastellfärg",
+    "appearance": "Utseende",
+    "preview": "Förhandsvisning",
+    "currentTheme": "Nuvarande Tema",
+    "light": "Ljust",
+    "dark": "Mörkt",
+    "system": "System"
   }
 }
