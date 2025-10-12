@@ -41,59 +41,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  // Function to validate session by making an API call
-  const validateSession = async (session: Session): Promise<boolean> => {
-    try {
-      // First, check if the session exists and has a valid expiry
-      if (!session || !session.access_token) {
-        console.log('Session missing or no access token');
-        return false;
-      }
-
-      // Check if session is expired
-      const now = Math.floor(Date.now() / 1000);
-      if (session.expires_at && session.expires_at < now) {
-        console.log('Session has expired');
-        return false;
-      }
-
-      console.log('Basic session checks passed, verifying with backend...');
-
-      // Create a timeout promise to avoid hanging
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => reject(new Error('Validation timeout')), 5000); // 5 second timeout
-      });
-
-      // Try to get the current user to validate the session is actually valid
-      const userPromise = supabase.auth.getUser();
-
-      const {
-        data: { user },
-        error,
-      } = await Promise.race([userPromise, timeoutPromise]);
-
-      if (error) {
-        console.log('Session validation failed:', error.message);
-        return false;
-      }
-
-      if (!user) {
-        console.log('No user returned, session is invalid');
-        return false;
-      }
-
-      console.log('Session validation successful for user:', user.email);
-      return true;
-    } catch (error) {
-      if (error instanceof Error && error.message === 'Validation timeout') {
-        console.log('Session validation timed out, assuming valid for now');
-        return true; // Fail gracefully - assume valid to avoid blocking users
-      }
-      console.log('Session validation error:', error);
-      return false;
-    }
-  };
-
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
@@ -105,35 +52,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         if (error) {
           console.error('Error getting session:', error);
-          // If there's an error getting the session, clear auth state
           setSession(null);
           setUser(null);
           if (!isPublicRoute) {
             navigate('/auth');
           }
-        } else if (session) {
-          // Validate the session by making an API call
-          const isValid = await validateSession(session);
-
-          if (isValid) {
-            setSession(session);
-            setUser(session.user);
-          } else {
-            // Session is invalid, force logout
-            console.log('Session validation failed, forcing logout');
-            await supabase.auth.signOut();
-            setSession(null);
-            setUser(null);
-            if (!isPublicRoute) {
-              navigate('/auth');
-              toast.info('Session expired. Please sign in again.');
-            }
-          }
         } else {
-          // No session
-          setSession(null);
-          setUser(null);
-          if (!isPublicRoute) {
+          // Trust Supabase's session management - no additional validation needed
+          setSession(session);
+          setUser(session?.user || null);
+
+          // Redirect logic
+          if (session && location.pathname === '/auth') {
+            navigate('/');
+          } else if (!session && !isPublicRoute) {
             navigate('/auth');
           }
         }
@@ -149,75 +81,38 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     };
 
-    getInitialSession();
-
-    // Listen for auth state changes
+    // Listen for auth state changes - simple switch case like your Flutter code
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state changed:', event, session?.user?.email);
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log(
+        'Auth state changed:',
+        event,
+        session?.user?.email || 'no user'
+      );
 
       switch (event) {
-        case 'SIGNED_IN':
         case 'INITIAL_SESSION':
-          console.log(
-            'Processing auth event:',
-            event,
-            'Current path:',
-            location.pathname
-          );
-          // Validate the session when we get it
-          if (session) {
-            try {
-              console.log('Validating session...');
-              const isValid = await validateSession(session);
-              console.log('Session validation result:', isValid);
+          // Handle initial session when app starts
+          setSession(session);
+          setUser(session?.user || null);
+          setLoading(false);
 
-              if (isValid) {
-                console.log('Setting valid session and user');
-                setSession(session);
-                setUser(session.user);
-                setLoading(false); // Ensure loading is set to false
-                console.log(
-                  'Loading set to false, current path:',
-                  location.pathname
-                );
+          if (session && location.pathname === '/auth') {
+            navigate('/');
+          } else if (!session && !isPublicRoute) {
+            navigate('/auth');
+          }
+          break;
 
-                if (location.pathname === '/auth') {
-                  console.log('Navigating from auth to dashboard');
-                  navigate('/');
-                } else {
-                  console.log('Already on correct page, staying here');
-                }
-              } else {
-                console.log('Invalid session detected, forcing logout');
-                await supabase.auth.signOut();
-                setSession(null);
-                setUser(null);
-                setLoading(false); // Ensure loading is set to false
-                if (!isPublicRoute) {
-                  navigate('/auth');
-                  toast.info('Session expired. Please sign in again.');
-                }
-              }
-            } catch (error) {
-              console.error('Session validation error:', error);
-              setSession(null);
-              setUser(null);
-              setLoading(false); // Ensure loading is set to false
-              if (!isPublicRoute) {
-                navigate('/auth');
-                toast.error('Authentication error. Please sign in again.');
-              }
-            }
-          } else {
-            console.log('No session provided');
-            setSession(null);
-            setUser(null);
-            setLoading(false); // Ensure loading is set to false
-            if (!isPublicRoute) {
-              navigate('/auth');
-            }
+        case 'SIGNED_IN':
+          // User successfully signed in
+          setSession(session);
+          setUser(session?.user || null);
+          setLoading(false);
+
+          if (location.pathname === '/auth') {
+            navigate('/');
           }
           break;
 
@@ -225,7 +120,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           // User signed out or session expired
           setSession(null);
           setUser(null);
-          setLoading(false); // Ensure loading is set to false
+          setLoading(false);
+
           if (!isPublicRoute) {
             navigate('/auth');
             toast.info('Session expired. Please sign in again.');
@@ -233,50 +129,35 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           break;
 
         case 'TOKEN_REFRESHED':
-          // Validate the refreshed token
-          if (session) {
-            try {
-              const isValid = await validateSession(session);
-
-              if (isValid) {
-                console.log('Token refreshed successfully');
-                setSession(session);
-                setUser(session.user);
-              } else {
-                console.log('Refreshed token is invalid, forcing logout');
-                await supabase.auth.signOut();
-                setSession(null);
-                setUser(null);
-                if (!isPublicRoute) {
-                  navigate('/auth');
-                  toast.info('Session expired. Please sign in again.');
-                }
-              }
-            } catch (error) {
-              console.error('Token refresh validation error:', error);
-              setSession(session);
-              setUser(session.user);
-            }
-          }
+          // Token was refreshed successfully
+          setSession(session);
+          setUser(session?.user || null);
+          console.log('Token refreshed successfully');
           break;
 
         case 'USER_UPDATED':
           // User profile was updated
-          if (session) {
-            setSession(session);
-            setUser(session.user);
-          }
+          setSession(session);
+          setUser(session?.user || null);
+          console.log('User data updated');
+          break;
+
+        case 'PASSWORD_RECOVERY':
+          // Handle password recovery if needed in the future
+          console.log('Password recovery initiated');
           break;
 
         default:
-          // Handle any other auth events
-          setLoading(false); // Ensure loading is set to false
-          if (!session && !isPublicRoute) {
-            navigate('/auth');
-          }
+          // Log unhandled events for future debugging
+          console.log('Unhandled auth event:', event);
+          // Ensure we're not stuck in loading state
+          setLoading(false);
           break;
       }
     });
+
+    // Initialize auth state
+    getInitialSession();
 
     // Cleanup subscription on unmount
     return () => subscription.unsubscribe();

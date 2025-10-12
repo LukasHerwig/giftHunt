@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/components/auth/AuthProvider';
+import { AuthTester } from '@/components/AuthTester';
 import Index from './pages/Index';
 import Auth from './pages/Auth';
 import ManageWishlist from './pages/ManageWishlist';
@@ -31,6 +32,8 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          {/* Temporary testing component - remove after testing */}
+          <AuthTester />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
