@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Gift, Menu, LogOut, Languages } from 'lucide-react';
+import { Gift, Menu, LogOut, Languages, User } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const AppHeader = () => {
@@ -48,6 +48,12 @@ const AppHeader = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem
+              onClick={() => navigate('/profile')}
+              className="flex items-center gap-2">
+              <User className="w-4 h-4" />
+              {t('common.profile')}
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={toggleLanguage}
               className="flex items-center gap-2">

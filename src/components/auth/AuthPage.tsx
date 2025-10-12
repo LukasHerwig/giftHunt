@@ -11,8 +11,9 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { Gift, Loader2 } from 'lucide-react';
+import { Gift, Loader2, UserPlus, LogIn } from 'lucide-react';
 import LanguageSwitcher from '../LanguageSwitcher';
 
 export const AuthPage = () => {
@@ -84,7 +85,62 @@ export const AuthPage = () => {
             {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-6">
+          {/* Mode Toggle Buttons */}
+          <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsLogin(true)}
+              className={`flex items-center gap-2 transition-all ${
+                isLogin
+                  ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-background/70 hover:text-foreground'
+              }`}
+              disabled={loading}>
+              <LogIn className="w-4 h-4" />
+              {t('common.signIn')}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsLogin(false)}
+              className={`flex items-center gap-2 transition-all ${
+                !isLogin
+                  ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
+                  : 'text-muted-foreground hover:bg-background/70 hover:text-foreground'
+              }`}
+              disabled={loading}>
+              <UserPlus className="w-4 h-4" />
+              {t('common.signUp')}
+            </Button>
+          </div>
+
+          {/* Additional Context for Each Mode */}
+          <div className="text-center">
+            {isLogin ? (
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg">
+                  {t('auth.welcomeBackTitle')}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t('auth.signInDescription')}
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <h3 className="font-semibold text-lg">
+                  {t('auth.createAccountTitle')}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {t('auth.signUpDescription')}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <Separator />
+
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Input
@@ -105,32 +161,71 @@ export const AuthPage = () => {
                 className="h-12 text-base"
                 disabled={loading}
               />
+              {!isLogin && (
+                <p className="text-xs text-muted-foreground">
+                  {t('auth.passwordRequirement')}
+                </p>
+              )}
             </div>
             <Button
               type="submit"
-              className="w-full h-12 text-base bg-gradient-to-r from-primary to-accent hover:opacity-90"
+              className={`w-full h-12 text-base font-semibold ${
+                isLogin
+                  ? 'bg-primary hover:bg-primary/90'
+                  : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
+              }`}
               disabled={loading}>
               {loading ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   {isLogin ? t('auth.signingIn') : t('auth.creatingAccount')}
                 </>
-              ) : isLogin ? (
-                t('auth.signInButton')
               ) : (
-                t('auth.createAccountButton')
+                <>
+                  {isLogin ? (
+                    <>
+                      <LogIn className="w-4 h-4 mr-2" />
+                      {t('auth.signInButton')}
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="w-4 h-4 mr-2" />
+                      {t('auth.createAccountButton')}
+                    </>
+                  )}
+                </>
               )}
             </Button>
           </form>
 
-          <div className="mt-6 text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              {isLogin ? t('auth.noAccount') : t('auth.hasAccount')}
-            </button>
-          </div>
+          {/* Additional Help Text */}
+          {isLogin ? (
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                {t('auth.newUserQuestion')}{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(false)}
+                  className="text-primary hover:text-primary/80 font-medium underline"
+                  disabled={loading}>
+                  {t('auth.createNewAccount')}
+                </button>
+              </p>
+            </div>
+          ) : (
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground">
+                {t('auth.existingUserQuestion')}{' '}
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(true)}
+                  className="text-primary hover:text-primary/80 font-medium underline"
+                  disabled={loading}>
+                  {t('auth.signInInstead')}
+                </button>
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

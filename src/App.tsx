@@ -11,6 +11,7 @@ import ManageWishlist from './pages/ManageWishlist';
 import AdminWishlist from './pages/AdminWishlist';
 import AcceptInvitation from './pages/AcceptInvitation';
 import PublicWishlist from './pages/PublicWishlist';
+import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={<Profile />} />
             <Route path="/wishlist/:id/manage" element={<ManageWishlist />} />
             <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
             <Route path="/accept-invitation" element={<AcceptInvitation />} />

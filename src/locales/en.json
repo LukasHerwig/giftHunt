@@ -22,7 +22,8 @@
     "required": "required",
     "priceRange": "Price range",
     "priority": "Priority",
-    "link": "Link"
+    "link": "Link",
+    "profile": "Profile"
   },
   "navigation": {
     "dashboard": "Dashboard",
@@ -56,12 +57,21 @@
   "auth": {
     "welcomeBack": "Welcome back! Sign in to manage your wishlists",
     "createAccount": "Create an account to start making wishlists",
+    "welcomeBackTitle": "Welcome Back!",
+    "signInDescription": "Enter your email and password to access your wishlists",
+    "createAccountTitle": "Get Started",
+    "signUpDescription": "Create your account to start building and sharing wishlists",
     "signInButton": "Sign In",
     "createAccountButton": "Create Account",
     "signingIn": "Signing in...",
     "creatingAccount": "Creating account...",
     "noAccount": "Don't have an account? Sign up",
     "hasAccount": "Already have an account? Sign in",
+    "newUserQuestion": "New to WishList?",
+    "createNewAccount": "Create an account",
+    "existingUserQuestion": "Already have an account?",
+    "signInInstead": "Sign in here",
+    "passwordRequirement": "Password must be at least 6 characters long",
     "fillAllFields": "Please fill in all fields",
     "passwordTooShort": "Password must be at least 6 characters",
     "welcomeBackSuccess": "Welcome back!",
@@ -186,7 +196,11 @@
     "failedToLoad": "Failed to load items",
     "failedToLoadDashboard": "Failed to load dashboard data",
     "invited": "Invited",
-    "expires": "Expires"
+    "expires": "Expires",
+    "failedToLoadProfile": "Failed to load profile",
+    "profileUpdated": "Profile updated successfully!",
+    "failedToUpdateProfile": "Failed to update profile",
+    "profileNotFound": "Profile not found"
   },
   "notFound": {
     "message": "Oops! Page not found",
@@ -216,5 +230,20 @@
     "takenItems": "Taken Items",
     "itemsClaimedByGuests": "Items that have been claimed by guests",
     "noItemsTakenYet": "No items have been taken yet"
+  },
+  "profile": {
+    "title": "Profile",
+    "description": "Manage your personal information and account settings",
+    "personalInformation": "Personal Information",
+    "updateYourPersonalDetails": "Update your personal details",
+    "email": "Email",
+    "emailCannotBeChanged": "Email address cannot be changed",
+    "fullName": "Full Name",
+    "fullNamePlaceholder": "Enter your full name",
+    "accountInformation": "Account Information",
+    "memberSince": "Member since",
+    "lastUpdated": "Last updated",
+    "saveChanges": "Save Changes",
+    "saving": "Saving..."
   }
 }

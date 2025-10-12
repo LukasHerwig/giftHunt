@@ -22,7 +22,8 @@
     "required": "obligatoriskt",
     "priceRange": "Prisklass",
     "priority": "Prioritet",
-    "link": "Länk"
+    "link": "Länk",
+    "profile": "Profil"
   },
   "navigation": {
     "dashboard": "Instrumentpanel",
@@ -56,12 +57,21 @@
   "auth": {
     "welcomeBack": "Välkommen tillbaka! Logga in för att hantera dina önskelistor",
     "createAccount": "Skapa ett konto för att börja göra önskelistor",
+    "welcomeBackTitle": "Välkommen Tillbaka!",
+    "signInDescription": "Ange din e-post och lösenord för att komma åt dina önskelistor",
+    "createAccountTitle": "Kom Igång",
+    "signUpDescription": "Skapa ditt konto för att börja bygga och dela önskelistor",
     "signInButton": "Logga in",
     "createAccountButton": "Skapa Konto",
     "signingIn": "Loggar in...",
     "creatingAccount": "Skapar konto...",
     "noAccount": "Har du inget konto? Registrera dig",
     "hasAccount": "Har du redan ett konto? Logga in",
+    "newUserQuestion": "Ny på WishList?",
+    "createNewAccount": "Skapa ett konto",
+    "existingUserQuestion": "Har du redan ett konto?",
+    "signInInstead": "Logga in här",
+    "passwordRequirement": "Lösenordet måste vara minst 6 tecken långt",
     "fillAllFields": "Vänligen fyll i alla fält",
     "passwordTooShort": "Lösenordet måste vara minst 6 tecken",
     "welcomeBackSuccess": "Välkommen tillbaka!",
@@ -186,7 +196,11 @@
     "failedToLoad": "Misslyckades att ladda önskningar",
     "failedToLoadDashboard": "Misslyckades att ladda instrumentpaneldata",
     "invited": "Inbjuden",
-    "expires": "Upphör"
+    "expires": "Upphör",
+    "failedToLoadProfile": "Misslyckades att ladda profil",
+    "profileUpdated": "Profil uppdaterad framgångsrikt!",
+    "failedToUpdateProfile": "Misslyckades att uppdatera profil",
+    "profileNotFound": "Profil hittades inte"
   },
   "notFound": {
     "message": "Hoppsan! Sidan hittades inte",
@@ -216,5 +230,20 @@
     "takenItems": "Tagna föremål",
     "itemsClaimedByGuests": "Föremål som har gjorts anspråk på av gäster",
     "noItemsTakenYet": "Inga föremål har tagits än"
+  },
+  "profile": {
+    "title": "Profil",
+    "description": "Hantera din personliga information och kontoinställningar",
+    "personalInformation": "Personlig Information",
+    "updateYourPersonalDetails": "Uppdatera dina personliga detaljer",
+    "email": "E-post",
+    "emailCannotBeChanged": "E-postadress kan inte ändras",
+    "fullName": "Fullständigt Namn",
+    "fullNamePlaceholder": "Ange ditt fullständiga namn",
+    "accountInformation": "Kontoinformation",
+    "memberSince": "Medlem sedan",
+    "lastUpdated": "Senast uppdaterad",
+    "saveChanges": "Spara Ändringar",
+    "saving": "Sparar..."
   }
 }
