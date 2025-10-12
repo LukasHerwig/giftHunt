@@ -501,13 +501,21 @@ const ManageWishlist = () => {
 
   const handleUpdateSettings = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!id) return;
+    if (!id || !wishlist) return;
+
+    // Validate required fields
+    if (!wishlist.title.trim()) {
+      toast.error(t('messages.enterTitle'));
+      return;
+    }
 
     setUpdatingSettings(true);
     try {
       const { data, error } = await supabase
         .from('wishlists')
         .update({
+          title: wishlist.title.trim(),
+          description: wishlist.description?.trim() || null,
           enable_links: settingsEnableLinks,
           enable_price: settingsEnablePrice,
           enable_priority: settingsEnablePriority,
@@ -563,6 +571,7 @@ const ManageWishlist = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <AppHeader />
       <PageSubheader
+        title={wishlist?.title}
         actions={
           <div className="flex gap-2">
             <Button
@@ -582,9 +591,9 @@ const ManageWishlist = () => {
           <Alert className="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50">
             <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
             <AlertDescription className="text-amber-700 dark:text-amber-300">
-              {t('messages.shareLinkActive')}
+              {t('messages.shareLinkActive') + '.'}
               <br />
-              {t('messages.editingRestricted')}
+              {t('messages.editingRestricted') + '.'}
             </AlertDescription>
           </Alert>
         )}
@@ -729,10 +738,12 @@ const ManageWishlist = () => {
                 </DialogHeader>
                 <form onSubmit={handleUpdateItem} className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="edit-title">Title *</Label>
+                    <Label htmlFor="edit-title">
+                      {t('editItemDialog.titleLabel')} *
+                    </Label>
                     <Input
                       id="edit-title"
-                      placeholder="Item title"
+                      placeholder={t('editItemDialog.titlePlaceholder')}
                       value={editTitle}
                       onChange={(e) => setEditTitle(e.target.value)}
                       className="text-base"
@@ -742,11 +753,11 @@ const ManageWishlist = () => {
 
                   <div className="space-y-2">
                     <Label htmlFor="edit-description">
-                      {t('common.description')}
+                      {t('editItemDialog.descriptionLabel')}
                     </Label>
                     <Textarea
                       id="edit-description"
-                      placeholder="Describe the item (optional)"
+                      placeholder={t('editItemDialog.descriptionPlaceholder')}
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}
                       className="text-base resize-none"
@@ -757,10 +768,12 @@ const ManageWishlist = () => {
 
                   {wishlist?.enable_links && (
                     <div className="space-y-2">
-                      <Label htmlFor="edit-link">{t('common.link')}</Label>
+                      <Label htmlFor="edit-link">
+                        {t('editItemDialog.linkLabel')}
+                      </Label>
                       <Input
                         id="edit-link"
-                        placeholder="Link to the item (optional)"
+                        placeholder={t('editItemDialog.linkPlaceholder')}
                         value={editLink}
                         onChange={(e) => setEditLink(e.target.value)}
                         className="text-base"
@@ -772,11 +785,11 @@ const ManageWishlist = () => {
                   {wishlist?.enable_price && (
                     <div className="space-y-2">
                       <Label htmlFor="edit-price">
-                        {t('common.priceRange')}
+                        {t('editItemDialog.priceLabel')}
                       </Label>
                       <Input
                         id="edit-price"
-                        placeholder="e.g. $50-100, Under $25 (optional)"
+                        placeholder={t('editItemDialog.pricePlaceholder')}
                         value={editPriceRange}
                         onChange={(e) => setEditPriceRange(e.target.value)}
                         className="text-base"
@@ -788,7 +801,7 @@ const ManageWishlist = () => {
                   {wishlist?.enable_priority && (
                     <div className="space-y-2">
                       <Label htmlFor="edit-priority">
-                        {t('common.priority')}
+                        {t('editItemDialog.priorityLabel')}
                       </Label>
                       <Select
                         value={editPriority?.toString() || 'none'}
@@ -798,7 +811,11 @@ const ManageWishlist = () => {
                           )
                         }>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select priority (optional)" />
+                          <SelectValue
+                            placeholder={t(
+                              'editItemDialog.priorityPlaceholder'
+                            )}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">
@@ -823,10 +840,10 @@ const ManageWishlist = () => {
                     {updating ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Updating...
+                        {t('editItemDialog.updating')}
                       </>
                     ) : (
-                      'Update Item'
+                      t('editItemDialog.updateButton')
                     )}
                   </Button>
                 </form>
@@ -899,6 +916,52 @@ const ManageWishlist = () => {
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleUpdateSettings} className="space-y-4">
+                {/* Wishlist Basic Information */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="wishlist-title">
+                      {t('manageWishlist.wishlistTitle')} *
+                    </Label>
+                    <Input
+                      id="wishlist-title"
+                      placeholder={t('manageWishlist.wishlistTitlePlaceholder')}
+                      value={wishlist?.title || ''}
+                      onChange={(e) =>
+                        setWishlist((prev) =>
+                          prev ? { ...prev, title: e.target.value } : prev
+                        )
+                      }
+                      className="text-base"
+                      disabled={updatingSettings}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="wishlist-description">
+                      {t('manageWishlist.wishlistDescription')}
+                    </Label>
+                    <Textarea
+                      id="wishlist-description"
+                      placeholder={t(
+                        'manageWishlist.wishlistDescriptionPlaceholder'
+                      )}
+                      value={wishlist?.description || ''}
+                      onChange={(e) =>
+                        setWishlist((prev) =>
+                          prev ? { ...prev, description: e.target.value } : prev
+                        )
+                      }
+                      className="text-base resize-none"
+                      rows={3}
+                      disabled={updatingSettings}
+                    />
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="border-t border-border my-4"></div>
+
+                {/* Field Configuration */}
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
