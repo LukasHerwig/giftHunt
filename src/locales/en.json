@@ -120,7 +120,11 @@
     "failedToClaim": "Failed to claim item",
     "invalidOrExpiredLink": "Invalid or expired share link",
     "linkExpired": "This share link has expired",
-    "failedToLoad": "Failed to load wishlist"
+    "failedToLoad": "Failed to load wishlist",
+    "howItWorks": "How It Works",
+    "howItWorksStep1": "Click \"I'll get this!\" on any item you want to buy as a gift. This reserves the item so others won't choose the same thing.",
+    "howItWorksStep2": "Your name will be shown to the wishlist owner so they know who's getting what gift, but it stays hidden from other visitors.",
+    "changeOfMind": "Changed your mind? Contact the wishlist admin to cancel your reservation."
   },
   "manageWishlist": {
     "title": "Manage Items",
@@ -270,6 +274,8 @@
     "shareLinkCopied": "Share link copied to clipboard!",
     "shareLinkActive": "This wishlist has an active share link and editing is restricted",
     "editingRestricted": "Editing and deleting items is disabled when a share link is active",
+    "editDisabledTooltip": "Editing is disabled while wishlist has an active share link",
+    "deleteDisabledTooltip": "Deleting is disabled while wishlist has an active share link",
     "itemUntaken": "Item is now available again",
     "failedToUntakeItem": "Failed to untake item"
   },

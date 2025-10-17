@@ -4,3 +4,4 @@ export { WishlistHeader } from './WishlistHeader';
 export { WishlistItemCard } from './WishlistItemCard';
 export { ClaimItemDialog } from './ClaimItemDialog';
 export { EmptyWishlistState } from './EmptyWishlistState';
+export { InfoSection } from './InfoSection';

@@ -120,7 +120,11 @@
     "failedToClaim": "Misslyckades att reservera önskning",
     "invalidOrExpiredLink": "Ogiltig eller utgången delningslänk",
     "linkExpired": "Denna delningslänk har gått ut",
-    "failedToLoad": "Misslyckades att ladda önskelista"
+    "failedToLoad": "Misslyckades att ladda önskelista",
+    "howItWorks": "Så Fungerar Det",
+    "howItWorksStep1": "Klicka \"Jag tar den här!\" på föremål du vill köpa som present. Detta reserverar föremålet så andra inte väljer samma sak.",
+    "howItWorksStep2": "Ditt namn visas för önskelistans ägare så de vet vem som ska ge vilken present, men det förblir dolt för andra besökare.",
+    "changeOfMind": "Ångrat dig? Kontakta önskelistans administratör för att avboka din reservation."
   },
   "manageWishlist": {
     "title": "Hantera Önskningar",
@@ -270,7 +274,9 @@
     "shareLinkCopied": "Delningslänk kopierad till urklipp!",
     "shareLinkActive": "Denna önskelista har en aktiv delningslänk och redigering är begränsad",
     "editingRestricted": "Redigering och borttagning av föremål är inaktiverat när en delningslänk är aktiv",
-    "itemUntaken": "Föremålet är nu tillgängligt igen",
+    "editDisabledTooltip": "Redigering är inaktiverat medan önskelistan har en aktiv delningslänk",
+    "deleteDisabledTooltip": "Borttagning är inaktiverat medan önskelistan har en aktiv delningslänk",
+    "itemUntaken": "Föremål är nu tillgängligt igen",
     "failedToUntakeItem": "Misslyckades att ångra reservering"
   },
   "notFound": {

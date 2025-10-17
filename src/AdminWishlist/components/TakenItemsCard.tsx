@@ -97,10 +97,10 @@ export const TakenItemsCard = ({
                     <span className="font-medium">
                       {t('adminWishlist.takenBy')}:
                     </span>{' '}
-                    {item.taken_by_name || t('adminWishlist.anonymous')}
+                    {item.taken_by_name}
+                    <br />
                     {item.taken_at && (
-                      <span className="ml-2">
-                        {t('adminWishlist.on')}{' '}
+                      <span>
                         {new Date(item.taken_at).toLocaleDateString()}
                       </span>
                     )}

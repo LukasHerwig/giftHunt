@@ -11,7 +11,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { ExternalLink, Star, DollarSign, Edit, Trash2 } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 
@@ -33,6 +39,29 @@ export const WishlistItems = ({
   formatUrl,
 }: WishlistItemsProps) => {
   const { t } = useTranslation();
+  const { toast } = useToast();
+
+  // Debug log to verify the value
+  console.log('hasActiveShareLink:', hasActiveShareLink);
+
+  // Handlers for disabled button clicks (mobile feedback)
+  const handleDisabledEditClick = () => {
+    if (hasActiveShareLink) {
+      toast({
+        description: t('messages.editDisabledTooltip'),
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDisabledDeleteClick = () => {
+    if (hasActiveShareLink) {
+      toast({
+        description: t('messages.deleteDisabledTooltip'),
+        variant: 'destructive',
+      });
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -107,24 +136,63 @@ export const WishlistItems = ({
                 )}
               </div>
               <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onEditItem(item)}
-                  disabled={hasActiveShareLink}
-                  className="text-muted-foreground hover:text-foreground flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                  <Edit className="w-4 h-4" />
-                </Button>
+                {/* Edit button with conditional tooltip */}
+                {hasActiveShareLink ? (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span onClick={handleDisabledEditClick}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={hasActiveShareLink}
+                          className="text-muted-foreground hover:text-foreground flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{t('messages.editDisabledTooltip')}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEditItem(item)}
+                    disabled={hasActiveShareLink}
+                    className="text-muted-foreground hover:text-foreground flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                )}
                 <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={hasActiveShareLink}
-                      className="text-destructive hover:text-destructive flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </AlertDialogTrigger>
+                  {hasActiveShareLink ? (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span onClick={handleDisabledDeleteClick}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            disabled={hasActiveShareLink}
+                            className="text-destructive hover:text-destructive flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>{t('messages.deleteDisabledTooltip')}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ) : (
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={hasActiveShareLink}
+                        className="text-destructive hover:text-destructive flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                  )}
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>

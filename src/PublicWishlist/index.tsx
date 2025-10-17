@@ -8,7 +8,9 @@ import {
   WishlistItemCard,
   ClaimItemDialog,
   EmptyWishlistState,
+  InfoSection,
 } from './components';
+import PageSubheader from '@/components/PageSubheader';
 
 const PublicWishlist = () => {
   const { token } = useParams();
@@ -48,7 +50,11 @@ const PublicWishlist = () => {
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
       <WishlistHeader wishlist={wishlist} />
 
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
+      <div className="container mx-auto px-4 py-4 max-w-3xl">
+        <InfoSection />
+      </div>
+
+      <main className="container mx-auto px-4 py-4 max-w-3xl">
         {items.length === 0 ? (
           <EmptyWishlistState />
         ) : (

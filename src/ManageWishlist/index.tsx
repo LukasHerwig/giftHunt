@@ -121,7 +121,7 @@ const ManageWishlist = () => {
         }
       />
 
-      <main className="container mx-auto px-4 py-8 max-w-3xl">
+      <main className="container mx-auto px-4 max-w-3xl">
         <ShareLinkWarning hasActiveShareLink={hasActiveShareLink} />
 
         {(admins.length > 0 || invitations.length > 0) && (

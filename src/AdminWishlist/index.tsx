@@ -46,7 +46,7 @@ const AdminWishlist = () => {
         onCopyShareLink={handleCopyShareLink}
       />
 
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="container mx-auto px-4 py-4 max-w-4xl">
         {/* Share Link Info */}
         {shareLink && <ShareLinkInfo shareLink={shareLink} />}
 
