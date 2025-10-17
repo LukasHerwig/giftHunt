@@ -34,8 +34,15 @@ const Onboarding = () => {
       }
     } catch (error) {
       console.error('Error checking onboarding status:', error);
-      toast.error('Error checking profile status');
-      navigate('/');
+
+      // If it's a profile error, the user has been signed out already
+      // Just redirect to auth page
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Error checking profile status';
+      toast.error(errorMessage);
+      navigate('/auth');
     } finally {
       setLoading(false);
     }

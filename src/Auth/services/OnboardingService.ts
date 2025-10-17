@@ -14,8 +14,17 @@ export class OnboardingService {
 
     if (error) {
       console.error('Error checking profile:', error);
-      // If there's an error getting profile, assume onboarding is needed
-      return true;
+
+      // If profile doesn't exist or other database errors, sign out the user
+      if (error.code === 'PGRST116' || error.message?.includes('0 rows')) {
+        console.log('Profile not found, signing out user');
+        await supabase.auth.signOut();
+        throw new Error('Profile not found - please sign up again');
+      }
+
+      // For other errors, also sign out
+      await supabase.auth.signOut();
+      throw new Error('Database error - please try signing in again');
     }
 
     // User needs onboarding if they don't have a name set

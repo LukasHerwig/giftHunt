@@ -207,18 +207,8 @@ export class DashboardService {
     wishlistId: string,
     invitedBy: string
   ): Promise<void> {
-    // First, create admin relationship while invitation is still pending
-    const { error: adminError } = await supabase
-      .from('wishlist_admins')
-      .insert({
-        wishlist_id: wishlistId,
-        admin_id: userId,
-        invited_by: invitedBy,
-      });
-
-    if (adminError) throw adminError;
-
-    // Then mark invitation as accepted
+    // The database trigger automatically creates the admin record when accepted = true
+    // So we only need to mark the invitation as accepted
     const { error } = await supabase
       .from('admin_invitations')
       .update({ accepted: true })
