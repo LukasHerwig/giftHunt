@@ -42,6 +42,12 @@ export const useProfile = (): ProfileState & ProfileActions => {
 
       if (!user || !state.profile) return;
 
+      // Validate that name is not empty or just spaces
+      if (!state.fullName.trim()) {
+        toast.error(t('profile.nameRequired'));
+        return;
+      }
+
       try {
         setState((prev) => ({ ...prev, saving: true }));
 

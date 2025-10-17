@@ -338,7 +338,9 @@
     "memberSince": "Member since",
     "lastUpdated": "Last updated",
     "saveChanges": "Save Changes",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "nameRequired": "Name cannot be empty",
+    "nameHelpText": "Your name helps others identify whose wishlist they're viewing and shows who claimed which items."
   },
   "theme": {
     "title": "Theme Settings",
@@ -350,5 +352,16 @@
     "light": "Light",
     "dark": "Dark",
     "system": "System"
+  },
+  "onboarding": {
+    "welcomeTitle": "Welcome to WishList!",
+    "welcomeDescription": "Let's get you set up. Please tell us your name so others can identify you when claiming items.",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your full name",
+    "nameHelpText": "This name will be shown to wishlist owners when you claim items as gifts.",
+    "continue": "Continue",
+    "saving": "Saving...",
+    "welcomeComplete": "Welcome! Your profile is now complete.",
+    "errorSaving": "Failed to save your name. Please try again."
   }
 }

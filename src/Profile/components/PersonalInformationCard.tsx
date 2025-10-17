@@ -67,7 +67,18 @@ export const PersonalInformationCard = ({
               onChange={(e) => onFullNameChange(e.target.value)}
               placeholder={t('profile.fullNamePlaceholder')}
               disabled={saving}
+              required
+              className={
+                !fullName.trim() && fullName.length > 0
+                  ? 'border-destructive'
+                  : ''
+              }
             />
+            {!fullName.trim() && fullName.length > 0 && (
+              <p className="text-sm text-destructive">
+                {t('profile.nameRequired')}
+              </p>
+            )}
           </div>
 
           {/* Account Information */}
@@ -89,7 +100,7 @@ export const PersonalInformationCard = ({
           <div className="flex justify-end pt-4">
             <Button
               type="submit"
-              disabled={saving}
+              disabled={saving || !fullName.trim()}
               className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
               {saving ? (
                 <>

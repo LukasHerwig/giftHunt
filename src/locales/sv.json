@@ -195,7 +195,8 @@
     "emailPlaceholder": "E-postadress",
     "sendButton": "Skicka Inbjudan",
     "sending": "Skickar...",
-    "invited": "Inbjuden"
+    "invited": "Inbjuden",
+    "expires": "Upphör"
   },
   "deleteDialog": {
     "title": "Ta bort Önskning",
@@ -338,7 +339,9 @@
     "memberSince": "Medlem sedan",
     "lastUpdated": "Senast uppdaterad",
     "saveChanges": "Spara Ändringar",
-    "saving": "Sparar..."
+    "saving": "Sparar...",
+    "nameRequired": "Namnet kan inte vara tomt",
+    "nameHelpText": "Ditt namn kommer att visas för önskelisteägare när du hämtar föremål som gåvor, och för att identifiera vems önskelista det är."
   },
   "theme": {
     "title": "Temainställningar",
@@ -350,5 +353,16 @@
     "light": "Ljust",
     "dark": "Mörkt",
     "system": "System"
+  },
+  "onboarding": {
+    "welcomeTitle": "Välkommen till WishList!",
+    "welcomeDescription": "Låt oss sätta upp dig. Berätta ditt namn så att andra kan identifiera dig när du hämtar föremål.",
+    "nameLabel": "Ditt Namn",
+    "namePlaceholder": "Ange ditt fullständiga namn",
+    "nameHelpText": "Detta namn kommer att visas för önskelisteägare när du hämtar föremål som gåvor.",
+    "continue": "Fortsätt",
+    "saving": "Sparar...",
+    "welcomeComplete": "Välkommen! Din profil är nu komplett.",
+    "errorSaving": "Misslyckades med att spara ditt namn. Försök igen."
   }
 }

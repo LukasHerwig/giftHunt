@@ -8,6 +8,7 @@ import { ThemeProvider } from '@/contexts/ThemeProvider';
 import { AuthTester } from '@/components/AuthTester';
 import Dashboard from './Dashboard';
 import Auth from './Auth';
+import Onboarding from './Onboarding';
 import ManageWishlist from './ManageWishlist';
 import AdminWishlist from './AdminWishlist';
 import AcceptInvitation from './AcceptInvitation';
@@ -28,6 +29,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wishlist/:id/manage" element={<ManageWishlist />} />
               <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />

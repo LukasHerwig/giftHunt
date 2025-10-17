@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { AuthContext, AuthContextType } from './AuthContext';
+import { OnboardingService } from '@/Auth/services';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -21,6 +22,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const isPublicRoute = publicRoutes.some(
     (route) =>
       location.pathname === route || location.pathname.startsWith(route + '/')
+  );
+
+  // Onboarding route requires authentication but is handled specially
+  const isOnboardingRoute = location.pathname === '/onboarding';
+
+  // Helper function to handle authenticated user navigation
+  const handleAuthenticatedNavigation = useCallback(
+    async (session: Session | null) => {
+      if (!session) return;
+
+      try {
+        // Check if user needs onboarding
+        const needsOnboarding = await OnboardingService.checkIfOnboardingNeeded(
+          session.user.id
+        );
+
+        if (needsOnboarding && location.pathname !== '/onboarding') {
+          navigate('/onboarding');
+        } else if (!needsOnboarding && location.pathname === '/auth') {
+          navigate('/');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        // If there's an error, just redirect normally
+        if (location.pathname === '/auth') {
+          navigate('/');
+        }
+      }
+    },
+    [navigate, location.pathname]
   );
 
   const signOut = async () => {
@@ -63,9 +94,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(session?.user || null);
 
           // Redirect logic
-          if (session && location.pathname === '/auth') {
-            navigate('/');
-          } else if (!session && !isPublicRoute) {
+          if (session) {
+            handleAuthenticatedNavigation(session);
+          } else if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
           }
         }
@@ -98,9 +129,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(session?.user || null);
           setLoading(false);
 
-          if (session && location.pathname === '/auth') {
-            navigate('/');
-          } else if (!session && !isPublicRoute) {
+          if (session) {
+            handleAuthenticatedNavigation(session);
+          } else if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
           }
           break;
@@ -111,8 +142,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(session?.user || null);
           setLoading(false);
 
-          if (location.pathname === '/auth') {
-            navigate('/');
+          if (session) {
+            handleAuthenticatedNavigation(session);
           }
           break;
 
@@ -122,7 +153,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUser(null);
           setLoading(false);
 
-          if (!isPublicRoute) {
+          if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
             toast.info('Session expired. Please sign in again.');
           }
@@ -161,7 +192,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     // Cleanup subscription on unmount
     return () => subscription.unsubscribe();
-  }, [navigate, location.pathname, isPublicRoute]);
+  }, [
+    navigate,
+    location.pathname,
+    isPublicRoute,
+    isOnboardingRoute,
+    handleAuthenticatedNavigation,
+  ]);
 
   // Show loading screen while checking auth state
   if (loading) {

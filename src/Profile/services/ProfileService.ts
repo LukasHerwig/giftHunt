@@ -17,10 +17,16 @@ export class ProfileService {
     userId: string,
     formData: ProfileFormData
   ): Promise<void> {
+    // Validate that the name is not empty or just spaces
+    const trimmedName = formData.fullName.trim();
+    if (!trimmedName) {
+      throw new Error('Name cannot be empty');
+    }
+
     const { error } = await supabase
       .from('profiles')
       .update({
-        full_name: formData.fullName.trim() || null,
+        full_name: trimmedName,
       })
       .eq('id', userId);
 
