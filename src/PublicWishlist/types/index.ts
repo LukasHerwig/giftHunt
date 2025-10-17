@@ -14,6 +14,7 @@ export interface Wishlist {
   enable_links: boolean | null;
   enable_price: boolean | null;
   enable_priority: boolean | null;
+  creator_name: string | null;
 }
 
 export interface ShareLink {

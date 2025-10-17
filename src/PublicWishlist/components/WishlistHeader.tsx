@@ -1,5 +1,6 @@
 import { Gift } from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
+import { useTranslation } from 'react-i18next';
 import { Wishlist } from '../types';
 
 interface WishlistHeaderProps {
@@ -7,6 +8,8 @@ interface WishlistHeaderProps {
 }
 
 export const WishlistHeader = ({ wishlist }: WishlistHeaderProps) => {
+  const { t } = useTranslation();
+
   return (
     <header className="border-b bg-card/50 backdrop-blur-sm">
       <div className="absolute top-4 right-4 z-10">
@@ -17,6 +20,11 @@ export const WishlistHeader = ({ wishlist }: WishlistHeaderProps) => {
           <Gift className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-3xl font-bold mb-2">{wishlist.title}</h1>
+        {wishlist.creator_name && (
+          <p className="text-sm text-muted-foreground mb-2">
+            {t('publicWishlist.createdBy')} {wishlist.creator_name}
+          </p>
+        )}
         {wishlist.description && (
           <p className="text-muted-foreground text-lg">
             {wishlist.description}

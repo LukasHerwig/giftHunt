@@ -84,7 +84,11 @@ export const TakenItemsCard = ({
 
                   {wishlist?.enable_links && item.link && (
                     <a
-                      href={item.link}
+                      href={
+                        item.link.startsWith('http')
+                          ? item.link
+                          : `https://${item.link}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-primary hover:underline flex items-center gap-1 mb-2">

@@ -106,6 +106,7 @@
     "accessNotAvailable": "Åtkomst Inte Tillgänglig",
     "requiresShareLink": "Denna önskelista kräver en giltig delningslänk för åtkomst",
     "invalidShareLink": "Delningslänken är ogiltig, utgången eller har inaktiverats",
+    "createdBy": "Skapad av",
     "noItemsYet": "Inga önskningar i denna lista än",
     "taken": "Tagen",
     "illGetThis": "Jag tar den här!",
@@ -324,7 +325,8 @@
     "available": "Tillgängliga",
     "taken": "Tagna",
     "untakeItem": "Ångra reservering",
-    "untaking": "Ångrar reservering..."
+    "untaking": "Ångrar reservering...",
+    "createdBy": "Skapad av"
   },
   "profile": {
     "title": "Profil",

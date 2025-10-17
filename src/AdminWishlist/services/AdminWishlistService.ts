@@ -1,6 +1,18 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Wishlist, WishlistItem } from '../types';
 
+interface WishlistWithProfile {
+  id: string;
+  title: string;
+  description: string | null;
+  enable_links: boolean | null;
+  enable_price: boolean | null;
+  enable_priority: boolean | null;
+  profiles: {
+    full_name: string | null;
+  } | null;
+}
+
 export class AdminWishlistService {
   static async checkAdminAccess(wishlistId: string): Promise<boolean> {
     const {
@@ -26,13 +38,30 @@ export class AdminWishlistService {
     const { data, error } = await supabase
       .from('wishlists')
       .select(
-        'id, title, description, enable_links, enable_price, enable_priority'
+        `
+        id, 
+        title, 
+        description, 
+        enable_links, 
+        enable_price, 
+        enable_priority,
+        profiles!creator_id (
+          full_name
+        )
+        `
       )
       .eq('id', wishlistId)
       .single();
 
     if (error) throw error;
-    return data;
+
+    // Transform the data to flatten the creator name
+    const wishlistWithProfile = data as WishlistWithProfile;
+    const { profiles, ...wishlistData } = wishlistWithProfile;
+    return {
+      ...wishlistData,
+      creator_name: profiles?.full_name || null,
+    };
   }
 
   static async getWishlistItems(wishlistId: string): Promise<WishlistItem[]> {

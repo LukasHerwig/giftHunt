@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAdminWishlist } from './hooks/useAdminWishlist';
 import { LoadingState } from './components/LoadingState';
 import { AccessDeniedState } from './components/AccessDeniedState';
@@ -10,6 +11,7 @@ import { TakenItemsCard } from './components/TakenItemsCard';
 import { UntakeItemDialog } from './components/UntakeItemDialog';
 
 const AdminWishlist = () => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const {
     wishlist,
@@ -49,6 +51,15 @@ const AdminWishlist = () => {
       <main className="container mx-auto px-4 py-4 max-w-4xl">
         {/* Share Link Info */}
         {shareLink && <ShareLinkInfo shareLink={shareLink} />}
+
+        <div className="mt-4 mb-6">
+          <h1 className="text-2xl font-bold">{wishlist.title}</h1>
+          {wishlist.creator_name && (
+            <p className="text-lg text-muted-foreground mt-1">
+              {t('adminWishlist.createdBy')} {wishlist.creator_name}
+            </p>
+          )}
+        </div>
 
         {/* Summary Stats */}
         <SummaryStats items={items} />

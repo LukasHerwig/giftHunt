@@ -1,6 +1,17 @@
 import { supabase } from '@/integrations/supabase/client';
 import { WishlistItem, Wishlist, ShareLink, ClaimItemData } from '../types';
 
+interface WishlistWithProfile {
+  title: string;
+  description: string | null;
+  enable_links: boolean | null;
+  enable_price: boolean | null;
+  enable_priority: boolean | null;
+  profiles: {
+    full_name: string | null;
+  } | null;
+}
+
 export class PublicWishlistService {
   static async loadWishlistByToken(token: string): Promise<{
     wishlist: Wishlist;
@@ -32,11 +43,33 @@ export class PublicWishlistService {
     // Load wishlist info
     const { data: wishlistData, error: wishlistError } = await supabase
       .from('wishlists')
-      .select('title, description, enable_links, enable_price, enable_priority')
+      .select(
+        `
+        title, 
+        description, 
+        enable_links, 
+        enable_price, 
+        enable_priority,
+        profiles!creator_id (
+          full_name
+        )
+      `
+      )
       .eq('id', shareLinkData.wishlist_id)
       .single();
 
     if (wishlistError) throw wishlistError;
+
+    // Transform the data to match our interface
+    const wishlistWithProfile = wishlistData as WishlistWithProfile;
+    const wishlist: Wishlist = {
+      title: wishlistWithProfile.title,
+      description: wishlistWithProfile.description,
+      enable_links: wishlistWithProfile.enable_links,
+      enable_price: wishlistWithProfile.enable_price,
+      enable_priority: wishlistWithProfile.enable_priority,
+      creator_name: wishlistWithProfile.profiles?.full_name || null,
+    };
 
     // Load all items (but hide who took what from public users)
     const { data: itemsData, error: itemsError } = await supabase
@@ -49,7 +82,7 @@ export class PublicWishlistService {
     if (itemsError) throw itemsError;
 
     return {
-      wishlist: wishlistData,
+      wishlist: wishlist,
       items: itemsData || [],
       shareLink: shareLinkData,
     };
