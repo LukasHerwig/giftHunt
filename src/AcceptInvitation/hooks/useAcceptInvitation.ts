@@ -5,7 +5,7 @@ import { AcceptInvitationState } from '../types';
 
 export const useAcceptInvitation = (token: string | null) => {
   const navigate = useNavigate();
-  
+
   const [state, setState] = useState<AcceptInvitationState>({
     loading: true,
     error: null,
@@ -16,7 +16,7 @@ export const useAcceptInvitation = (token: string | null) => {
 
   useEffect(() => {
     if (!token) {
-      setState(prev => ({
+      setState((prev) => ({
         ...prev,
         error: 'Invalid invitation link',
         loading: false,
@@ -26,11 +26,13 @@ export const useAcceptInvitation = (token: string | null) => {
 
     const checkInvitation = async () => {
       try {
-        setState(prev => ({ ...prev, loading: true, error: null }));
+        setState((prev) => ({ ...prev, loading: true, error: null }));
 
         // Get the basic invitation data
-        const invitation = await AcceptInvitationService.getInvitationByToken(token);
-        
+        const invitation = await AcceptInvitationService.getInvitationByToken(
+          token
+        );
+
         // Validate the invitation
         AcceptInvitationService.validateInvitation(invitation);
 
@@ -48,7 +50,7 @@ export const useAcceptInvitation = (token: string | null) => {
           wishlistInfo
         );
 
-        setState(prev => ({
+        setState((prev) => ({
           ...prev,
           invitationValid: true,
           invitationData,
@@ -56,20 +58,20 @@ export const useAcceptInvitation = (token: string | null) => {
           loading: false,
         }));
 
-        // If user is logged in, redirect to dashboard so they can see the invitation
+        // If user is logged in, redirect to home page so they can see the invitation
         if (currentUser) {
           AcceptInvitationService.storeInvitationToken(token);
-          navigate('/dashboard');
+          navigate('/');
           return;
         }
-
       } catch (error) {
         console.error('Error checking invitation:', error);
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : 'Unable to verify invitation';
-        
-        setState(prev => ({
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Unable to verify invitation';
+
+        setState((prev) => ({
           ...prev,
           error: errorMessage,
           loading: false,

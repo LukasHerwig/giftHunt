@@ -1,6 +1,19 @@
+import nodemailer from 'npm:nodemailer@6.9.10';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+// Gmail SMTP configuration
+const GMAIL_USER = Deno.env.get('GMAIL_USER'); // wishly.the.wishlist.app@gmail.com
+const GMAIL_APP_PASSWORD = Deno.env.get('GMAIL_APP_PASSWORD'); // Gmail app password
+
+const transport = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  auth: {
+    user: GMAIL_USER,
+    pass: GMAIL_APP_PASSWORD,
+  },
+});
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,14 +27,38 @@ serve(async (req: Request) => {
   }
 
   try {
+    console.log(
+      'Function called, Gmail credentials available:',
+      !!GMAIL_USER && !!GMAIL_APP_PASSWORD
+    );
+
     const { email, invitationLink, wishlistTitle, inviterName } =
       await req.json();
 
+    console.log('Request data:', {
+      email,
+      invitationLink,
+      wishlistTitle,
+      inviterName,
+    });
+
     if (!email || !invitationLink || !wishlistTitle) {
+      console.log('Missing required fields');
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         {
           status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
+    if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
+      console.log('Gmail credentials not configured');
+      return new Response(
+        JSON.stringify({ error: 'Email service not configured' }),
+        {
+          status: 500,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         }
       );
@@ -79,34 +116,34 @@ serve(async (req: Request) => {
       </html>
     `;
 
-    const res = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-      },
-      body: JSON.stringify({
-        from: 'Wishly <wishly@yourdomain.com>',
-        to: [email],
-        subject: `🎁 You've been invited to help with ${wishlistTitle}!`,
-        html: emailHtml,
-      }),
+    // Send email using Gmail SMTP
+    await new Promise<void>((resolve, reject) => {
+      transport.sendMail(
+        {
+          from: `Wishly <${GMAIL_USER}>`,
+          to: email,
+          subject: `🎁 You've been invited to help with ${wishlistTitle}!`,
+          html: emailHtml,
+        },
+        (error: Error | null) => {
+          if (error) {
+            console.log('Gmail SMTP error:', error);
+            return reject(error);
+          }
+          resolve();
+        }
+      );
     });
 
-    if (res.ok) {
-      const data = await res.json();
-      return new Response(JSON.stringify(data), {
+    return new Response(
+      JSON.stringify({ message: 'Email sent successfully' }),
+      {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } else {
-      const error = await res.text();
-      return new Response(JSON.stringify({ error }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
+      }
+    );
   } catch (error) {
+    console.log('Function error:', error);
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(JSON.stringify({ error: errorMessage }), {
