@@ -200,13 +200,10 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
 
     setInviting(true);
     try {
-      const inviteLink = await ManageWishlistService.createAdminInvitation(
+      await ManageWishlistService.createAdminInvitation(
         wishlistId,
         inviteEmail
       );
-
-      // Copy to clipboard
-      await navigator.clipboard.writeText(inviteLink);
 
       toast.success(t('messages.invitationCreated'));
       setInviteEmail('');

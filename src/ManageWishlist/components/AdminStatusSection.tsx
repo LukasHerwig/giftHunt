@@ -12,7 +12,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import { WishlistAdmin, WishlistInvitation } from '../types';
 
 interface AdminStatusSectionProps {
@@ -31,6 +32,17 @@ export const AdminStatusSection = ({
   onRemoveAdmin,
 }: AdminStatusSectionProps) => {
   const { t } = useTranslation();
+
+  const handleCopyInviteLink = async (token: string) => {
+    try {
+      const inviteLink = `${window.location.origin}/accept-invitation?token=${token}`;
+      await navigator.clipboard.writeText(inviteLink);
+      toast.success(t('messages.inviteLinkCopied'));
+    } catch (error) {
+      console.error('Failed to copy invitation link:', error);
+      toast.error('Failed to copy link - please try again');
+    }
+  };
 
   if (admins.length === 0 && invitations.length === 0) {
     return null;
@@ -69,6 +81,15 @@ export const AdminStatusSection = ({
                     <span className="text-sm text-primary font-medium">
                       {t('manageWishlist.pending')}
                     </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() =>
+                        handleCopyInviteLink(invitation.invitation_token)
+                      }
+                      className="text-primary hover:text-primary/80">
+                      <Copy className="w-4 h-4" />
+                    </Button>
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
