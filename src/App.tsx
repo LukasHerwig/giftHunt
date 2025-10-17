@@ -7,10 +7,10 @@ import { AuthProvider } from '@/components/auth/AuthProvider';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
 import { AuthTester } from '@/components/AuthTester';
 import Index from './pages/Index';
-import Auth from './pages/Auth';
-import ManageWishlist from './pages/ManageWishlist';
-import AdminWishlist from './pages/AdminWishlist';
-import AcceptInvitation from './pages/AcceptInvitation';
+import Auth from './Auth';
+import ManageWishlist from './ManageWishlist';
+import AdminWishlist from './AdminWishlist';
+import AcceptInvitation from './AcceptInvitation';
 import PublicWishlist from './pages/PublicWishlist';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
@@ -37,7 +37,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
             {/* Temporary testing component - remove after testing */}
-            <AuthTester />
+            {/* <AuthTester /> */}
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>

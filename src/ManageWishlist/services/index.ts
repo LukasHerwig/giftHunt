@@ -1,0 +1,1 @@
+export { ManageWishlistService } from './ManageWishlistService';

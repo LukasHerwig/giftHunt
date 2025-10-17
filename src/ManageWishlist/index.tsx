@@ -1,0 +1,179 @@
+import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, Loader2 } from 'lucide-react';
+import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
+
+import { useManageWishlist } from './hooks';
+import {
+  AddItemDialog,
+  EditItemDialog,
+  InviteAdminDialog,
+  SettingsDialog,
+  AdminStatusSection,
+  WishlistItems,
+  ShareLinkWarning,
+} from './components';
+
+const ManageWishlist = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const {
+    // State
+    items,
+    wishlist,
+    setWishlist,
+    loading,
+    admins,
+    invitations,
+    hasActiveShareLink,
+
+    // Dialog states
+    dialogOpen,
+    setDialogOpen,
+    editDialogOpen,
+    setEditDialogOpen,
+    inviteDialogOpen,
+    setInviteDialogOpen,
+    settingsDialogOpen,
+    setSettingsDialogOpen,
+    deleteDialogOpen,
+    setDeleteDialogOpen,
+
+    // Form states
+    newItem,
+    setNewItem,
+    editingItem,
+    editItem,
+    setEditItem,
+    inviteEmail,
+    setInviteEmail,
+    settings,
+    setSettings,
+
+    // Loading states
+    adding,
+    updating,
+    inviting,
+    updatingSettings,
+
+    // Actions
+    handleAddItem,
+    handleEditItem,
+    handleUpdateItem,
+    handleDeleteItem,
+    handleInviteAdmin,
+    handleRemoveInvitation,
+    handleRemoveAdmin,
+    handleUpdateSettings,
+    handleDeleteWishlist,
+
+    // Utilities
+    formatUrl,
+    canInviteAdmin,
+  } = useManageWishlist(id);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <span className="ml-2">{t('manageWishlist.loading')}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      <AppHeader />
+      <PageSubheader
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="flex items-center">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('common.back')}
+            </Button>
+          </div>
+        }
+      />
+
+      <main className="container mx-auto px-4 py-8 max-w-3xl">
+        <ShareLinkWarning hasActiveShareLink={hasActiveShareLink} />
+
+        {(admins.length > 0 || invitations.length > 0) && (
+          <AdminStatusSection
+            admins={admins}
+            invitations={invitations}
+            hasActiveShareLink={hasActiveShareLink}
+            onRemoveInvitation={handleRemoveInvitation}
+            onRemoveAdmin={handleRemoveAdmin}
+          />
+        )}
+
+        <div className="mb-8 flex gap-4 justify-between">
+          <div className="flex gap-4">
+            <AddItemDialog
+              open={dialogOpen}
+              onOpenChange={setDialogOpen}
+              wishlist={wishlist}
+              newItem={newItem}
+              setNewItem={setNewItem}
+              onSubmit={handleAddItem}
+              adding={adding}
+            />
+
+            <EditItemDialog
+              open={editDialogOpen}
+              onOpenChange={setEditDialogOpen}
+              wishlist={wishlist}
+              editItem={editItem}
+              setEditItem={setEditItem}
+              onSubmit={handleUpdateItem}
+              updating={updating}
+            />
+
+            <InviteAdminDialog
+              open={inviteDialogOpen}
+              onOpenChange={setInviteDialogOpen}
+              canInviteAdmin={canInviteAdmin}
+              inviteEmail={inviteEmail}
+              setInviteEmail={setInviteEmail}
+              onSubmit={handleInviteAdmin}
+              inviting={inviting}
+            />
+          </div>
+
+          <SettingsDialog
+            open={settingsDialogOpen}
+            onOpenChange={setSettingsDialogOpen}
+            wishlist={wishlist}
+            setWishlist={setWishlist}
+            settings={settings}
+            setSettings={setSettings}
+            onSubmit={handleUpdateSettings}
+            onDeleteWishlist={handleDeleteWishlist}
+            updatingSettings={updatingSettings}
+            deleteDialogOpen={deleteDialogOpen}
+            setDeleteDialogOpen={setDeleteDialogOpen}
+          />
+        </div>
+
+        <WishlistItems
+          items={items}
+          wishlist={wishlist}
+          hasActiveShareLink={hasActiveShareLink}
+          onEditItem={handleEditItem}
+          onDeleteItem={handleDeleteItem}
+          formatUrl={formatUrl}
+        />
+      </main>
+    </div>
+  );
+};
+
+export default ManageWishlist;
