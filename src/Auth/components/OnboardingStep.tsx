@@ -70,7 +70,7 @@ export const OnboardingStep = ({
 
             <Button
               type="submit"
-              className="w-full h-12 text-base bg-gradient-to-r from-primary to-accent hover:opacity-90"
+              className="w-full h-12 text-base bg-primary hover:bg-primary/90"
               disabled={loading || !name.trim()}>
               {loading ? (
                 <>

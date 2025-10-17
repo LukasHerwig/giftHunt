@@ -125,7 +125,7 @@ export const CreateWishlistDialog = ({
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+            className="w-full bg-primary hover:bg-primary/90"
             disabled={creating}>
             {creating ? (
               <>

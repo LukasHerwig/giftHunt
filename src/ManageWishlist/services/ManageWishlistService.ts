@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { EmailService } from '@/lib/EmailService';
 import {
   WishlistItem,
   Wishlist,
@@ -180,7 +181,37 @@ export class ManageWishlistService {
       throw error;
     }
 
-    return `${window.location.origin}/accept-invitation?token=${token}`;
+    const invitationLink = `${window.location.origin}/accept-invitation?token=${token}`;
+
+    // Send invitation email
+    try {
+      // Get wishlist details for the email
+      const { data: wishlistData } = await supabase
+        .from('wishlists')
+        .select('title')
+        .eq('id', wishlistId)
+        .single();
+
+      // Get inviter details for the email
+      const { data: inviterData } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      await EmailService.sendInvitationEmail(
+        email.trim(),
+        invitationLink,
+        wishlistData?.title || 'Wishlist',
+        inviterData?.full_name || undefined
+      );
+    } catch (emailError) {
+      console.error('Failed to send invitation email:', emailError);
+      // Don't throw here - the invitation was created successfully
+      // The user can still manually share the link
+    }
+
+    return invitationLink;
   }
 
   /**

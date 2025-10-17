@@ -101,7 +101,7 @@ export const PersonalInformationCard = ({
             <Button
               type="submit"
               disabled={saving || !fullName.trim()}
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+              className="bg-primary hover:bg-primary/90">
               {saving ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

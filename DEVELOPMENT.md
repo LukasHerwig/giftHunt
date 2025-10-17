@@ -1,4 +1,4 @@
-# Wishlist App Development Workflow
+# Wishly App Development Workflow
 
 ## Overview
 
