@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Plus, Loader2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Wishlist, ItemFormData } from '../types';
 
 interface AddItemDialogProps {
@@ -41,15 +42,16 @@ export const AddItemDialog = ({
   adding,
 }: AddItemDialogProps) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button
-          size="lg"
-          className="w-full sm:w-auto bg-gradient-to-r from-primary to-accent hover:opacity-90">
-          <Plus className="w-5 h-5 mr-2" />
-          {t('manageWishlist.addItem')}
+          size={isMobile ? 'default' : 'lg'}
+          className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+          <Plus className="w-5 h-5" />
+          <span className="ml-2">{t('manageWishlist.addItem')}</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

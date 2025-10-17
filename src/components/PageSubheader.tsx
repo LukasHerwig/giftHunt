@@ -5,6 +5,7 @@ interface PageSubheaderProps {
   description?: string;
   children?: ReactNode;
   actions?: ReactNode;
+  trailing?: ReactNode;
 }
 
 const PageSubheader = ({
@@ -12,6 +13,7 @@ const PageSubheader = ({
   description,
   children,
   actions,
+  trailing,
 }: PageSubheaderProps) => {
   return (
     <div className="container mx-auto px-4 py-4">
@@ -24,6 +26,7 @@ const PageSubheader = ({
           )}
         </div>
         {children}
+        {trailing}
       </div>
     </div>
   );

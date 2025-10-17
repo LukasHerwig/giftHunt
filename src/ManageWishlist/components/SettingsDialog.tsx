@@ -24,6 +24,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Settings, Loader2, Trash2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Wishlist, SettingsFormData } from '../types';
 
 interface SettingsDialogProps {
@@ -54,13 +55,18 @@ export const SettingsDialog = ({
   setDeleteDialogOpen,
 }: SettingsDialogProps) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="lg" className="w-full sm:w-auto">
-          <Settings className="w-5 h-5 mr-2" />
-          {t('manageWishlist.settings')}
+        <Button variant="outline" size={isMobile ? 'default' : 'lg'}>
+          <Settings className="w-5 h-5" />
+          {!isMobile && (
+            <>
+              <span className="ml-2">{t('manageWishlist.settings')}</span>
+            </>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent>

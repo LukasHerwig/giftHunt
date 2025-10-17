@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
 
@@ -20,6 +21,7 @@ const ManageWishlist = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   const {
     // State
@@ -95,9 +97,26 @@ const ManageWishlist = () => {
               variant="ghost"
               onClick={() => navigate('/')}
               className="flex items-center">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              {t('common.back')}
+              <ArrowLeft className="w-4 h-4" />
+              <span className="ml-2">{t('common.back')}</span>
             </Button>
+          </div>
+        }
+        trailing={
+          <div className="flex gap-2">
+            <SettingsDialog
+              open={settingsDialogOpen}
+              onOpenChange={setSettingsDialogOpen}
+              wishlist={wishlist}
+              setWishlist={setWishlist}
+              settings={settings}
+              setSettings={setSettings}
+              onSubmit={handleUpdateSettings}
+              onDeleteWishlist={handleDeleteWishlist}
+              updatingSettings={updatingSettings}
+              deleteDialogOpen={deleteDialogOpen}
+              setDeleteDialogOpen={setDeleteDialogOpen}
+            />
           </div>
         }
       />
@@ -115,8 +134,11 @@ const ManageWishlist = () => {
           />
         )}
 
-        <div className="mb-8 flex gap-4 justify-between">
-          <div className="flex gap-4">
+        <div
+          className={`mb-8 flex gap-2 ${
+            isMobile ? 'flex-wrap' : 'justify-between'
+          }`}>
+          <div className={`flex gap-2 ${isMobile ? 'flex-wrap flex-1' : ''}`}>
             <AddItemDialog
               open={dialogOpen}
               onOpenChange={setDialogOpen}
@@ -147,20 +169,6 @@ const ManageWishlist = () => {
               inviting={inviting}
             />
           </div>
-
-          <SettingsDialog
-            open={settingsDialogOpen}
-            onOpenChange={setSettingsDialogOpen}
-            wishlist={wishlist}
-            setWishlist={setWishlist}
-            settings={settings}
-            setSettings={setSettings}
-            onSubmit={handleUpdateSettings}
-            onDeleteWishlist={handleDeleteWishlist}
-            updatingSettings={updatingSettings}
-            deleteDialogOpen={deleteDialogOpen}
-            setDeleteDialogOpen={setDeleteDialogOpen}
-          />
         </div>
 
         <WishlistItems

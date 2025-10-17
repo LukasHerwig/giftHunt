@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { UserPlus, Loader2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface InviteAdminDialogProps {
   open: boolean;
@@ -31,15 +32,16 @@ export const InviteAdminDialog = ({
   inviting,
 }: InviteAdminDialogProps) => {
   const { t } = useTranslation();
+  const isMobile = useIsMobile();
 
   if (!canInviteAdmin) return null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="lg" className="w-full sm:w-auto">
-          <UserPlus className="w-5 h-5 mr-2" />
-          {t('manageWishlist.inviteAdmin')}
+        <Button variant="outline" size={isMobile ? 'default' : 'lg'}>
+          <UserPlus className="w-5 h-5" />
+          <span className="ml-2">{t('manageWishlist.inviteAdmin')}</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

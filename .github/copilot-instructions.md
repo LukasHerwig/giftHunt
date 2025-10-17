@@ -71,7 +71,69 @@ FOR SELECT USING (
 );
 ```
 
-## 🎯 Component Architecture
+## �️ Feature-Based Architecture
+
+This application follows a **feature-based architecture** where code is organized by business features rather than technical concerns. Each feature is self-contained with its own components, services, hooks, and types.
+
+### Feature Structure
+
+```
+src/
+├── FeatureName/
+│   ├── components/          # UI components specific to this feature
+│   │   ├── Component1.tsx
+│   │   ├── Component2.tsx
+│   │   └── index.ts        # Component exports
+│   ├── hooks/              # Custom hooks for state management
+│   │   └── useFeature.ts
+│   ├── services/           # Business logic and API operations
+│   │   └── FeatureService.ts
+│   ├── types/              # TypeScript interfaces
+│   │   └── index.ts
+│   ├── index.tsx           # Main feature component
+│   └── README.md           # Feature documentation
+├── components/             # Shared/system components
+├── pages/                  # System pages (404, etc.)
+└── lib/                    # Utilities and configurations
+```
+
+### Current Features
+
+- **ManageWishlist** - Wishlist management with items, admins, settings
+- **Dashboard** - Main app dashboard with wishlists overview
+- **AdminWishlist** - Admin view for wishlist oversight
+- **AcceptInvitation** - Invitation acceptance workflow
+- **PublicWishlist** - Public-facing wishlist view with item claiming
+- **Profile** - User profile management
+- **Auth** - Authentication state management
+
+### Feature Development Guidelines
+
+1. **Separation of Concerns**: Each feature contains only related functionality
+2. **Self-Contained**: Features should be independent and reusable
+3. **Consistent Structure**: All features follow the same organizational pattern
+4. **Service Layer**: Business logic isolated in service classes
+5. **Custom Hooks**: State management centralized in feature-specific hooks
+6. **Component Composition**: Break complex UIs into focused components
+7. **Type Safety**: Comprehensive TypeScript interfaces for all data
+
+### When to Create a New Feature
+
+✅ **Create a feature folder when:**
+
+- Building a distinct business capability
+- Component will have multiple sub-components
+- Requires its own state management
+- Has specific business logic/services
+- Will be reused or extended
+
+❌ **Keep in shared locations when:**
+
+- Simple utility components
+- System/infrastructure components (404 pages, error boundaries)
+- Single-purpose components without complex logic
+
+## �🎯 Component Architecture
 
 ### Dialog Components Pattern
 
@@ -233,10 +295,13 @@ if (error) throw error;
 
 ### Code Organization
 
-- **Component files**: One component per file
-- **Hooks**: Extract reusable logic into custom hooks
-- **Utils**: Shared utilities in `/lib` directory
-- **Types**: Database types in `/integrations/supabase/types.ts`
+- **Feature-based structure**: Organize by business features, not technical concerns
+- **Component files**: One component per file within feature folders
+- **Hooks**: Custom hooks in feature `hooks/` directories for state management
+- **Services**: Business logic in feature `services/` directories
+- **Types**: Feature-specific types in feature `types/` directories
+- **Shared utilities**: Common utilities in `/lib` directory
+- **Database types**: Global types in `/integrations/supabase/types.ts`
 
 ### Error Handling
 

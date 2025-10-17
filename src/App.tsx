@@ -6,13 +6,13 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
 import { AuthTester } from '@/components/AuthTester';
-import Index from './pages/Index';
+import Dashboard from './Dashboard';
 import Auth from './Auth';
 import ManageWishlist from './ManageWishlist';
 import AdminWishlist from './AdminWishlist';
 import AcceptInvitation from './AcceptInvitation';
-import PublicWishlist from './pages/PublicWishlist';
-import Profile from './pages/Profile';
+import PublicWishlist from './PublicWishlist';
+import Profile from './Profile';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -26,7 +26,7 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Dashboard />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/wishlist/:id/manage" element={<ManageWishlist />} />
