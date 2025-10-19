@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { getBaseUrl } from '@/lib/urlUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
@@ -35,7 +36,7 @@ export const AdminStatusSection = ({
 
   const handleCopyInviteLink = async (token: string) => {
     try {
-      const inviteLink = `${window.location.origin}/accept-invitation?token=${token}`;
+      const inviteLink = `${getBaseUrl()}/accept-invitation?token=${token}`;
       await navigator.clipboard.writeText(inviteLink);
       toast.success(t('messages.inviteLinkCopied'));
     } catch (error) {

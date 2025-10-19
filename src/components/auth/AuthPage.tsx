@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/integrations/supabase/client';
+import { getBaseUrl } from '@/lib/urlUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -50,7 +51,7 @@ export const AuthPage = () => {
         toast.success(t('auth.welcomeBackSuccess'));
         navigate('/');
       } else {
-        const redirectUrl = `${window.location.origin}/`;
+        const redirectUrl = `${getBaseUrl()}/`;
         const { error } = await supabase.auth.signUp({
           email,
           password,
