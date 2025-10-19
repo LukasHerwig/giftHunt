@@ -223,6 +223,91 @@ console.log('Query result:', { data, error });
 4. **Make changes**: Always test locally first
 5. **Migration changes**: Create migration files for schema changes
 
+## 🌐 Switching Between Local and Production Environments
+
+To safely develop and test against either your local Supabase database or the production (remote) Supabase instance, use the following workflow:
+
+### Quick Environment Switching with NPM Scripts
+
+You can use these scripts for fast switching and running the dev server:
+
+- **Local DB:**
+
+  ```bash
+  npm run dev:local
+  ```
+
+  Switches to your local DB and starts the dev server in one step.
+
+- **Production DB:**
+  ```bash
+  npm run dev:prod
+  ```
+  Switches to your production DB and starts the dev server in one step.
+
+Manual steps are still available below if you want more control.
+
+### Switching to Local Development (Local DB)
+
+1. **Ensure `.env.local` exists** with your local Supabase settings (URL: `http://127.0.0.1:54321`).
+2. **If you are currently using production**, restore your local environment:
+
+```bash
+mv .env.local.backup .env.local 2>/dev/null || echo "Already using local"
+```
+
+3. **Start local Supabase** (if not running):
+
+```bash
+npx supabase start
+```
+
+4. **Start the dev server:**
+
+```bash
+npm run dev
+```
+
+5. **Visual indicator:** You should see the orange banner "🚧 LOCAL DEVELOPMENT MODE" in the app.
+
+### Switching to Production (Remote DB)
+
+1. **Backup your local env and switch to production:**
+
+```bash
+mv .env.local .env.local.backup 2>/dev/null || echo "Already using production"
+```
+
+2. **Start the dev server:**
+
+```bash
+npm run dev
+```
+
+3. **Visual indicator:** The orange banner will be gone. The app is now using the production Supabase instance.
+
+### How to Check Which Environment is Active
+
+- **Banner:** Orange banner = local, no banner = production
+- **Console:**
+  ```js
+  console.log(import.meta.env.VITE_SUPABASE_URL);
+  // Local: http://127.0.0.1:54321
+  // Production: https://pjiofxvhzcengexymoms.supabase.co
+  ```
+- **Network tab:** API calls go to `127.0.0.1:54321` (local) or `pjiofxvhzcengexymoms.supabase.co` (production)
+
+### Safety Tips
+
+- **Never push migrations directly to production.**
+- **Always test locally first.**
+- **Switch back to local after testing production:**
+  ```bash
+  mv .env.local.backup .env.local
+  ```
+
+See `DEVELOPMENT.md` for more details and troubleshooting.
+
 ### Feature Branch Deployment
 
 1. **Local testing**: Complete all testing in local environment
@@ -261,6 +346,55 @@ const { data, error } = await supabase
 // Good: Error handling
 if (error) throw error;
 ```
+
+## 🌐 Base URL, Invitation Link, and GitHub Pages Deployment Handling
+
+### Base URL Management
+
+- **Always use a centralized utility** for generating the app's base URL. In this project, use `getBaseUrl()` from `src/lib/urlUtils.ts`.
+- The base URL is determined by the `VITE_APP_BASE_URL` environment variable, with a fallback to `window.location.origin` for local development.
+- **Never hardcode URLs**—always use the utility to ensure correct paths in all environments (local, production, GitHub Pages).
+
+### Invitation Link Generation
+
+- **All invitation links** (for emails, sharing, etc.) must be generated using `getBaseUrl()` to ensure the `/giftHunt/` base path is included in production.
+- Example:
+  ```ts
+  const invitationLink = `${getBaseUrl()}/accept-invitation?token=${token}`;
+  ```
+- The invitation link is passed to the Supabase Edge Function, which uses it directly in the email template.
+- **Do not generate or modify the base URL in the Edge Function**—it should always receive the full, correct link from the client.
+
+### Email Template Handling
+
+- The Edge Function (`supabase/functions/send-invitation/index.ts`) receives the full invitation link and inserts it into the email template.
+- The email template uses the provided link for the "Accept Invitation" button. No further modification is needed in the function.
+
+### GitHub Pages Deployment & Environment Variables
+
+- **Set the `VITE_APP_BASE_URL` repository variable** in GitHub to the full production URL (e.g., `https://lukasherwig.github.io/giftHunt`).
+- Steps:
+  1. Go to your GitHub repository → Settings → Secrets and variables → Actions → Variables
+  2. Add a variable:
+     - Name: `VITE_APP_BASE_URL`
+     - Value: `https://lukasherwig.github.io/giftHunt`
+- The GitHub Actions workflow will use this variable for production builds, ensuring all links are correct.
+
+### Testing and Verification
+
+- After deployment, always test:
+  - Invitation emails (check that links include `/giftHunt/` and work in production)
+  - Shared/public wishlist links
+  - Navigation and redirects
+- If links are broken or missing the base path, verify the environment variable and that all code uses `getBaseUrl()`.
+
+### Summary Checklist
+
+- [x] All URLs generated with `getBaseUrl()`
+- [x] `VITE_APP_BASE_URL` set in GitHub repository variables
+- [x] Edge Function receives and uses full invitation link
+- [x] Email template uses provided link directly
+- [x] All deployments tested for correct link behavior
 
 ### Authentication
 

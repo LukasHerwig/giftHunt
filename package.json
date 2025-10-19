@@ -6,6 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "mv .env.local.backup .env.local 2>/dev/null || echo 'Already using local' && vite",
+    "dev:prod": "mv .env.local .env.local.backup 2>/dev/null || echo 'Already using production' && vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "build:pages": "vite build --mode production",
