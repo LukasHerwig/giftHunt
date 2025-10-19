@@ -190,6 +190,28 @@
     "updateButton": "Uppdatera Önskning",
     "updating": "Uppdaterar..."
   },
+  "editLimitedDialog": {
+    "title": "Redigera Önskning",
+    "description": "Uppdatera denna önskning. Vissa fält kan inte ändras medan önskelistan har en aktiv delningslänk.",
+    "titleLabel": "Titel",
+    "titleReadonlyNote": "Titel kan inte ändras medan önskelistan har en aktiv delningslänk",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Beskriv önskningen (valfritt)",
+    "linkLabel": "Länk",
+    "linkPlaceholder": "Länk till önskningen (valfritt)",
+    "linkReadonlyNote": "Länk kan inte ändras när den är inställd medan önskelistan har en aktiv delningslänk",
+    "linkAddNote": "Du kan lägga till en länk nu, men när den är tillagd kan den inte ändras medan delningslänken är aktiv",
+    "priceLabel": "Prisintervall",
+    "pricePlaceholder": "t.ex. 500-1000 kr, Under 250 kr (valfritt)",
+    "priceReadonlyNote": "Prisintervall kan inte ändras när det är inställt medan önskelistan har en aktiv delningslänk",
+    "priceAddNote": "Du kan lägga till ett prisintervall nu, men när det är tillagt kan det inte ändras medan delningslänken är aktiv",
+    "priorityLabel": "Prioritet",
+    "priorityPlaceholder": "Välj prioritet (valfritt)",
+    "priorityReadonlyNote": "Prioritet kan inte ändras när den är inställd medan önskelistan har en aktiv delningslänk",
+    "priorityAddNote": "Du kan lägga till en prioritet nu, men när den är tillagd kan den inte ändras medan delningslänken är aktiv",
+    "updateButton": "Uppdatera Önskning",
+    "updating": "Uppdaterar..."
+  },
   "inviteDialog": {
     "title": "Bjud in Admin",
     "description": "Bjud in någon att hjälpa till att hantera din önskelista och dela den med andra",
@@ -278,6 +300,7 @@
     "shareLinkActive": "Denna önskelista har en aktiv delningslänk och redigering är begränsad",
     "editingRestricted": "Redigering och borttagning av föremål är inaktiverat när en delningslänk är aktiv",
     "editDisabledTooltip": "Redigering är inaktiverat medan önskelistan har en aktiv delningslänk",
+    "editDescriptionOnlyTooltip": "Endast beskrivning kan redigeras medan önskelistan har en aktiv delningslänk",
     "deleteDisabledTooltip": "Borttagning är inaktiverat medan önskelistan har en aktiv delningslänk",
     "itemUntaken": "Föremål är nu tillgängligt igen",
     "failedToUntakeItem": "Misslyckades att ångra reservering"

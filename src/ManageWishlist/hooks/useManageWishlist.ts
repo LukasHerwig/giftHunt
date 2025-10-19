@@ -29,6 +29,8 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
   // Dialog states
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editDescriptionDialogOpen, setEditDescriptionDialogOpen] =
+    useState(false);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -50,6 +52,15 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     priceRange: '',
     priority: null,
   });
+
+  const [editingDescriptionItem, setEditingDescriptionItem] =
+    useState<WishlistItem | null>(null);
+  const [editDescription, setEditDescription] = useState('');
+  const [editLinkLimited, setEditLinkLimited] = useState('');
+  const [editPriceRangeLimited, setEditPriceRangeLimited] = useState('');
+  const [editPriorityLimited, setEditPriorityLimited] = useState<number | null>(
+    null
+  );
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [settings, setSettings] = useState<SettingsFormData>({
@@ -190,6 +201,53 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
       toast.success(t('messages.itemDeleted'));
     } catch (error: unknown) {
       toast.error(t('messages.failedToDelete'));
+    }
+  };
+
+  const handleEditDescriptionOnly = (item: WishlistItem) => {
+    setEditingDescriptionItem(item);
+    setEditDescription(item.description || '');
+    setEditLinkLimited(item.link || ''); // Initialize with current link or empty
+    setEditPriceRangeLimited(item.price_range || ''); // Initialize with current price range or empty
+    setEditPriorityLimited(item.priority || null); // Initialize with current priority or null
+    setEditDescriptionDialogOpen(true);
+  };
+
+  const handleUpdateDescriptionOnly = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingDescriptionItem) {
+      return;
+    }
+
+    setUpdating(true);
+    try {
+      const data = await ManageWishlistService.updateItem(
+        editingDescriptionItem.id,
+        {
+          title: editingDescriptionItem.title,
+          description: editDescription.trim() || null,
+          link: editLinkLimited.trim() || null, // Use the link from the form, allowing updates only if originally empty
+          price_range: editPriceRangeLimited.trim() || null, // Use the price range from the form, allowing updates only if originally empty
+          priority: editPriorityLimited, // Use the priority from the form, allowing updates only if originally empty
+        }
+      );
+
+      setItems(
+        items.map((item) =>
+          item.id === editingDescriptionItem.id ? data : item
+        )
+      );
+      setEditDescriptionDialogOpen(false);
+      setEditingDescriptionItem(null);
+      setEditDescription('');
+      setEditLinkLimited('');
+      setEditPriceRangeLimited('');
+      setEditPriorityLimited(null);
+      toast.success(t('messages.itemUpdated'));
+    } catch (error: unknown) {
+      toast.error(t('messages.failedToUpdate'));
+    } finally {
+      setUpdating(false);
     }
   };
 
@@ -341,6 +399,8 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     setDialogOpen,
     editDialogOpen,
     setEditDialogOpen,
+    editDescriptionDialogOpen,
+    setEditDescriptionDialogOpen,
     inviteDialogOpen,
     setInviteDialogOpen,
     settingsDialogOpen,
@@ -354,6 +414,15 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     editingItem,
     editItem,
     setEditItem,
+    editingDescriptionItem,
+    editDescription,
+    setEditDescription,
+    editLinkLimited,
+    setEditLinkLimited,
+    editPriceRangeLimited,
+    setEditPriceRangeLimited,
+    editPriorityLimited,
+    setEditPriorityLimited,
     inviteEmail,
     setInviteEmail,
     settings,
@@ -369,6 +438,8 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     handleAddItem,
     handleEditItem,
     handleUpdateItem,
+    handleEditDescriptionOnly,
+    handleUpdateDescriptionOnly,
     handleDeleteItem,
     handleInviteAdmin,
     handleRemoveInvitation,

@@ -26,6 +26,7 @@ interface WishlistItemsProps {
   wishlist: Wishlist | null;
   hasActiveShareLink: boolean;
   onEditItem: (item: WishlistItem) => void;
+  onEditDescriptionOnly?: (item: WishlistItem) => void;
   onDeleteItem: (itemId: string) => Promise<void>;
   formatUrl: (url: string) => string;
 }
@@ -35,6 +36,7 @@ export const WishlistItems = ({
   wishlist,
   hasActiveShareLink,
   onEditItem,
+  onEditDescriptionOnly,
   onDeleteItem,
   formatUrl,
 }: WishlistItemsProps) => {
@@ -133,22 +135,20 @@ export const WishlistItems = ({
                 )}
               </div>
               <div className="flex gap-1">
-                {/* Edit button with conditional tooltip */}
+                {/* Edit button with conditional functionality */}
                 {hasActiveShareLink ? (
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <span onClick={handleDisabledEditClick}>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          disabled={hasActiveShareLink}
-                          className="text-muted-foreground hover:text-foreground flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onEditDescriptionOnly?.(item)}
+                        className="text-muted-foreground hover:text-foreground flex-shrink-0">
+                        <Edit className="w-4 h-4" />
+                      </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{t('messages.editDisabledTooltip')}</p>
+                      <p>{t('messages.editDescriptionOnlyTooltip')}</p>
                     </TooltipContent>
                   </Tooltip>
                 ) : (
@@ -156,8 +156,7 @@ export const WishlistItems = ({
                     variant="ghost"
                     size="sm"
                     onClick={() => onEditItem(item)}
-                    disabled={hasActiveShareLink}
-                    className="text-muted-foreground hover:text-foreground flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed">
+                    className="text-muted-foreground hover:text-foreground flex-shrink-0">
                     <Edit className="w-4 h-4" />
                   </Button>
                 )}
