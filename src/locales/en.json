@@ -190,6 +190,28 @@
     "updateButton": "Update Item",
     "updating": "Updating..."
   },
+  "editLimitedDialog": {
+    "title": "Edit Item",
+    "description": "Update this item. Some fields cannot be changed while the wishlist has an active share link.",
+    "titleLabel": "Title",
+    "titleReadonlyNote": "Title cannot be changed while wishlist has an active share link",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Describe the item (optional)",
+    "linkLabel": "Link",
+    "linkPlaceholder": "Link to the item (optional)",
+    "linkReadonlyNote": "Link cannot be changed once set while wishlist has an active share link",
+    "linkAddNote": "You can add a link now, but once added it cannot be changed while the share link is active",
+    "priceLabel": "Price Range",
+    "pricePlaceholder": "e.g. $50-100, Under $25 (optional)",
+    "priceReadonlyNote": "Price range cannot be changed once set while wishlist has an active share link",
+    "priceAddNote": "You can add a price range now, but once added it cannot be changed while the share link is active",
+    "priorityLabel": "Priority",
+    "priorityPlaceholder": "Select priority (optional)",
+    "priorityReadonlyNote": "Priority cannot be changed once set while wishlist has an active share link",
+    "priorityAddNote": "You can add a priority now, but once added it cannot be changed while the share link is active",
+    "updateButton": "Update Item",
+    "updating": "Updating..."
+  },
   "inviteDialog": {
     "title": "Invite Admin",
     "description": "Invite someone to help manage your wishlist and share it with others",
@@ -277,6 +299,7 @@
     "shareLinkActive": "This wishlist has an active share link and editing is restricted",
     "editingRestricted": "Editing and deleting items is disabled when a share link is active",
     "editDisabledTooltip": "Editing is disabled while wishlist has an active share link",
+    "editDescriptionOnlyTooltip": "Only description can be edited while wishlist has an active share link",
     "deleteDisabledTooltip": "Deleting is disabled while wishlist has an active share link",
     "itemUntaken": "Item is now available again",
     "failedToUntakeItem": "Failed to untake item"

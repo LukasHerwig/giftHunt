@@ -10,6 +10,7 @@ import { useManageWishlist } from './hooks';
 import {
   AddItemDialog,
   EditItemDialog,
+  EditLimitedDialog,
   InviteAdminDialog,
   SettingsDialog,
   AdminStatusSection,
@@ -38,6 +39,8 @@ const ManageWishlist = () => {
     setDialogOpen,
     editDialogOpen,
     setEditDialogOpen,
+    editDescriptionDialogOpen,
+    setEditDescriptionDialogOpen,
     inviteDialogOpen,
     setInviteDialogOpen,
     settingsDialogOpen,
@@ -51,6 +54,15 @@ const ManageWishlist = () => {
     editingItem,
     editItem,
     setEditItem,
+    editingDescriptionItem,
+    editDescription,
+    setEditDescription,
+    editLinkLimited,
+    setEditLinkLimited,
+    editPriceRangeLimited,
+    setEditPriceRangeLimited,
+    editPriorityLimited,
+    setEditPriorityLimited,
     inviteEmail,
     setInviteEmail,
     settings,
@@ -66,6 +78,8 @@ const ManageWishlist = () => {
     handleAddItem,
     handleEditItem,
     handleUpdateItem,
+    handleEditDescriptionOnly,
+    handleUpdateDescriptionOnly,
     handleDeleteItem,
     handleInviteAdmin,
     handleRemoveInvitation,
@@ -159,6 +173,23 @@ const ManageWishlist = () => {
               updating={updating}
             />
 
+            <EditLimitedDialog
+              open={editDescriptionDialogOpen}
+              onOpenChange={setEditDescriptionDialogOpen}
+              item={editingDescriptionItem}
+              wishlist={wishlist}
+              description={editDescription}
+              setDescription={setEditDescription}
+              link={editLinkLimited}
+              setLink={setEditLinkLimited}
+              priceRange={editPriceRangeLimited}
+              setPriceRange={setEditPriceRangeLimited}
+              priority={editPriorityLimited}
+              setPriority={setEditPriorityLimited}
+              onSubmit={handleUpdateDescriptionOnly}
+              updating={updating}
+            />
+
             <InviteAdminDialog
               open={inviteDialogOpen}
               onOpenChange={setInviteDialogOpen}
@@ -176,6 +207,7 @@ const ManageWishlist = () => {
           wishlist={wishlist}
           hasActiveShareLink={hasActiveShareLink}
           onEditItem={handleEditItem}
+          onEditDescriptionOnly={handleEditDescriptionOnly}
           onDeleteItem={handleDeleteItem}
           formatUrl={formatUrl}
         />

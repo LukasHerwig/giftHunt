@@ -257,6 +257,16 @@ export class ManageWishlistService {
       console.error('Error removing share links:', shareLinkError);
     }
 
+    // Untake all items in this wishlist and clear taken_by_name and taken_at
+    const { error: untakeError } = await supabase
+      .from('wishlist_items')
+      .update({ is_taken: false, taken_by_name: null, taken_at: null })
+      .eq('wishlist_id', wishlistId)
+      .eq('is_taken', true);
+    if (untakeError) {
+      console.error('Error untaking items after admin removal:', untakeError);
+    }
+
     // Remove the admin record
     const { error: adminError } = await supabase
       .from('wishlist_admins')
