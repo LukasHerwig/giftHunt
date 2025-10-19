@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env.prod
+.env.production
+.env
+
 # Supabase local environment
 supabase/.env
 
