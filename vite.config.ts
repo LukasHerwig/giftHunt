@@ -19,4 +19,15 @@ export default defineConfig(({ mode }) => ({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    // Configure for GitHub Pages CSP compatibility
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+        inlineDynamicImports: true,
+      },
+    },
+    // Minimize CSP issues
+    cssCodeSplit: false,
+  },
 }));
