@@ -1,6 +1,6 @@
 {
-  "name": "wishly",
-  "description": "Wishly - A modern wishlist app for sharing gift ideas with friends and family",
+  "name": "gift-hunt",
+  "description": "GiftHunt - A modern wishlist app for sharing gift ideas with friends and family",
   "private": true,
   "version": "1.0.0",
   "type": "module",

@@ -2,7 +2,7 @@ import nodemailer from 'npm:nodemailer@6.9.10';
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
 // Gmail SMTP configuration
-const GMAIL_USER = Deno.env.get('GMAIL_USER'); // wishly.the.wishlist.app@gmail.com
+const GMAIL_USER = Deno.env.get('GMAIL_USER'); // GiftHunt.the.wishlist.app@gmail.com
 const GMAIL_APP_PASSWORD = Deno.env.get('GMAIL_APP_PASSWORD'); // Gmail app password
 
 const transport = nodemailer.createTransport({
@@ -77,7 +77,7 @@ serve(async (req: Request) => {
           <div style="background: rgba(255,255,255,0.2); width: 60px; height: 60px; border-radius: 15px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 15px;">
             <span style="font-size: 24px; color: white;">🎁</span>
           </div>
-          <h1 style="color: white; margin: 0; font-size: 28px;">Wishly</h1>
+          <h1 style="color: white; margin: 0; font-size: 28px;">GiftHunt</h1>
           <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Gift coordination made easy</p>
         </div>
         
@@ -120,7 +120,7 @@ serve(async (req: Request) => {
     await new Promise<void>((resolve, reject) => {
       transport.sendMail(
         {
-          from: `Wishly <${GMAIL_USER}>`,
+          from: `GiftHunt <${GMAIL_USER}>`,
           to: email,
           subject: `🎁 You've been invited to help with ${wishlistTitle}!`,
           html: emailHtml,

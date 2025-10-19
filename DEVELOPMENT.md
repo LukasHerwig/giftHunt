@@ -1,4 +1,4 @@
-# Wishly App Development Workflow
+# GiftHunt App Development Workflow
 
 ## Overview
 

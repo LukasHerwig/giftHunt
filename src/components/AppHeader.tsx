@@ -10,7 +10,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Gift, Menu, LogOut, Languages, User, Sparkles } from 'lucide-react';
+import {
+  Gift,
+  Menu,
+  LogOut,
+  Languages,
+  User,
+  Search,
+  Target,
+} from 'lucide-react';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -35,11 +43,13 @@ const AppHeader = () => {
         <div
           className="flex items-center gap-3 cursor-pointer"
           onClick={() => navigate('/')}>
-          <div className="w-10 h-10 rounded-xl bg-blue-400 flex items-center justify-center relative overflow-hidden">
-            <Gift className="w-5 h-5 text-white z-10" />
-            <Sparkles className="w-3 h-3 text-yellow-200 absolute top-1 right-1 animate-pulse" />
+          <div className="w-10 h-10 rounded-xl bg-blue-400 flex items-center justify-center relative overflow-hidden shadow-lg">
+            <Search className="w-8 h-8 text-white z-10" />
+            <div className="absolute inset-0 flex items-center justify-center -translate-x-0.5 -translate-y-0.5">
+              <Gift className="w-3 h-3 text-white animate-pulse z-20" />
+            </div>
           </div>
-          <h1 className="text-2xl font-bold">Wishly</h1>
+          <h1 className="text-2xl font-bold">GiftHunt</h1>
         </div>
 
         {/* Action buttons and Hamburger Menu */}
