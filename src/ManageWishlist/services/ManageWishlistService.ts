@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { EmailService } from '@/lib/EmailService';
+import { getBaseUrl } from '@/lib/urlUtils';
 import {
   WishlistItem,
   Wishlist,
@@ -181,7 +182,7 @@ export class ManageWishlistService {
       throw error;
     }
 
-    const invitationLink = `${window.location.origin}/accept-invitation?token=${token}`;
+    const invitationLink = `${getBaseUrl()}/accept-invitation?token=${token}`;
 
     // Send invitation email
     try {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuth } from '@/components/auth/useAuth';
+import { getBaseUrl } from '@/lib/urlUtils';
 import { DashboardService } from '../services/DashboardService';
 import { DashboardState, DashboardActions } from '../types';
 
@@ -106,7 +107,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
 
   const handleCopyLink = useCallback(
     (id: string) => {
-      const url = `${window.location.origin}/wishlist/${id}`;
+      const url = `${getBaseUrl()}/wishlist/${id}`;
       navigator.clipboard.writeText(url);
       toast.success(t('messages.linkCopied'));
     },

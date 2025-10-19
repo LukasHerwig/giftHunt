@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { getBaseUrl } from '@/lib/urlUtils';
 import { Wishlist, WishlistItem } from '../types';
 
 interface WishlistWithProfile {
@@ -87,7 +88,7 @@ export class AdminWishlistService {
     }
 
     if (data) {
-      return `${window.location.origin}/shared/${data.token}`;
+      return `${getBaseUrl()}/shared/${data.token}`;
     }
 
     return null;
@@ -107,7 +108,7 @@ export class AdminWishlistService {
       .maybeSingle();
 
     if (existingLink) {
-      return `${window.location.origin}/shared/${existingLink.token}`;
+      return `${getBaseUrl()}/shared/${existingLink.token}`;
     }
 
     // Generate new share link
@@ -124,7 +125,7 @@ export class AdminWishlistService {
 
     if (error) throw error;
 
-    return `${window.location.origin}/shared/${data.token}`;
+    return `${getBaseUrl()}/shared/${data.token}`;
   }
 
   static async untakeItem(itemId: string): Promise<void> {
