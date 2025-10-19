@@ -27,23 +27,10 @@ serve(async (req: Request) => {
   }
 
   try {
-    console.log(
-      'Function called, Gmail credentials available:',
-      !!GMAIL_USER && !!GMAIL_APP_PASSWORD
-    );
-
     const { email, invitationLink, wishlistTitle, inviterName } =
       await req.json();
 
-    console.log('Request data:', {
-      email,
-      invitationLink,
-      wishlistTitle,
-      inviterName,
-    });
-
     if (!email || !invitationLink || !wishlistTitle) {
-      console.log('Missing required fields');
       return new Response(
         JSON.stringify({ error: 'Missing required fields' }),
         {
@@ -54,7 +41,6 @@ serve(async (req: Request) => {
     }
 
     if (!GMAIL_USER || !GMAIL_APP_PASSWORD) {
-      console.log('Gmail credentials not configured');
       return new Response(
         JSON.stringify({ error: 'Email service not configured' }),
         {
@@ -122,12 +108,11 @@ serve(async (req: Request) => {
         {
           from: `GiftHunt <${GMAIL_USER}>`,
           to: email,
-          subject: `🎁 You've been invited to help with ${wishlistTitle}!`,
+          subject: `You've been invited to help with ${wishlistTitle}!`,
           html: emailHtml,
         },
         (error: Error | null) => {
           if (error) {
-            console.log('Gmail SMTP error:', error);
             return reject(error);
           }
           resolve();
@@ -143,7 +128,6 @@ serve(async (req: Request) => {
       }
     );
   } catch (error) {
-    console.log('Function error:', error);
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred';
     return new Response(JSON.stringify({ error: errorMessage }), {

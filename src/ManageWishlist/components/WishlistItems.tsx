@@ -41,9 +41,6 @@ export const WishlistItems = ({
   const { t } = useTranslation();
   const { toast } = useToast();
 
-  // Debug log to verify the value
-  console.log('hasActiveShareLink:', hasActiveShareLink);
-
   // Handlers for disabled button clicks (mobile feedback)
   const handleDisabledEditClick = () => {
     if (hasActiveShareLink) {

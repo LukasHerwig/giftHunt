@@ -1,24 +1,24 @@
 import { supabase } from '@/integrations/supabase/client';
-import { 
-  InvitationQueryResult, 
-  InviterProfile, 
-  WishlistInfo, 
+import {
+  InvitationQueryResult,
+  InviterProfile,
+  WishlistInfo,
   InvitationData,
-  CurrentUser 
+  CurrentUser,
 } from '../types';
 
 export class AcceptInvitationService {
   /**
    * Get invitation data by token
    */
-  static async getInvitationByToken(token: string): Promise<InvitationQueryResult> {
+  static async getInvitationByToken(
+    token: string
+  ): Promise<InvitationQueryResult> {
     const { data: inviteData, error: inviteError } = await supabase
       .from('admin_invitations')
       .select('id, email, accepted, expires_at, invited_by, wishlist_id')
       .eq('invitation_token', token)
       .single();
-
-    console.log('Invitation query result:', { inviteData, inviteError });
 
     if (inviteError || !inviteData) {
       console.error('Invitation error:', inviteError);
@@ -38,8 +38,6 @@ export class AcceptInvitationService {
       .eq('id', invitedBy)
       .single();
 
-    console.log('Inviter profile query result:', { inviterProfile, inviterError });
-
     return inviterProfile || { email: null, full_name: null };
   }
 
@@ -53,8 +51,6 @@ export class AcceptInvitationService {
       .eq('id', wishlistId)
       .single();
 
-    console.log('Wishlist query result:', { wishlistData, wishlistError });
-
     return wishlistData || { title: null, description: null };
   }
 
@@ -62,7 +58,9 @@ export class AcceptInvitationService {
    * Get current authenticated user
    */
   static async getCurrentUser(): Promise<CurrentUser | null> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     return user;
   }
 
@@ -99,12 +97,6 @@ export class AcceptInvitationService {
       wishlistTitle,
       wishlistDescription,
     };
-
-    console.log('Invitation data set:', {
-      inviterEmail,
-      wishlistTitle,
-      wishlistDescription,
-    });
 
     return invitationData;
   }

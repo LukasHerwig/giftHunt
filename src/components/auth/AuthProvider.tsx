@@ -116,12 +116,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log(
-        'Auth state changed:',
-        event,
-        session?.user?.email || 'no user'
-      );
-
       switch (event) {
         case 'INITIAL_SESSION':
           // Handle initial session when app starts
@@ -163,24 +157,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           // Token was refreshed successfully
           setSession(session);
           setUser(session?.user || null);
-          console.log('Token refreshed successfully');
           break;
 
         case 'USER_UPDATED':
           // User profile was updated
           setSession(session);
           setUser(session?.user || null);
-          console.log('User data updated');
           break;
 
         case 'PASSWORD_RECOVERY':
           // Handle password recovery if needed in the future
-          console.log('Password recovery initiated');
           break;
 
         default:
-          // Log unhandled events for future debugging
-          console.log('Unhandled auth event:', event);
           // Ensure we're not stuck in loading state
           setLoading(false);
           break;

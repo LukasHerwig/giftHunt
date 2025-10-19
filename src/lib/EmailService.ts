@@ -27,8 +27,6 @@ export class EmailService {
       if (error) {
         throw new Error(error.message || 'Failed to send invitation email');
       }
-
-      console.log('Invitation email sent successfully:', data);
     } catch (error) {
       console.error('Error sending invitation email:', error);
       throw error;
