@@ -8,6 +8,7 @@ import {
   AdminWishlistState,
   AdminWishlistActions,
   WishlistItem,
+  ItemFormData,
 } from '../types';
 
 export const useAdminWishlist = (
@@ -26,6 +27,19 @@ export const useAdminWishlist = (
     untakeDialogOpen: false,
     selectedUntakeItem: null,
     untaking: false,
+    editDialogOpen: false,
+    selectedEditItem: null,
+    editFormData: {
+      title: '',
+      description: '',
+      link: '',
+      priceRange: '',
+      priority: null,
+    },
+    updating: false,
+    deleteDialogOpen: false,
+    selectedDeleteItem: null,
+    deleting: false,
   });
 
   const checkAdminAccess = useCallback(async () => {
@@ -157,6 +171,141 @@ export const useAdminWishlist = (
     }));
   }, []);
 
+  const openEditDialog = useCallback((item: WishlistItem) => {
+    setState((prev) => ({
+      ...prev,
+      selectedEditItem: item,
+      editFormData: {
+        title: item.title,
+        description: item.description || '',
+        link: item.link || '',
+        priceRange: item.price_range || '',
+        priority: item.priority || null,
+      },
+      editDialogOpen: true,
+    }));
+  }, []);
+
+  const setEditDialogOpen = useCallback((open: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      editDialogOpen: open,
+      ...(open
+        ? {}
+        : {
+            selectedEditItem: null,
+            editFormData: {
+              title: '',
+              description: '',
+              link: '',
+              priceRange: '',
+              priority: null,
+            },
+          }),
+    }));
+  }, []);
+
+  const setEditFormData = useCallback((data: ItemFormData) => {
+    setState((prev) => ({
+      ...prev,
+      editFormData: data,
+    }));
+  }, []);
+
+  const handleUpdateItem = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!state.selectedEditItem) return;
+
+      setState((prev) => ({ ...prev, updating: true }));
+      try {
+        await AdminWishlistService.updateItem(state.selectedEditItem.id, {
+          title: state.editFormData.title,
+          description: state.editFormData.description,
+          link: state.editFormData.link,
+          price_range: state.editFormData.priceRange,
+          priority: state.editFormData.priority || 0,
+        });
+
+        // Update local state
+        setState((prev) => ({
+          ...prev,
+          items: prev.items.map((item) =>
+            item.id === state.selectedEditItem!.id
+              ? {
+                  ...item,
+                  title: state.editFormData.title,
+                  description: state.editFormData.description || null,
+                  link: state.editFormData.link || null,
+                  price_range: state.editFormData.priceRange || null,
+                  priority: state.editFormData.priority || 0,
+                }
+              : item
+          ),
+          editDialogOpen: false,
+          selectedEditItem: null,
+          editFormData: {
+            title: '',
+            description: '',
+            link: '',
+            priceRange: '',
+            priority: null,
+          },
+          updating: false,
+        }));
+
+        toast.success(t('messages.itemUpdated'));
+      } catch (error) {
+        console.error('Update item error:', error);
+        toast.error(t('messages.failedToUpdateItem'));
+        setState((prev) => ({ ...prev, updating: false }));
+      }
+    },
+    [state.selectedEditItem, state.editFormData, t]
+  );
+
+  const openDeleteDialog = useCallback((item: WishlistItem) => {
+    setState((prev) => ({
+      ...prev,
+      selectedDeleteItem: item,
+      deleteDialogOpen: true,
+    }));
+  }, []);
+
+  const setDeleteDialogOpen = useCallback((open: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      deleteDialogOpen: open,
+      ...(open ? {} : { selectedDeleteItem: null }),
+    }));
+  }, []);
+
+  const handleDeleteItem = useCallback(async () => {
+    if (!state.selectedDeleteItem) return;
+
+    setState((prev) => ({ ...prev, deleting: true }));
+    try {
+      await AdminWishlistService.deleteItem(state.selectedDeleteItem.id);
+
+      // Update local state
+      setState((prev) => ({
+        ...prev,
+        items: prev.items.filter(
+          (item) => item.id !== state.selectedDeleteItem!.id
+        ),
+        deleteDialogOpen: false,
+        selectedDeleteItem: null,
+        deleting: false,
+      }));
+
+      toast.success(t('messages.itemDeleted'));
+    } catch (error) {
+      console.error('Delete item error:', error);
+      toast.error(t('messages.failedToDeleteItem'));
+      setState((prev) => ({ ...prev, deleting: false }));
+    }
+  }, [state.selectedDeleteItem, t]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -181,5 +330,12 @@ export const useAdminWishlist = (
     handleUntakeItem,
     openUntakeDialog,
     setUntakeDialogOpen,
+    openEditDialog,
+    setEditDialogOpen,
+    setEditFormData,
+    handleUpdateItem,
+    openDeleteDialog,
+    setDeleteDialogOpen,
+    handleDeleteItem,
   };
 };

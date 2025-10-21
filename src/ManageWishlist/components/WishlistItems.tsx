@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { ExternalLink, Star, DollarSign, Edit, Trash2 } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
+import { CurrencyBadge } from '@/components/CurrencyBadge';
 
 interface WishlistItemsProps {
   items: WishlistItem[];
@@ -98,10 +99,7 @@ export const WishlistItems = ({
 
                 <div className="flex flex-wrap gap-2 mb-2">
                   {wishlist?.enable_price && item.price_range && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-400 rounded-full">
-                      <DollarSign className="w-3 h-3" />
-                      {item.price_range}
-                    </span>
+                    <CurrencyBadge amount={item.price_range} />
                   )}
                   {wishlist?.enable_priority &&
                     item.priority &&

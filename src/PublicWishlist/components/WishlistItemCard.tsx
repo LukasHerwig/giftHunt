@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Star, Check, DollarSign, ExternalLink } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
+import { CurrencyBadge } from '@/components/CurrencyBadge';
 
 interface WishlistItemCardProps {
   item: WishlistItem;
@@ -48,10 +49,7 @@ export const WishlistItemCard = ({
 
             <div className="flex flex-wrap gap-2 mb-2">
               {wishlist?.enable_price && item.price_range && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
-                  <DollarSign className="w-3 h-3" />
-                  {item.price_range}
-                </span>
+                <CurrencyBadge amount={item.price_range} />
               )}
               {wishlist?.enable_priority && item.priority > 0 && (
                 <span

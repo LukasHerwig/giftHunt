@@ -140,4 +140,37 @@ export class AdminWishlistService {
 
     if (error) throw error;
   }
+
+  static async updateItem(
+    itemId: string,
+    updates: {
+      title: string;
+      description?: string;
+      link?: string;
+      price_range?: string;
+      priority?: number;
+    }
+  ): Promise<void> {
+    const { error } = await supabase
+      .from('wishlist_items')
+      .update({
+        title: updates.title,
+        description: updates.description || null,
+        link: updates.link || null,
+        price_range: updates.price_range || null,
+        priority: updates.priority || 0,
+      })
+      .eq('id', itemId);
+
+    if (error) throw error;
+  }
+
+  static async deleteItem(itemId: string): Promise<void> {
+    const { error } = await supabase
+      .from('wishlist_items')
+      .delete()
+      .eq('id', itemId);
+
+    if (error) throw error;
+  }
 }

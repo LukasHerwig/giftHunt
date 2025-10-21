@@ -19,6 +19,7 @@
     "title": "Titel",
     "description": "Beskrivning",
     "optional": "valfritt",
+    "currency": "SEK",
     "required": "obligatoriskt",
     "priceRange": "Prisklass",
     "priority": "Prioritet",
@@ -264,8 +265,10 @@
     "failedToAdd": "Misslyckades att lägga till önskning",
     "itemUpdated": "Önskning uppdaterad!",
     "failedToUpdate": "Misslyckades att uppdatera önskning",
-    "itemDeleted": "Önskning borttagen",
+    "failedToUpdateItem": "Misslyckades att uppdatera föremål",
+    "itemDeleted": "Föremål borttaget",
     "failedToDelete": "Misslyckades att ta bort önskning",
+    "failedToDeleteItem": "Misslyckades att ta bort föremål",
     "wishlistCreated": "Önskelista skapad!",
     "failedToCreate": "Misslyckades att skapa önskelista",
     "wishlistDeleted": "Önskelista borttagen",
@@ -299,6 +302,7 @@
     "shareLinkCopied": "Delningslänk kopierad till urklipp!",
     "shareLinkActive": "Denna önskelista har en aktiv delningslänk och redigering är begränsad",
     "editingRestricted": "Redigering och borttagning av föremål är inaktiverat när en delningslänk är aktiv",
+    "editingAskAdmin": "Kontakta din administratör om det behövs göras ändringar",
     "editDisabledTooltip": "Redigering är inaktiverat medan önskelistan har en aktiv delningslänk",
     "editDescriptionOnlyTooltip": "Endast beskrivning kan redigeras medan önskelistan har en aktiv delningslänk",
     "deleteDisabledTooltip": "Borttagning är inaktiverat medan önskelistan har en aktiv delningslänk",
@@ -350,7 +354,48 @@
     "taken": "Tagna",
     "untakeItem": "Ångra reservering",
     "untaking": "Ångrar reservering...",
-    "createdBy": "Skapad av"
+    "createdBy": "Skapad av",
+    "editItem": {
+      "title": "Redigera föremål",
+      "description": "Gör ändringar i önskelisteföremålet som admin",
+      "titleLabel": "Föremålstitel",
+      "titlePlaceholder": "Ange föremålstitel",
+      "descriptionLabel": "Beskrivning",
+      "descriptionPlaceholder": "Lägg till en beskrivning (valfritt)",
+      "linkLabel": "Länk",
+      "linkPlaceholder": "Lägg till en länk (valfritt)",
+      "priceLabel": "Prisintervall",
+      "pricePlaceholder": "t.ex. 100-200 kr, Under 500 kr",
+      "priorityLabel": "Prioritet",
+      "priorityPlaceholder": "Välj prioritet",
+      "cancel": "Avbryt",
+      "updateButton": "Uppdatera föremål",
+      "updating": "Uppdaterar...",
+      "editButton": "Redigera"
+    },
+    "editTakenItem": {
+      "title": "Redigera taget föremål",
+      "description": "Gör ändringar i detta föremål som har tagits av någon",
+      "warning": "⚠️ Detta föremål har tagits. Vänligen meddela personen som har tagit det om eventuella ändringar.",
+      "takenBy": "Tagen av",
+      "editButton": "Redigera"
+    },
+    "deleteItem": {
+      "title": "Ta bort föremål",
+      "description": "Är du säker på att du vill ta bort detta föremål? Denna åtgärd kan inte ångras.",
+      "warning": "⚠️ Detta kommer permanent ta bort föremålet från önskelistan",
+      "cancel": "Avbryt",
+      "deleteButton": "Ta bort",
+      "deleting": "Tar bort..."
+    },
+    "deleteTakenItem": {
+      "title": "Ta bort taget föremål",
+      "description": "Är du säker på att du vill ta bort detta föremål som någon har tagit?",
+      "warning": "⚠️ Detta kommer permanent ta bort föremålet från önskelistan",
+      "notifyWarning": "⚠️ Viktigt: Du måste meddela personen som tog detta föremål att det har tagits bort!",
+      "takenBy": "Tagen av",
+      "deleteButton": "Ta bort"
+    }
   },
   "profile": {
     "title": "Profil",

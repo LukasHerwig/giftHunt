@@ -6,17 +6,30 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Star, DollarSign, Link as LinkIcon } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Star,
+  DollarSign,
+  Link as LinkIcon,
+  Edit2,
+  Trash2,
+  Edit,
+} from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
+import { CurrencyBadge } from '@/components/CurrencyBadge';
 
 interface AvailableItemsCardProps {
   availableItems: WishlistItem[];
   wishlist: Wishlist | null;
+  onEditItem: (item: WishlistItem) => void;
+  onDeleteItem: (item: WishlistItem) => void;
 }
 
 export const AvailableItemsCard = ({
   availableItems,
   wishlist,
+  onEditItem,
+  onDeleteItem,
 }: AvailableItemsCardProps) => {
   const { t } = useTranslation();
 
@@ -55,10 +68,7 @@ export const AvailableItemsCard = ({
 
                   <div className="flex flex-wrap gap-2 mb-2">
                     {wishlist?.enable_price && item.price_range && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
-                        <DollarSign className="w-3 h-3" />
-                        {item.price_range}
-                      </span>
+                      <CurrencyBadge amount={item.price_range} />
                     )}
                     {wishlist?.enable_priority && item.priority > 0 && (
                       <span
@@ -92,6 +102,26 @@ export const AvailableItemsCard = ({
                       {t('adminWishlist.viewLink')}
                     </a>
                   )}
+                </div>
+
+                {/* Admin Action Buttons */}
+                <div className="flex gap-2 ml-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onEditItem(item)}
+                    className="text-muted-foreground hover:text-foreground flex-shrink-0"
+                    title={t('adminWishlist.editItem.editButton')}>
+                    <Edit className="w-3 h-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => onDeleteItem(item)}
+                    className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    title={t('adminWishlist.deleteItem.deleteButton')}>
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
                 </div>
               </div>
             </Card>

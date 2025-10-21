@@ -17,9 +17,11 @@ export const ShareLinkWarning = ({
     <Alert className="mb-6 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/50">
       <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400" />
       <AlertDescription className="text-amber-700 dark:text-amber-300">
-        {t('messages.shareLinkActive') + '.'}
-        <br />
+        {t('messages.shareLinkActive') + '. '}
         {t('messages.editingRestricted') + '.'}
+        <br />
+        <br />
+        {t('messages.editingAskAdmin') + '.'}
       </AlertDescription>
     </Alert>
   );

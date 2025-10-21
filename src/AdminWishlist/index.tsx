@@ -9,6 +9,8 @@ import { SummaryStats } from './components/SummaryStats';
 import { AvailableItemsCard } from './components/AvailableItemsCard';
 import { TakenItemsCard } from './components/TakenItemsCard';
 import { UntakeItemDialog } from './components/UntakeItemDialog';
+import { AdminEditItemDialog } from './components/AdminEditItemDialog';
+import { AdminDeleteItemDialog } from './components/AdminDeleteItemDialog';
 
 const AdminWishlist = () => {
   const { t } = useTranslation();
@@ -23,10 +25,24 @@ const AdminWishlist = () => {
     untakeDialogOpen,
     selectedUntakeItem,
     untaking,
+    editDialogOpen,
+    selectedEditItem,
+    editFormData,
+    updating,
+    deleteDialogOpen,
+    selectedDeleteItem,
+    deleting,
     handleCopyShareLink,
     handleUntakeItem,
     openUntakeDialog,
     setUntakeDialogOpen,
+    openEditDialog,
+    setEditDialogOpen,
+    setEditFormData,
+    handleUpdateItem,
+    openDeleteDialog,
+    setDeleteDialogOpen,
+    handleDeleteItem,
   } = useAdminWishlist(id);
 
   if (loading) {
@@ -69,6 +85,8 @@ const AdminWishlist = () => {
           <AvailableItemsCard
             availableItems={availableItems}
             wishlist={wishlist}
+            onEditItem={openEditDialog}
+            onDeleteItem={openDeleteDialog}
           />
 
           {/* Taken Items */}
@@ -76,6 +94,8 @@ const AdminWishlist = () => {
             takenItems={takenItems}
             wishlist={wishlist}
             onUntakeItem={openUntakeDialog}
+            onEditItem={openEditDialog}
+            onDeleteItem={openDeleteDialog}
           />
         </div>
       </main>
@@ -87,6 +107,27 @@ const AdminWishlist = () => {
         selectedItem={selectedUntakeItem}
         untaking={untaking}
         onConfirm={handleUntakeItem}
+      />
+
+      {/* Edit Item Dialog */}
+      <AdminEditItemDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        wishlist={wishlist}
+        editItem={editFormData}
+        setEditItem={setEditFormData}
+        onSubmit={handleUpdateItem}
+        updating={updating}
+        selectedItem={selectedEditItem}
+      />
+
+      {/* Delete Item Confirmation Dialog */}
+      <AdminDeleteItemDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        selectedItem={selectedDeleteItem}
+        deleting={deleting}
+        onConfirm={handleDeleteItem}
       />
     </div>
   );
