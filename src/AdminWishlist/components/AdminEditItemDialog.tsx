@@ -18,16 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
-import { Wishlist, WishlistItem } from '../types';
-
-interface ItemFormData {
-  title: string;
-  description: string;
-  link: string;
-  priceRange: string;
-  priority: number | null;
-}
-
+import { Wishlist, WishlistItem, ItemFormData } from '../types';
 interface AdminEditItemDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
