@@ -125,7 +125,7 @@
     "failedToLoad": "Misslyckades att ladda önskelista",
     "howItWorks": "Så Fungerar Det",
     "howItWorksStep1": "Klicka \"Jag tar den här!\" på föremål du vill köpa som present. Detta reserverar föremålet så andra inte väljer samma sak.",
-    "howItWorksStep2": "Ditt namn visas för önskelistans ägare så de vet vem som ska ge vilken present, men det förblir dolt för andra besökare.",
+    "howItWorksStep2": "Ditt namn visas för önskelistans administratör så de vet vem som ska ge vilken present, men det förblir dolt för andra besökare.",
     "changeOfMind": "Ångrat dig? Kontakta önskelistans administratör för att avboka din reservation."
   },
   "manageWishlist": {
@@ -340,6 +340,7 @@
     "accessDenied": "Åtkomst nekad eller önskelista hittades inte",
     "availableItems": "Tillgängliga föremål",
     "availableItemsDescription": "Föremål som inte har tagits än",
+    "availableForClaiming": "Tillgänglig för reservering",
     "allItemsTaken": "Alla föremål har tagits!",
     "high": "Hög",
     "medium": "Medel",
@@ -355,6 +356,9 @@
     "untakeItem": "Ångra reservering",
     "untaking": "Ångrar reservering...",
     "createdBy": "Skapad av",
+    "priority": "Prioritet",
+    "price": "Pris",
+    "link": "Länk",
     "editItem": {
       "title": "Redigera föremål",
       "description": "Gör ändringar i önskelisteföremålet som admin",

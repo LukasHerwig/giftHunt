@@ -125,7 +125,7 @@
     "failedToLoad": "Failed to load wishlist",
     "howItWorks": "How It Works",
     "howItWorksStep1": "Click \"I'll get this!\" on any item you want to buy as a gift. This reserves the item so others won't choose the same thing.",
-    "howItWorksStep2": "Your name will be shown to the wishlist owner so they know who's getting what gift, but it stays hidden from other visitors.",
+    "howItWorksStep2": "Your name will be shown to the wishlist administrator so they know who's getting what gift, but it stays hidden from other visitors.",
     "changeOfMind": "Changed your mind? Contact the wishlist admin to cancel your reservation."
   },
   "manageWishlist": {
@@ -339,6 +339,7 @@
     "accessDenied": "Access denied or wishlist not found",
     "availableItems": "Available Items",
     "availableItemsDescription": "Items that haven't been taken yet",
+    "availableForClaiming": "Available for claiming",
     "allItemsTaken": "All items have been taken!",
     "high": "High",
     "medium": "Medium",
@@ -354,6 +355,9 @@
     "untakeItem": "Untake Item",
     "untaking": "Untaking...",
     "createdBy": "Created by",
+    "priority": "Priority",
+    "price": "Price",
+    "link": "Link",
     "editItem": {
       "title": "Edit Item",
       "description": "Make changes to the wishlist item as an admin",
