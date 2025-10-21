@@ -21,6 +21,14 @@ export interface Wishlist {
   creator_name: string | null;
 }
 
+export interface ItemFormData {
+  title: string;
+  description: string;
+  link: string;
+  priceRange: string;
+  priority: number | null;
+}
+
 export interface AdminWishlistState {
   wishlist: Wishlist | null;
   items: WishlistItem[];
@@ -31,6 +39,13 @@ export interface AdminWishlistState {
   untakeDialogOpen: boolean;
   selectedUntakeItem: WishlistItem | null;
   untaking: boolean;
+  editDialogOpen: boolean;
+  selectedEditItem: WishlistItem | null;
+  editFormData: ItemFormData;
+  updating: boolean;
+  deleteDialogOpen: boolean;
+  selectedDeleteItem: WishlistItem | null;
+  deleting: boolean;
 }
 
 export interface AdminWishlistActions {
@@ -43,4 +58,11 @@ export interface AdminWishlistActions {
   handleUntakeItem: () => Promise<void>;
   openUntakeDialog: (item: WishlistItem) => void;
   setUntakeDialogOpen: (open: boolean) => void;
+  openEditDialog: (item: WishlistItem) => void;
+  setEditDialogOpen: (open: boolean) => void;
+  setEditFormData: (data: ItemFormData) => void;
+  handleUpdateItem: (e: React.FormEvent) => Promise<void>;
+  openDeleteDialog: (item: WishlistItem) => void;
+  setDeleteDialogOpen: (open: boolean) => void;
+  handleDeleteItem: () => Promise<void>;
 }

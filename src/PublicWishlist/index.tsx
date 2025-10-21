@@ -59,14 +59,16 @@ const PublicWishlist = () => {
           <EmptyWishlistState />
         ) : (
           <div className="space-y-3">
-            {items.map((item) => (
-              <WishlistItemCard
-                key={item.id}
-                item={item}
-                wishlist={wishlist}
-                onClaimItem={openClaimDialog}
-              />
-            ))}
+            {items
+              // .filter((item) => !item.is_taken)
+              .map((item) => (
+                <WishlistItemCard
+                  key={item.id}
+                  item={item}
+                  wishlist={wishlist}
+                  onClaimItem={openClaimDialog}
+                />
+              ))}
           </div>
         )}
 
