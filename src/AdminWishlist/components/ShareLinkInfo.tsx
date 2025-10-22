@@ -11,14 +11,14 @@ export const ShareLinkInfo = ({ shareLink }: ShareLinkInfoProps) => {
   const { t } = useTranslation();
 
   return (
-    <Card className="mb-6 border-accent/30 bg-accent/5 dark:bg-accent/10">
+    <Card className="mb-6 border-primary/20 bg-primary/5 dark:bg-primary/10">
       <CardContent className="pt-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-accent mb-1">
+            <h3 className="font-semibold text-primary mb-1">
               {t('adminWishlist.activeShareLink')}
             </h3>
-            <p className="text-sm text-accent/80 break-all font-mono">
+            <p className="text-sm text-muted-foreground break-all font-mono">
               {shareLink}
             </p>
           </div>

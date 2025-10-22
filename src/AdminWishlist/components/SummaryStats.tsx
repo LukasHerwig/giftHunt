@@ -36,7 +36,7 @@ export const SummaryStats = ({ items }: SummaryStatsProps) => {
             </div>
           </div>
           <div>
-            <div className="text-2xl font-bold text-accent">
+            <div className="text-2xl font-bold text-primary">
               {takenItems.length}
             </div>
             <div className="text-sm text-muted-foreground">

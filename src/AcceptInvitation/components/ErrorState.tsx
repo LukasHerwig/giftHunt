@@ -19,14 +19,12 @@ export const ErrorState = ({ error, onGoHome }: ErrorStateProps) => {
       </div>
       <Card className="max-w-md text-center">
         <CardContent className="pt-6">
-          <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <XCircle className="w-16 h-16 text-destructive mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">
             {t('acceptInvitation.invalidInvitation')}
           </h2>
           <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={onGoHome}>
-            {t('acceptInvitation.goToHome')}
-          </Button>
+          <Button onClick={onGoHome}>{t('acceptInvitation.goToHome')}</Button>
         </CardContent>
       </Card>
     </div>

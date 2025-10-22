@@ -53,7 +53,7 @@ const AvailableItemCard = ({
               <div className="flex items-center gap-2 mb-1">
                 <h4 className="font-medium truncate text-sm">{item.title}</h4>
                 {item.priority === 3 && (
-                  <Star className="w-3 h-3 text-yellow-500 fill-current flex-shrink-0" />
+                  <Star className="w-3 h-3 text-yellow-500 dark:text-yellow-400 fill-current flex-shrink-0" />
                 )}
               </div>
               <div className="text-xs text-muted-foreground">

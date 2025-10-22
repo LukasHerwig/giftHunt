@@ -60,7 +60,7 @@ const TakenItemCard = ({
                 <Check className="w-4 h-4 text-primary flex-shrink-0" />
                 <h4 className="font-medium truncate text-sm">{item.title}</h4>
                 {item.priority === 3 && (
-                  <Star className="w-3 h-3 text-yellow-500 fill-current flex-shrink-0" />
+                  <Star className="w-3 h-3 text-yellow-500 dark:text-yellow-400 fill-current flex-shrink-0" />
                 )}
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
@@ -218,7 +218,7 @@ export const TakenItemsCard = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-accent">
+        <CardTitle className="text-primary">
           {t('adminWishlist.takenItems')} ({takenItems.length})
         </CardTitle>
         <CardDescription>

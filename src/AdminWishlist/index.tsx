@@ -57,7 +57,7 @@ const AdminWishlist = () => {
   const availableItems = items.filter((item) => !item.is_taken);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
       <AdminWishlistHeader
         generatingLink={generatingLink}
         shareLink={shareLink}

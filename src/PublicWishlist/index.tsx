@@ -47,7 +47,7 @@ const PublicWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
       <WishlistHeader wishlist={wishlist} />
 
       <div className="container mx-auto px-4 py-4 max-w-3xl">

@@ -49,7 +49,7 @@ export const AddItemDialog = ({
       <DialogTrigger asChild>
         <Button
           size={isMobile ? 'default' : 'lg'}
-          className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+          className="bg-primary hover:bg-primary/90 text-primary-foreground">
           <Plus className="w-5 h-5" />
           <span className="ml-2">{t('manageWishlist.addItem')}</span>
         </Button>
@@ -155,7 +155,7 @@ export const AddItemDialog = ({
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-primary to-accent hover:opacity-90"
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
             disabled={adding}>
             {adding ? (
               <>

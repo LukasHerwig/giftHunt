@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react';
 
 export type ColorScheme =
+  | 'github'
   | 'lavender'
   | 'mint'
   | 'peach'

@@ -38,7 +38,7 @@ export const AdminWishlistHeader = ({
           <Button
             onClick={onCopyShareLink}
             disabled={generatingLink}
-            className="bg-gradient-to-r from-primary to-accent hover:opacity-90">
+            className="bg-primary hover:bg-primary/90 text-primary-foreground">
             {generatingLink ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
