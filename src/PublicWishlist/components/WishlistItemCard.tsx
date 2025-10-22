@@ -31,7 +31,7 @@ export const WishlistItemCard = ({
                 {item.title}
               </CardTitle>
               {item.priority === 3 && (
-                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                <Star className="w-4 h-4 text-yellow-500 dark:text-yellow-400 fill-current" />
               )}
               {item.is_taken && (
                 <span className="flex items-center gap-1 text-sm font-normal text-muted-foreground">
