@@ -2,7 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>GiftHunt - Share Your Wishlist</title>
     <meta
       name="description"
@@ -40,12 +42,19 @@
 
     <!-- iOS specific meta tags -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="GiftHunt" />
 
     <!-- Android/Chrome specific -->
     <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="theme-color" content="#000000" />
+    <!-- Theme colors to match header background -->
+    <meta name="theme-color" content="#FCFDFE" />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#191922" />
 
     <!-- Content Security Policy for GitHub Pages compatibility -->
     <meta
@@ -82,6 +91,73 @@
       })(window.location);
     </script>
     <!-- End Single Page Apps for GitHub Pages -->
+
+    <!-- Dynamic theme color update for iOS status bar -->
+    <script type="text/javascript">
+      // Function to update theme colors based on current theme
+      function updateThemeColors() {
+        const isDark =
+          window.matchMedia('(prefers-color-scheme: dark)').matches ||
+          document.documentElement.classList.contains('dark');
+
+        // Update theme color meta tag
+        let themeColorMeta = document.querySelector(
+          'meta[name="theme-color"]:not([media])'
+        );
+        if (!themeColorMeta) {
+          themeColorMeta = document.createElement('meta');
+          themeColorMeta.name = 'theme-color';
+          document.head.appendChild(themeColorMeta);
+        }
+
+        // Update apple status bar style
+        let statusBarMeta = document.querySelector(
+          'meta[name="apple-mobile-web-app-status-bar-style"]'
+        );
+        if (!statusBarMeta) {
+          statusBarMeta = document.createElement('meta');
+          statusBarMeta.name = 'apple-mobile-web-app-status-bar-style';
+          document.head.appendChild(statusBarMeta);
+        }
+
+        if (isDark) {
+          // Dark mode: dark background with light text
+          themeColorMeta.content = '#191922';
+          statusBarMeta.content = 'black-translucent';
+        } else {
+          // Light mode: light background with dark text
+          themeColorMeta.content = '#FCFDFE';
+          statusBarMeta.content = 'black-translucent';
+        }
+      }
+
+      // Update on page load
+      updateThemeColors();
+
+      // Listen for theme changes
+      window
+        .matchMedia('(prefers-color-scheme: dark)')
+        .addEventListener('change', updateThemeColors);
+
+      // Also listen for manual theme changes via class
+      if (window.MutationObserver) {
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (
+              mutation.type === 'attributes' &&
+              mutation.attributeName === 'class'
+            ) {
+              updateThemeColors();
+            }
+          });
+        });
+
+        observer.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['class'],
+        });
+      }
+    </script>
   </head>
 
   <body>
