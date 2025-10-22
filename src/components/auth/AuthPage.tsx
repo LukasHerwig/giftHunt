@@ -16,6 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { Gift, Loader2, UserPlus, LogIn } from 'lucide-react';
 import LanguageSwitcher from '../LanguageSwitcher';
+import GiftHuntIcon from '../GiftHuntIcon';
 
 export const AuthPage = () => {
   const { t } = useTranslation();
@@ -73,15 +74,11 @@ export const AuthPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="absolute top-4 right-4">
-        <LanguageSwitcher />
-      </div>
+      <div className="absolute top-4 right-4"></div>
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center space-y-3">
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <Gift className="w-8 h-8 text-white" />
-          </div>
-          <CardTitle className="text-3xl">WishList</CardTitle>
+          <GiftHuntIcon className="mx-auto w-16 h-16" />
+          <CardTitle className="text-3xl">GiftHunt</CardTitle>
           <CardDescription className="text-base">
             {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
           </CardDescription>

@@ -35,13 +35,13 @@ export const AdminWishlistsSection = ({
         {adminWishlists.map((wishlist) => (
           <Card
             key={wishlist.id}
-            className="hover:shadow-lg transition-all duration-200 cursor-pointer border-blue-200 hover:border-blue-300"
+            className="hover:shadow-lg transition-all duration-200 cursor-pointer border hover:border-primary/30"
             onClick={() => navigate(`/wishlist/${wishlist.id}/admin`)}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <CardTitle className="text-xl mb-1 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-blue-500" />
+                    <Users className="w-5 h-5 text-primary" />
                     {wishlist.title}
                   </CardTitle>
                   {wishlist.description && (
@@ -67,7 +67,7 @@ export const AdminWishlistsSection = ({
                     {t('dashboard.owner')}: {wishlist.owner_profile?.email}
                   </span>
                 </span>
-                <span className="text-blue-600 font-medium hover:underline">
+                <span className="text-primary font-medium hover:underline">
                   {t('dashboard.manageAction')}
                 </span>
               </div>

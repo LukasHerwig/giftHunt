@@ -102,7 +102,7 @@ const ManageWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5 pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20 pb-20">
       <AppHeader />
       <PageSubheader
         actions={

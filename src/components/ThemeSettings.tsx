@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Moon, Sun, Monitor, Palette } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { Mode } from '@/contexts/ThemeContext';
+import { Mode, ColorScheme } from '@/contexts/ThemeContext';
+import { COLOR_SCHEME_LABELS, COLOR_SCHEMES } from '@/lib/theme';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -18,7 +19,7 @@ interface ThemeSettingsProps {
 
 export const ThemeSettings = ({ className }: ThemeSettingsProps) => {
   const { t } = useTranslation();
-  const { theme, setMode, isDark } = useTheme();
+  const { theme, setColorScheme, setMode, isDark } = useTheme();
 
   const modeOptions: { value: Mode; icon: typeof Sun; label: string }[] = [
     { value: 'light', icon: Sun, label: t('theme.light') },
@@ -40,6 +41,32 @@ export const ThemeSettings = ({ className }: ThemeSettingsProps) => {
         <CardDescription>{t('theme.description')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Color Scheme Selection */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-medium">{t('theme.colorScheme')}</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {Object.entries(COLOR_SCHEME_LABELS).map(([colorScheme, label]) => {
+              const isSelected = theme.colorScheme === colorScheme;
+              const colors = COLOR_SCHEMES[colorScheme as ColorScheme];
+
+              return (
+                <Button
+                  key={colorScheme}
+                  variant={isSelected ? 'default' : 'outline'}
+                  size="sm"
+                  className="flex items-center gap-2 h-auto py-3 justify-start"
+                  onClick={() => setColorScheme?.(colorScheme as ColorScheme)}>
+                  <div
+                    className="w-4 h-4 rounded-full border"
+                    style={{ backgroundColor: `hsl(${colors.primary})` }}
+                  />
+                  <span className="text-xs">{label}</span>
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Mode Selection */}
         <div className="space-y-3">
           <h3 className="text-sm font-medium">{t('theme.appearance')}</h3>
@@ -74,11 +101,11 @@ export const ThemeSettings = ({ className }: ThemeSettingsProps) => {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
-                  {/* Sky Serenity color display */}
+                  {/* Current theme color display */}
                   <div
                     className="w-8 h-8 rounded-xl border-2 border-background shadow-sm"
                     style={{ backgroundColor: `hsl(${theme.colors.base})` }}
-                    title="Sky Serenity theme"
+                    title={COLOR_SCHEME_LABELS[theme.colorScheme]}
                   />
                   {/* Generated variations */}
                   <div className="flex flex-col gap-1">
@@ -98,15 +125,19 @@ export const ThemeSettings = ({ className }: ThemeSettingsProps) => {
                 </div>
                 <div>
                   <span className="text-sm font-medium">
-                    Sky Serenity Theme
+                    {COLOR_SCHEME_LABELS[theme.colorScheme]}
                   </span>
                   <p className="text-xs text-muted-foreground">
-                    Soft sky blue with harmonious accents
+                    {theme.colorScheme === 'github'
+                      ? 'Clean and professional with subtle contrasts'
+                      : 'Soft and harmonious color palette'}
                   </p>
                 </div>
               </div>
               <div className="flex gap-2">
-                <Badge variant="secondary">Sky Serenity</Badge>
+                <Badge variant="secondary">
+                  {COLOR_SCHEME_LABELS[theme.colorScheme]}
+                </Badge>
                 <Badge variant="outline">
                   {theme.mode === 'system'
                     ? `${t('theme.system')} (${

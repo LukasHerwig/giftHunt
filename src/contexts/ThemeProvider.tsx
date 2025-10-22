@@ -7,9 +7,9 @@ interface ThemeProviderProps {
 }
 
 const DEFAULT_THEME: ThemeConfig = {
-  colorScheme: 'sky',
+  colorScheme: 'github',
   mode: 'system',
-  colors: COLOR_SCHEMES.sky,
+  colors: COLOR_SCHEMES.github,
 };
 
 const STORAGE_KEY = 'wishlist-theme';
@@ -78,20 +78,20 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     applyTheme(theme.colorScheme, isDark);
   }, [theme.colorScheme, isDark]);
 
-  // Color scheme is now fixed to 'sky' - keeping this function for future use
-  // const setColorScheme = (colorScheme: ColorScheme) => {
-  //   // Ensure the color scheme exists
-  //   if (!COLOR_SCHEMES[colorScheme]) {
-  //     console.warn(`Invalid color scheme: ${colorScheme}`);
-  //     return;
-  //   }
-  //
-  //   setTheme(prev => ({
-  //     ...prev,
-  //     colorScheme,
-  //     colors: COLOR_SCHEMES[colorScheme],
-  //   }));
-  // };
+  // Enable color scheme switching - users can choose between themes
+  const setColorScheme = (colorScheme: ColorScheme) => {
+    // Ensure the color scheme exists
+    if (!COLOR_SCHEMES[colorScheme]) {
+      console.warn(`Invalid color scheme: ${colorScheme}`);
+      return;
+    }
+
+    setTheme((prev) => ({
+      ...prev,
+      colorScheme,
+      colors: COLOR_SCHEMES[colorScheme],
+    }));
+  };
 
   const setMode = (mode: Mode) => {
     setTheme((prev) => ({ ...prev, mode }));
@@ -105,7 +105,7 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
   const value = {
     theme,
-    // setColorScheme, // Commented out - color is fixed to Sky Serenity
+    setColorScheme, // Enable color scheme switching
     setMode,
     isDark,
   };

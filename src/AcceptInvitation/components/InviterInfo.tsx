@@ -11,11 +11,9 @@ export const InviterInfo = ({ invitationData }: InviterInfoProps) => {
   if (!invitationData.inviterEmail) return null;
 
   return (
-    <div className="bg-blue-50 border border-blue-200 p-3 rounded-lg">
-      <p className="text-sm text-blue-800">
-        <span className="font-medium">
-          {t('acceptInvitation.invitedBy')}:
-        </span>{' '}
+    <div className="bg-muted/50 border p-3 rounded-lg">
+      <p className="text-sm text-muted-foreground">
+        <span className="font-medium">{t('acceptInvitation.invitedBy')}:</span>{' '}
         {invitationData.inviterEmail === 'Someone'
           ? t('acceptInvitation.someone')
           : invitationData.inviterEmail}

@@ -16,7 +16,7 @@ export const WishlistHeader = ({ wishlist }: WishlistHeaderProps) => {
         <LanguageSwitcher />
       </div>
       <div className="container mx-auto px-4 py-6 text-center">
-        <div className="mx-auto w-16 h-16 rounded-2xl bg-blue-400 flex items-center justify-center mb-4 relative overflow-hidden">
+        <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4 relative overflow-hidden">
           <Gift className="w-8 h-8 text-white z-10" />
           <Sparkles className="w-4 h-4 text-yellow-200 absolute top-2 right-2 animate-pulse" />
         </div>

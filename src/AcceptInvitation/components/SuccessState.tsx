@@ -13,7 +13,10 @@ interface SuccessStateProps {
   onSignIn: () => void;
 }
 
-export const SuccessState = ({ invitationData, onSignIn }: SuccessStateProps) => {
+export const SuccessState = ({
+  invitationData,
+  onSignIn,
+}: SuccessStateProps) => {
   const { t } = useTranslation();
 
   return (
@@ -23,7 +26,7 @@ export const SuccessState = ({ invitationData, onSignIn }: SuccessStateProps) =>
       </div>
       <Card className="max-w-md w-full">
         <CardHeader className="text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <CheckCircle className="w-16 h-16 text-green-500 dark:text-green-400 mx-auto mb-4" />
           <CardTitle className="text-2xl">
             {t('acceptInvitation.youveBeenInvited')}
           </CardTitle>

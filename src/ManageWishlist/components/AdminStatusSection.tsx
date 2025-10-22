@@ -131,7 +131,7 @@ export const AdminStatusSection = ({
             {admins.map((admin) => (
               <div
                 key={admin.id}
-                className="flex items-center justify-between p-3 bg-accent/5 dark:bg-accent/10 rounded-lg">
+                className="flex items-center justify-between p-3 bg-primary/10 dark:bg-primary/20 rounded-lg">
                 <div>
                   <p className="font-medium">
                     {admin.profiles?.email || t('manageWishlist.unknownUser')}
@@ -142,7 +142,7 @@ export const AdminStatusSection = ({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm text-accent font-medium">
+                  <span className="text-sm text-primary font-medium">
                     {t('manageWishlist.activeAdmin')}
                   </span>
                   <AlertDialog>

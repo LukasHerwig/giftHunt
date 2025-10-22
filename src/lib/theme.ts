@@ -25,8 +25,21 @@ const createColorVariations = (
   return { primary, accent, base };
 };
 
-// Pastel base colors - soft, gentle, and pleasing
+// GitHub-inspired monochromatic color scheme
+const createGitHubColors = (): ThemeColors => {
+  return {
+    // Primary: GitHub's signature dark gray from your icon
+    primary: '210 10% 15%', // #24292f equivalent in HSL
+    // Accent: A slightly lighter gray with subtle blue undertone
+    accent: '210 8% 25%', // Lighter variation for accents
+    // Base: Clean neutral for backgrounds
+    base: '210 5% 50%', // Mid-tone gray for muted elements
+  };
+};
+
+// Color schemes - keeping existing pastels plus new GitHub theme
 export const COLOR_SCHEMES: Record<ColorScheme, ThemeColors> = {
+  github: createGitHubColors(), // New GitHub-inspired theme
   lavender: createColorVariations(270, 55, 75), // Soft lavender
   mint: createColorVariations(150, 45, 75), // Gentle mint green
   peach: createColorVariations(25, 60, 80), // Warm peach
@@ -36,6 +49,7 @@ export const COLOR_SCHEMES: Record<ColorScheme, ThemeColors> = {
 };
 
 export const COLOR_SCHEME_LABELS: Record<ColorScheme, string> = {
+  github: 'GitHub Classic',
   lavender: 'Lavender Dreams',
   mint: 'Mint Fresh',
   peach: 'Peachy Warm',

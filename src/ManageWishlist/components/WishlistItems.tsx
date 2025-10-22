@@ -87,7 +87,7 @@ export const WishlistItems = ({
                     {item.title}
                   </CardTitle>
                   {item.priority === 3 && (
-                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                    <Star className="w-4 h-4 text-yellow-500 dark:text-yellow-400 fill-current" />
                   )}
                 </div>
 
@@ -107,10 +107,10 @@ export const WishlistItems = ({
                       <span
                         className={`px-2 py-1 text-xs rounded-full ${
                           item.priority === 3
-                            ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-400'
+                            ? 'bg-destructive/10 text-destructive'
                             : item.priority === 2
                             ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-400'
+                            : 'bg-muted text-muted-foreground'
                         }`}>
                         {item.priority === 3
                           ? t('priority.high')
