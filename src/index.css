@@ -37,10 +37,18 @@ All colors MUST be HSL.
     --ring: 260 85% 65%;
 
     --radius: 1rem;
-    
-    --gradient-primary: linear-gradient(135deg, hsl(260 85% 65%), hsl(280 85% 75%));
-    --gradient-accent: linear-gradient(135deg, hsl(190 80% 55%), hsl(210 80% 65%));
-    
+
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(260 85% 65%),
+      hsl(280 85% 75%)
+    );
+    --gradient-accent: linear-gradient(
+      135deg,
+      hsl(190 80% 55%),
+      hsl(210 80% 65%)
+    );
+
     --shadow-soft: 0 4px 20px -4px hsl(260 85% 65% / 0.15);
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -107,10 +115,53 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+      sans-serif;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-semibold;
+  }
+}
+
+/* iOS Safe Area Support */
+@layer utilities {
+  /* Header safe area for iOS devices - adapts to theme */
+  .ios-header-safe-area {
+    padding-top: env(safe-area-inset-top, 0);
+    /* Use the same background as the header */
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Ensure the header background extends to the top */
+  .ios-header-safe-area::before {
+    content: '';
+    position: absolute;
+    top: calc(-1 * env(safe-area-inset-top, 0));
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top, 0);
+    /* Use the same card background with backdrop blur */
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(8px);
+    z-index: -1;
+  }
+
+  /* For better iOS integration, ensure status bar text color adapts */
+  @media (prefers-color-scheme: dark) {
+    .ios-header-safe-area {
+      /* Ensure proper contrast in dark mode */
+      background: hsl(var(--card) / 0.5);
+    }
+
+    .ios-header-safe-area::before {
+      background: hsl(var(--card) / 0.5);
+    }
   }
 }
