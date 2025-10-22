@@ -1,30 +1,58 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- iOS app icon background with proper rounded rectangle (squircle) shape -->
-  <path d="M20 0 h60 a20 20 0 0 1 20 20 v60 a20 20 0 0 1 -20 20 h-60 a20 20 0 0 1 -20 -20 v-60 a20 20 0 0 1 20 -20 z" fill="#60a5fa" />
+  <!-- GitHub-style background: dark with rounded corners -->
+  <path d="M20 0 h60 a20 20 0 0 1 20 20 v60 a20 20 0 0 1 -20 20 h-60 a20 20 0 0 1 -20 -20 v-60 a20 20 0 0 1 20 -20 z" fill="#24292f" />
   
-  <!-- Magnifying glass lens (centered and properly sized) -->
-  <circle cx="50" cy="50" r="22" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <!-- Subtle gradient overlay for depth (GitHub style) -->
+  <defs>
+    <linearGradient id="githubGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
+    </linearGradient>
+    <filter id="innerShadow">
+      <feOffset dx="0" dy="1"/>
+      <feGaussianBlur stdDeviation="1" result="offset-blur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.2"/>
+      <feComposite in2="offset-blur" operator="in"/>
+    </filter>
+  </defs>
   
-  <!-- Magnifying glass handle (shorter, better positioned) -->
-  <line x1="67" y1="67" x2="78" y2="78" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
+  <path d="M20 0 h60 a20 20 0 0 1 20 20 v60 a20 20 0 0 1 -20 20 h-60 a20 20 0 0 1 -20 -20 v-60 a20 20 0 0 1 20 -20 z" fill="url(#githubGradient)" />
   
-  <!-- Gift box inside magnifying glass (centered) -->
-  <g transform="translate(50, 50)">
-    <!-- Gift box base -->
-    <rect x="-8" y="-6" width="16" height="14" fill="#ffffff" rx="1"/>
+  <!-- Magnifying glass lens (bright white like GitHub icons) -->
+  <circle cx="50" cy="50" r="28" fill="none" stroke="#ffffff" stroke-width="5" opacity="0.99"/>
+  
+  <!-- Magnifying glass handle (crisp white) -->
+  <line x1="71" y1="71" x2="85" y2="85" stroke="#ffffff" stroke-width="5" stroke-linecap="round" opacity="0.99"/>
+  
+  <!-- Gift box inside magnifying glass (GitHub white style) -->
+  <g transform="translate(45, 45)">
+    <!-- Gift box base with subtle shadow -->
+    <rect x="-10" y="-8" width="28" height="28" fill="#ffffff" rx="2" opacity="0.95"/>
+    <rect x="-9" y="-7" width="26" height="26" fill="none" stroke="#24292f" stroke-width="0.5" rx="1.5" opacity="0.3"/>
     
-    <!-- Gift ribbon vertical -->
-    <rect x="-1" y="-6" width="2" height="14" fill="#60A5FA"/>
+    <!-- Gift ribbon vertical (GitHub dark accent) -->
+    <rect x="2.5" y="-8" width="3" height="28" fill="#24292f" opacity="0.9"/>
     
-    <!-- Gift ribbon horizontal -->
-    <rect x="-8" y="0" width="16" height="2" fill="#60A5FA"/>
+    <!-- Gift ribbon horizontal (GitHub dark accent) -->
+    <rect x="-10" y="5" width="28" height="3" fill="#24292f" opacity="0.9"/>
     
-    <!-- Gift bow (angled upwards) -->
-    <ellipse cx="-2.5" cy="-7.5" rx="2.5" ry="1.5" fill="#ffffff" transform="rotate(15 -3 -9)"/>
-    <ellipse cx="2.5" cy="-7.5" rx="2.5" ry="1.5" fill="#ffffff" transform="rotate(-15 3 -9)"/>
-    <circle cx="0" cy="-7" r="1" fill="#60A5FA"/>
+    <!-- Gift bow (crisp white with dark outline) -->
+    <ellipse cx="-1.5" cy="-11" rx="5" ry="3" fill="#ffffff" transform="rotate(15 -2 -12)" opacity="0.95"/>
+    <ellipse cx="9" cy="-9.5" rx="5" ry="3" fill="#ffffff" transform="rotate(-15 4 -12)" opacity="0.95"/>
+    
+    <!-- Bow center knot -->
+    <circle cx="4" cy="-9" r="2" fill="#24292f" opacity="0.9"/>
+    
+    <!-- Bow subtle outlines for definition -->
+    <ellipse cx="-1.5" cy="-11" rx="5" ry="3" fill="none" stroke="#24292f" stroke-width="0.5" transform="rotate(15 -2 -12)" opacity="0.4"/>
+    <ellipse cx="9" cy="-9.5" rx="5" ry="3" fill="none" stroke="#24292f" stroke-width="0.5" transform="rotate(-15 4 -12)" opacity="0.4"/>
   </g>
   
-  <!-- Subtle inner shadow for depth -->
-  <path d="M20 0 h60 a20 20 0 0 1 20 20 v60 a20 20 0 0 1 -20 20 h-60 a20 20 0 0 1 -20 -20 v-60 a20 20 0 0 1 20 -20 z" fill="none" stroke="#000000" stroke-width="0.5" opacity="0.1"/>
+  <!-- GitHub-style border highlight -->
+  <path d="M20 1 h60 a19 19 0 0 1 19 19 v60 a19 19 0 0 1 -19 19 h-60 a19 19 0 0 1 -19 -19 v-60 a19 19 0 0 1 19 -19 z" 
+        fill="none" stroke="#ffffff" stroke-width="0.5" opacity="0.2"/>
+  
+  <!-- Subtle inner shadow for GitHub depth -->
+  <path d="M20 0 h60 a20 20 0 0 1 20 20 v60 a20 20 0 0 1 -20 20 h-60 a20 20 0 0 1 -20 -20 v-60 a20 20 0 0 1 20 -20 z" 
+        fill="none" stroke="#000000" stroke-width="1" opacity="0.1" filter="url(#innerShadow)"/>
 </svg>
