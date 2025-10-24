@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
-import { Star, Check, DollarSign, ExternalLink } from 'lucide-react';
+import { Star, Check, ExternalLink } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 import { CurrencyBadge } from '@/components/CurrencyBadge';
 
@@ -78,7 +78,7 @@ export const WishlistItemCard = ({
                 }
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-primary hover:underline flex items-center gap-1 break-all">
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 break-all">
                 {t('manageWishlist.viewLink')}
                 <ExternalLink className="w-3 h-3 flex-shrink-0" />
               </a>
@@ -87,6 +87,7 @@ export const WishlistItemCard = ({
           {!item.is_taken && (
             <Button
               onClick={() => onClaimItem(item.id)}
+              variant="default"
               className="flex-shrink-0">
               {t('publicWishlist.illGetThis')}
             </Button>

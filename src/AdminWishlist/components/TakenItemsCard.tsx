@@ -82,10 +82,10 @@ const TakenItemCard = ({
 
         {/* Expanded Content */}
         {isExpanded && (
-          <div className="px-4 pb-4 border-t bg-muted/20">
+          <div className="px-4 pb-2 border-t bg-muted/20">
             {/* Description */}
             {item.description && (
-              <div className="pt-3">
+              <div className="pt-2">
                 <p className="text-sm text-muted-foreground">
                   {item.description}
                 </p>
@@ -170,7 +170,7 @@ const TakenItemCard = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col gap-2 mt-4 pt-3 border-t">
+            <div className="flex flex-col gap-2 mt-2 pt-2 border-t">
               <Button
                 variant="outline"
                 size="sm"
