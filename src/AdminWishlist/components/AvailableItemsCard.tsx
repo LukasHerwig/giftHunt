@@ -56,9 +56,11 @@ const AvailableItemCard = ({
                   <Star className="w-3 h-3 text-yellow-500 dark:text-yellow-400 fill-current flex-shrink-0" />
                 )}
               </div>
+                {item.description && (
               <div className="text-xs text-muted-foreground">
-                {t('adminWishlist.availableForClaiming')}
+                  {item.description}
               </div>
+                )}
             </div>
 
             {/* Right side - Expand button */}
@@ -74,10 +76,10 @@ const AvailableItemCard = ({
 
         {/* Expanded Content */}
         {isExpanded && (
-          <div className="px-4 pb-4 border-t bg-muted/20">
+          <div className="px-4 pb-2 border-t bg-muted/20">
             {/* Description */}
             {item.description && (
-              <div className="mb-3 pt-3">
+              <div className="pt-2">
                 <p className="text-sm text-muted-foreground">
                   {item.description}
                 </p>
@@ -88,7 +90,7 @@ const AvailableItemCard = ({
             <div className="space-y-3">
               {/* Priority */}
               {wishlist?.enable_priority && item.priority > 0 && (
-                <div className="flex items-center justify-between text-sm pt-1">
+                <div className="flex items-center justify-between text-sm pt-2">
                   <span className="text-muted-foreground">
                     {t('adminWishlist.priority')}:
                   </span>
@@ -111,7 +113,7 @@ const AvailableItemCard = ({
 
               {/* Price */}
               {wishlist?.enable_price && item.price_range && (
-                <div className="flex items-center justify-between text-sm pt-1">
+                <div className="flex items-center justify-between text-sm pt-2">
                   <span className="text-muted-foreground">
                     {t('adminWishlist.price')}:
                   </span>
@@ -121,7 +123,7 @@ const AvailableItemCard = ({
 
               {/* Link */}
               {wishlist?.enable_links && item.link && (
-                <div className="flex items-center justify-between text-sm pt-1">
+                <div className="flex items-center justify-between text-sm pt-2">
                   <span className="text-muted-foreground">
                     {t('adminWishlist.link')}:
                   </span>
@@ -144,7 +146,7 @@ const AvailableItemCard = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-2 mt-4 pt-2 border-t">
+            <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t">
               <Button
                 variant="secondary"
                 size="sm"
