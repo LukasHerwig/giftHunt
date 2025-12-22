@@ -1,15 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { UserPlus, Loader2 } from 'lucide-react';
+import { UserPlus, Loader2, X, Check, Mail } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface InviteAdminDialogProps {
@@ -36,47 +29,85 @@ export const InviteAdminDialog = ({
 
   if (!canInviteAdmin) return null;
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-center text-[17px] font-semibold">
-            {t('inviteDialog.title')}
-          </DialogTitle>
-          <DialogDescription className="text-center text-[13px] text-ios-gray">
-            {t('inviteDialog.description')}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={onSubmit} className="p-6 pt-2 space-y-6">
-          <div className="bg-ios-background rounded-[12px] border border-ios-separator overflow-hidden">
-            <div className="px-4 py-3">
-              <Input
-                type="email"
-                placeholder={
-                  t('inviteDialog.emailPlaceholder') || 'Email address'
-                }
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50"
-                disabled={inviting}
-                required
-              />
+  const FormContent = () => (
+    <form onSubmit={onSubmit} className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 h-16">
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
+          <X className="w-5 h-5" />
+        </button>
+        <h2 className="text-[20px] font-bold text-foreground">
+          {t('inviteDialog.title')}
+        </h2>
+        <button
+          type="submit"
+          disabled={inviting || !inviteEmail.trim()}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
+          {inviting ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Check className="w-5 h-5" />
+          )}
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+        {/* Icon Placeholder */}
+        <div className="flex flex-col items-center">
+          <div className="w-48 h-48 relative">
+            <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+            <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative">
+                <Mail className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+                <Mail className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+                <Mail className="w-32 h-32 text-ios-blue relative z-10" />
+              </div>
             </div>
           </div>
-          <Button
-            type="submit"
-            className="w-full bg-ios-blue hover:bg-ios-blue/90 text-white rounded-[12px] py-6 font-semibold text-[17px] shadow-lg active:opacity-70 transition-all"
-            disabled={inviting}>
-            {inviting ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {t('inviteDialog.sending') || 'Sending...'}
-              </>
-            ) : (
-              t('inviteDialog.sendButton') || 'Send Invitation'
-            )}
-          </Button>
-        </form>
+          <p className="text-center text-[15px] text-ios-gray max-w-[260px] mt-4">
+            {t('inviteDialog.description')}
+          </p>
+        </div>
+
+        {/* Inputs */}
+        <div className="space-y-6">
+          <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+            <input
+              type="email"
+              placeholder={
+                t('inviteDialog.emailPlaceholder') || 'Email address'
+              }
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+              disabled={inviting}
+              required
+            />
+          </div>
+        </div>
+      </div>
+    </form>
+  );
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
+          <FormContent />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        hideClose
+        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
+        <FormContent />
       </DialogContent>
     </Dialog>
   );

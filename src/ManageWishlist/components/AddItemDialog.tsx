@@ -1,15 +1,7 @@
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -18,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2, X, Check, Gift } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Wishlist, ItemFormData } from '../types';
 
@@ -44,147 +36,169 @@ export const AddItemDialog = ({
   const { t } = useTranslation();
   const isMobile = useIsMobile();
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-4 py-2 h-auto font-medium text-[15px] shadow-sm active:opacity-70 transition-all">
-          <Plus className="w-4 h-4 mr-1.5" />
-          {t('manageWishlist.addItem')}
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator p-0 overflow-hidden">
-        <DialogHeader className="p-6 pb-2">
-          <DialogTitle className="text-center text-[17px] font-semibold">
-            {t('addItemDialog.title')}
-          </DialogTitle>
-          <DialogDescription className="text-center text-[13px] text-ios-gray">
-            {t('addItemDialog.description')}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={onSubmit} className="p-6 pt-2 space-y-6">
-          <div className="bg-ios-background rounded-[12px] border border-ios-separator overflow-hidden">
-            <div className="px-4 py-3 border-b border-ios-separator">
-              <Label
-                htmlFor="title"
-                className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
-                {t('addItemDialog.titleLabel')} *
-              </Label>
-              <Input
-                id="title"
-                placeholder={t('addItemDialog.titlePlaceholder')}
-                value={newItem.title}
-                onChange={(e) =>
-                  setNewItem({ ...newItem, title: e.target.value })
-                }
-                className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50"
-                disabled={adding}
-                required
-              />
-            </div>
+  const FormContent = () => (
+    <form onSubmit={onSubmit} className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 h-16">
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
+          <X className="w-5 h-5" />
+        </button>
+        <h2 className="text-[20px] font-bold text-foreground">
+          {t('addItemDialog.title')}
+        </h2>
+        <button
+          type="submit"
+          disabled={adding || !newItem.title.trim()}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
+          {adding ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Check className="w-5 h-5" />
+          )}
+        </button>
+      </div>
 
-            <div className="px-4 py-3 border-b border-ios-separator">
-              <Label
-                htmlFor="description"
-                className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
-                {t('addItemDialog.descriptionLabel')}
-              </Label>
-              <Textarea
-                id="description"
+      <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+        {/* Icon Placeholder (No Image Upload) */}
+        <div className="flex flex-col items-center">
+          <div className="w-48 h-48 relative">
+            <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+            <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative">
+                <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+                <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+                <Gift className="w-32 h-32 text-ios-blue relative z-10" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Inputs */}
+        <div className="space-y-6">
+          <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+            <input
+              placeholder={t('addItemDialog.titlePlaceholder')}
+              value={newItem.title}
+              onChange={(e) =>
+                setNewItem({ ...newItem, title: e.target.value })
+              }
+              className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+              disabled={adding}
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
+              {t('addItemDialog.descriptionLabel')}
+            </Label>
+            <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+              <textarea
                 placeholder={t('addItemDialog.descriptionPlaceholder')}
                 value={newItem.description}
                 onChange={(e) =>
                   setNewItem({ ...newItem, description: e.target.value })
                 }
-                className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50 resize-none min-h-[80px]"
+                className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground resize-none"
+                rows={3}
                 disabled={adding}
               />
             </div>
+          </div>
 
-            {wishlist?.enable_links && (
-              <div className="px-4 py-3 border-b border-ios-separator">
-                <Label
-                  htmlFor="link"
-                  className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
-                  {t('addItemDialog.linkLabel')}
-                </Label>
-                <Input
-                  id="link"
+          {wishlist?.enable_links && (
+            <div className="space-y-2">
+              <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
+                {t('addItemDialog.linkLabel')}
+              </Label>
+              <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                <input
                   placeholder={t('addItemDialog.linkPlaceholder')}
                   value={newItem.link}
                   onChange={(e) =>
                     setNewItem({ ...newItem, link: e.target.value })
                   }
-                  className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50"
+                  className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
                   disabled={adding}
                 />
               </div>
-            )}
+            </div>
+          )}
 
+          <div className="grid grid-cols-2 gap-4">
             {wishlist?.enable_price && (
-              <div className="px-4 py-3 border-b border-ios-separator">
-                <Label
-                  htmlFor="price"
-                  className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
+              <div className="space-y-2">
+                <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
                   {t('addItemDialog.priceLabel')}
                 </Label>
-                <Input
-                  id="price"
-                  placeholder={t('addItemDialog.pricePlaceholder')}
-                  value={newItem.priceRange}
-                  onChange={(e) =>
-                    setNewItem({ ...newItem, priceRange: e.target.value })
-                  }
-                  className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50"
-                  disabled={adding}
-                />
+                <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                  <input
+                    placeholder={t('addItemDialog.pricePlaceholder')}
+                    value={newItem.priceRange}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, priceRange: e.target.value })
+                    }
+                    className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+                    disabled={adding}
+                  />
+                </div>
               </div>
             )}
 
             {wishlist?.enable_priority && (
-              <div className="px-4 py-3">
-                <Label
-                  htmlFor="priority"
-                  className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
+              <div className="space-y-2">
+                <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
                   {t('addItemDialog.priorityLabel')}
                 </Label>
-                <Select
-                  value={newItem.priority?.toString() || 'none'}
-                  onValueChange={(value) =>
-                    setNewItem({
-                      ...newItem,
-                      priority: value === 'none' ? null : parseInt(value),
-                    })
-                  }>
-                  <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none">
-                    <SelectValue
-                      placeholder={t('addItemDialog.priorityPlaceholder')}
-                    />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-[12px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
-                    <SelectItem value="none">{t('priority.none')}</SelectItem>
-                    <SelectItem value="1">{t('priority.low')}</SelectItem>
-                    <SelectItem value="2">{t('priority.medium')}</SelectItem>
-                    <SelectItem value="3">{t('priority.high')}</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                  <Select
+                    value={newItem.priority?.toString() || 'none'}
+                    onValueChange={(value) =>
+                      setNewItem({
+                        ...newItem,
+                        priority: value === 'none' ? null : parseInt(value),
+                      })
+                    }>
+                    <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none text-foreground">
+                      <SelectValue
+                        placeholder={t('addItemDialog.priorityPlaceholder')}
+                      />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
+                      <SelectItem value="none">{t('priority.none')}</SelectItem>
+                      <SelectItem value="1">{t('priority.low')}</SelectItem>
+                      <SelectItem value="2">{t('priority.medium')}</SelectItem>
+                      <SelectItem value="3">{t('priority.high')}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
             )}
           </div>
+        </div>
+      </div>
+    </form>
+  );
 
-          <Button
-            type="submit"
-            className="w-full bg-ios-blue hover:bg-ios-blue/90 text-white rounded-[12px] py-6 font-semibold text-[17px] shadow-lg active:opacity-70 transition-all"
-            disabled={adding}>
-            {adding ? (
-              <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                {t('addItemDialog.adding')}
-              </>
-            ) : (
-              t('addItemDialog.addButton')
-            )}
-          </Button>
-        </form>
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
+          <FormContent />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        hideClose
+        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
+        <FormContent />
       </DialogContent>
     </Dialog>
   );

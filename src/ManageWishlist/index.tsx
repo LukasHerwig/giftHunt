@@ -126,17 +126,10 @@ const ManageWishlist = () => {
 
         {/* Title Card */}
         <div className="absolute inset-x-0 bottom-16 px-4 flex justify-center">
-          <div className="w-full max-w-3xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[32px] px-8 py-8 flex items-center justify-between shadow-2xl">
+          <div className="w-full max-w-3xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[32px] px-8 py-8 flex items-center justify-center shadow-2xl">
             <h1 className="text-[32px] font-bold text-white tracking-tight leading-tight">
               {wishlist?.title || t('manageWishlist.title')}
             </h1>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => setSettingsDialogOpen(true)}
-                className="w-12 h-12 flex items-center justify-center bg-black/40 rounded-full text-white/90 hover:text-white transition-colors">
-                <Edit2 className="w-5 h-5" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -153,11 +146,11 @@ const ManageWishlist = () => {
             </span>
           </Button>
           <Button
-            onClick={() => setDeleteDialogOpen(true)}
-            className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-[#FF453A] rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">
-            <Trash2 className="w-6 h-6" />
+            onClick={() => setSettingsDialogOpen(true)}
+            className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-foreground rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">
+            <Edit2 className="w-6 h-6" />
             <span className="text-[17px] font-semibold">
-              {t('common.delete')}
+              {t('common.edit')}
             </span>
           </Button>
         </div>
