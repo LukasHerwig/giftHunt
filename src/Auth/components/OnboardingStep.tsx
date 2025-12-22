@@ -61,7 +61,6 @@ export const OnboardingStep = ({
                   className="w-full h-12 bg-transparent text-[17px] outline-none placeholder-[#C7C7CC] dark:placeholder-[#48484A]"
                   disabled={loading}
                   required
-                  autoFocus
                 />
               </div>
             </div>

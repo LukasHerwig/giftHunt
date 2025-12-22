@@ -23,27 +23,35 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter basename={import.meta.env.PROD ? '/giftHunt' : ''}>
-          <AuthProvider>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/onboarding" element={<Onboarding />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/shared-wishlists" element={<SharedWishlists />} />
-              <Route path="/wishlist/:id/manage" element={<ManageWishlist />} />
-              <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
-              <Route path="/accept-invitation" element={<AcceptInvitation />} />
-              <Route path="/shared/:token" element={<PublicWishlist />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            {/* Temporary testing component - remove after testing */}
-            {/* <AuthTester /> */}
-          </AuthProvider>
-        </BrowserRouter>
+        <div vaul-drawer-wrapper="" className="min-h-screen bg-ios-background">
+          <Toaster />
+          <Sonner />
+          <BrowserRouter basename={import.meta.env.PROD ? '/giftHunt' : ''}>
+            <AuthProvider>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/onboarding" element={<Onboarding />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/shared-wishlists" element={<SharedWishlists />} />
+                <Route
+                  path="/wishlist/:id/manage"
+                  element={<ManageWishlist />}
+                />
+                <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
+                <Route
+                  path="/accept-invitation"
+                  element={<AcceptInvitation />}
+                />
+                <Route path="/shared/:token" element={<PublicWishlist />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+              {/* Temporary testing component - remove after testing */}
+              {/* <AuthTester /> */}
+            </AuthProvider>
+          </BrowserRouter>
+        </div>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

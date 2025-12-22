@@ -68,7 +68,8 @@
     "enablePriority": "Enable priority levels",
     "enablePriorityDescription": "Allow setting priority levels on items",
     "createButton": "Create Wishlist",
-    "creating": "Creating..."
+    "creating": "Creating...",
+    "addPhoto": "Add Photo"
   },
   "createWishlistDialog": {
     "title": "Create New Wishlist",

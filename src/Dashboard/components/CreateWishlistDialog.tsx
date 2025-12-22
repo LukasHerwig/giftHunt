@@ -3,15 +3,19 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X, Check, Gift, Camera } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CreateWishlistDialogProps {
   open: boolean;
@@ -30,135 +34,147 @@ interface CreateWishlistDialogProps {
   creating: boolean;
 }
 
-export const CreateWishlistDialog = ({
-  open,
-  onOpenChange,
-  onSubmit,
-  newTitle,
-  onTitleChange,
-  newDescription,
-  onDescriptionChange,
-  enableLinks,
-  onEnableLinksChange,
-  enablePrice,
-  onEnablePriceChange,
-  enablePriority,
-  onEnablePriorityChange,
-  creating,
-}: CreateWishlistDialogProps) => {
+export const CreateWishlistDialog = (props: CreateWishlistDialogProps) => {
+  const isMobile = useIsMobile();
   const { t } = useTranslation();
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[20px] shadow-2xl">
-        <DialogHeader className="p-6 pb-2 text-center">
-          <DialogTitle className="text-[17px] font-semibold text-ios-label-primary">
-            {t('createWishlistDialog.title')}
-          </DialogTitle>
-          <DialogDescription className="text-[13px] text-ios-label-secondary">
-            {t('createWishlistDialog.description')}
-          </DialogDescription>
-        </DialogHeader>
+  const FormContent = () => (
+    <form onSubmit={props.onSubmit} className="flex flex-col h-full">
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 h-16">
+        <button
+          type="button"
+          onClick={() => props.onOpenChange(false)}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
+          <X className="w-5 h-5" />
+        </button>
+        <h2 className="text-[20px] font-bold text-foreground">
+          {t('createWishlistDialog.title')}
+        </h2>
+        <button
+          type="submit"
+          disabled={props.creating || !props.newTitle.trim()}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
+          {props.creating ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : (
+            <Check className="w-5 h-5" />
+          )}
+        </button>
+      </div>
 
-        <form onSubmit={onSubmit} className="p-4 space-y-6">
-          <div className="space-y-0.5">
-            <div className="bg-ios-background rounded-[10px] overflow-hidden divide-y divide-ios-separator border border-ios-separator/50">
-              <div className="px-4">
-                <input
-                  placeholder={t('createWishlistDialog.titlePlaceholder')}
-                  value={newTitle}
-                  onChange={(e) => onTitleChange(e.target.value)}
-                  className="w-full h-11 bg-transparent text-[17px] outline-none placeholder-ios-label-tertiary text-ios-label-primary"
-                  disabled={creating}
-                />
-              </div>
-              <div className="px-4 py-2">
-                <textarea
-                  placeholder={t('createWishlistDialog.descriptionPlaceholder')}
-                  value={newDescription}
-                  onChange={(e) => onDescriptionChange(e.target.value)}
-                  className="w-full bg-transparent text-[17px] outline-none placeholder-ios-label-tertiary text-ios-label-primary resize-none"
-                  rows={3}
-                  disabled={creating}
-                />
+      <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+        {/* Icon Placeholder */}
+        <div className="flex flex-col items-center">
+          <div className="w-48 h-48 relative">
+            <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+            <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative">
+                <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+                <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+                <Gift className="w-32 h-32 text-ios-blue relative z-10" />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Inputs */}
+        <div className="space-y-6">
+          <div className="bg-ios-background/50 rounded-[16px] px-4 py-4 border border-ios-separator/5">
+            <input
+              placeholder={t('createWishlistDialog.titlePlaceholder')}
+              value={props.newTitle}
+              onChange={(e) => props.onTitleChange(e.target.value)}
+              className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+              disabled={props.creating}
+            />
+          </div>
+
+          <div className="bg-ios-background/50 rounded-[16px] px-4 py-4 border border-ios-separator/5">
+            <textarea
+              placeholder={t('createWishlistDialog.descriptionPlaceholder')}
+              value={props.newDescription}
+              onChange={(e) => props.onDescriptionChange(e.target.value)}
+              className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground resize-none"
+              rows={2}
+              disabled={props.creating}
+            />
           </div>
 
           {/* Configuration Options */}
           <div className="space-y-2">
-            <h4 className="px-4 text-[13px] font-normal text-ios-label-secondary uppercase tracking-wider">
+            <h4 className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
               {t('createWishlistDialog.itemFeatures')}
             </h4>
 
-            <div className="bg-ios-background rounded-[10px] overflow-hidden divide-y divide-ios-separator border border-ios-separator/50">
-              <div className="flex items-center justify-between px-4 h-11">
+            <div className="bg-ios-background/50 rounded-[16px] overflow-hidden divide-y divide-ios-separator/10 border border-ios-separator/5">
+              <div className="flex items-center justify-between px-4 h-12">
                 <Label
                   htmlFor="enable-links"
-                  className="text-[17px] font-normal text-ios-label-primary">
+                  className="text-[17px] font-normal text-foreground">
                   {t('createWishlistDialog.enableLinks')}
                 </Label>
                 <Switch
                   id="enable-links"
-                  checked={enableLinks}
-                  onCheckedChange={onEnableLinksChange}
-                  disabled={creating}
-                  className="data-[state=checked]:bg-ios-green"
+                  checked={props.enableLinks}
+                  onCheckedChange={props.onEnableLinksChange}
+                  disabled={props.creating}
+                  className="data-[state=checked]:bg-ios-blue"
                 />
               </div>
 
-              <div className="flex items-center justify-between px-4 h-11">
+              <div className="flex items-center justify-between px-4 h-12">
                 <Label
                   htmlFor="enable-price"
-                  className="text-[17px] font-normal text-ios-label-primary">
+                  className="text-[17px] font-normal text-foreground">
                   {t('createWishlistDialog.enablePrice')}
                 </Label>
                 <Switch
                   id="enable-price"
-                  checked={enablePrice}
-                  onCheckedChange={onEnablePriceChange}
-                  disabled={creating}
-                  className="data-[state=checked]:bg-ios-green"
+                  checked={props.enablePrice}
+                  onCheckedChange={props.onEnablePriceChange}
+                  disabled={props.creating}
+                  className="data-[state=checked]:bg-ios-blue"
                 />
               </div>
 
-              <div className="flex items-center justify-between px-4 h-11">
+              <div className="flex items-center justify-between px-4 h-12">
                 <Label
                   htmlFor="enable-priority"
-                  className="text-[17px] font-normal text-ios-label-primary">
+                  className="text-[17px] font-normal text-foreground">
                   {t('createWishlistDialog.enablePriority')}
                 </Label>
                 <Switch
                   id="enable-priority"
-                  checked={enablePriority}
-                  onCheckedChange={onEnablePriorityChange}
-                  disabled={creating}
-                  className="data-[state=checked]:bg-ios-green"
+                  checked={props.enablePriority}
+                  onCheckedChange={props.onEnablePriorityChange}
+                  disabled={props.creating}
+                  className="data-[state=checked]:bg-ios-blue"
                 />
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </form>
+  );
 
-          <div className="flex flex-col gap-3 pt-2">
-            <button
-              type="submit"
-              className="w-full h-12 bg-ios-blue text-white rounded-[12px] text-[17px] font-semibold active:opacity-70 transition-all disabled:opacity-50 flex items-center justify-center"
-              disabled={creating}>
-              {creating ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                t('createWishlistDialog.createButton')
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              className="w-full h-12 text-ios-blue text-[17px] font-normal active:opacity-50 transition-all"
-              disabled={creating}>
-              {t('common.cancel')}
-            </button>
-          </div>
-        </form>
+  if (isMobile) {
+    return (
+      <Drawer open={props.open} onOpenChange={props.onOpenChange}>
+        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
+          <FormContent />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      <DialogContent
+        hideClose
+        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
+        <FormContent />
       </DialogContent>
     </Dialog>
   );

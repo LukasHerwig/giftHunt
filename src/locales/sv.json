@@ -68,7 +68,8 @@
     "enablePriority": "Aktivera prioritetsnivåer",
     "enablePriorityDescription": "Tillåt att sätta prioritetsnivåer på önskningar",
     "createButton": "Skapa Önskelista",
-    "creating": "Skapar..."
+    "creating": "Skapar...",
+    "addPhoto": "Lägg till bild"
   },
   "createWishlistDialog": {
     "title": "Skapa Ny Önskelista",
