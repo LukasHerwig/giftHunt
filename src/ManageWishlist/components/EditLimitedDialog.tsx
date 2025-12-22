@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, X, Check, Gift } from 'lucide-react';
+import { Loader2, X, Check, Gift, Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { WishlistItem, Wishlist } from '../types';
 
@@ -27,6 +27,7 @@ interface EditLimitedDialogProps {
   priority: number | null;
   setPriority: (priority: number | null) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
+  onDelete?: () => void;
   updating: boolean;
 }
 
@@ -47,18 +48,21 @@ const FormContent = ({
   priority,
   setPriority,
   onSubmit,
+  onDelete,
   updating,
   t,
 }: FormContentProps) => (
   <form onSubmit={onSubmit} className="flex flex-col h-full">
     {/* Header */}
     <div className="flex items-center justify-between px-4 h-16">
-      <button
-        type="button"
-        onClick={() => onOpenChange(false)}
-        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
-        <X className="w-5 h-5" />
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
       <h2 className="text-[20px] font-bold text-foreground">
         {t('editLimitedDialog.title')}
       </h2>
@@ -228,6 +232,18 @@ const FormContent = ({
             </div>
           )}
         </div>
+
+        {onDelete && (
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={onDelete}
+              className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              {t('editLimitedDialog.removeItem')}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   </form>

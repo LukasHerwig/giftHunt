@@ -195,7 +195,9 @@
     "priorityLabel": "Priority",
     "priorityPlaceholder": "Select priority (optional)",
     "updateButton": "Update Item",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "removeItem": "Remove Item",
+    "removeItem": "Remove Item"
   },
   "editLimitedDialog": {
     "title": "Edit Item",

@@ -59,7 +59,7 @@ const Dashboard = () => {
         creating={creating}
       />
 
-      <main className="mx-auto max-w-2xl w-full">
+      <main className="mx-auto max-w-4xl w-full">
         <div className="px-4 pt-4 mb-8">
           <h1 className="text-[34px] font-bold tracking-tight text-foreground">
             {t('dashboard.title')}

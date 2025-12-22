@@ -134,7 +134,7 @@ const ManageWishlist = () => {
         </div>
       </div>
 
-      <main className="container mx-auto px-4 max-w-3xl -mt-10 relative z-10">
+      <main className="container mx-auto px-4 max-w-4xl -mt-10 relative z-10">
         {/* Action Buttons */}
         <div className="flex gap-4 mb-10">
           <Button
@@ -205,6 +205,12 @@ const ManageWishlist = () => {
             editItem={editItem}
             setEditItem={setEditItem}
             onSubmit={handleUpdateItem}
+            onDelete={() => {
+              if (editingItem) {
+                handleDeleteItem(editingItem.id);
+                setEditDialogOpen(false);
+              }
+            }}
             updating={updating}
           />
 
@@ -222,6 +228,12 @@ const ManageWishlist = () => {
             priority={editPriorityLimited}
             setPriority={setEditPriorityLimited}
             onSubmit={handleUpdateDescriptionOnly}
+            onDelete={() => {
+              if (editingDescriptionItem) {
+                handleDeleteItem(editingDescriptionItem.id);
+                setEditDescriptionDialogOpen(false);
+              }
+            }}
             updating={updating}
           />
 

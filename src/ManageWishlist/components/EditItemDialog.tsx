@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2, X, Check, Gift } from 'lucide-react';
+import { Loader2, X, Check, Gift, Trash2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Wishlist, ItemFormData } from '../types';
 
@@ -20,12 +20,14 @@ interface EditItemDialogProps {
   editItem: ItemFormData;
   setEditItem: (item: ItemFormData) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
+  onDelete?: () => void;
   updating: boolean;
 }
 
 interface FormContentProps {
   onSubmit: (e: React.FormEvent) => Promise<void>;
   onOpenChange: (open: boolean) => void;
+  onDelete?: () => void;
   updating: boolean;
   editItem: ItemFormData;
   setEditItem: (item: ItemFormData) => void;
@@ -36,6 +38,7 @@ interface FormContentProps {
 const FormContent = ({
   onSubmit,
   onOpenChange,
+  onDelete,
   updating,
   editItem,
   setEditItem,
@@ -45,12 +48,14 @@ const FormContent = ({
   <form onSubmit={onSubmit} className="flex flex-col h-full">
     {/* Header */}
     <div className="flex items-center justify-between px-4 h-16">
-      <button
-        type="button"
-        onClick={() => onOpenChange(false)}
-        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
-        <X className="w-5 h-5" />
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
       <h2 className="text-[20px] font-bold text-foreground">
         {t('editItemDialog.title')}
       </h2>
@@ -87,7 +92,9 @@ const FormContent = ({
           <input
             placeholder={t('editItemDialog.titlePlaceholder')}
             value={editItem.title}
-            onChange={(e) => setNewItem({ ...editItem, title: e.target.value })}
+            onChange={(e) =>
+              setEditItem({ ...editItem, title: e.target.value })
+            }
             className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
             disabled={updating}
             required
@@ -181,6 +188,18 @@ const FormContent = ({
             </div>
           )}
         </div>
+
+        {onDelete && (
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={onDelete}
+              className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              {t('editItemDialog.removeItem')}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   </form>
@@ -193,6 +212,7 @@ export const EditItemDialog = ({
   editItem,
   setEditItem,
   onSubmit,
+  onDelete,
   updating,
 }: EditItemDialogProps) => {
   const { t } = useTranslation();
@@ -201,6 +221,7 @@ export const EditItemDialog = ({
   const formProps = {
     onSubmit,
     onOpenChange,
+    onDelete,
     updating,
     editItem,
     setEditItem,

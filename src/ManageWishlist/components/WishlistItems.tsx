@@ -103,144 +103,53 @@ export const WishlistItems = ({
   }
 
   return (
-    <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
-      {items.map((item, index) => (
-        <div key={item.id}>
-          {index > 0 && <div className="ml-4 border-t border-ios-separator" />}
-          <div className="p-4 flex items-start justify-between gap-3 active:bg-ios-tertiary transition-colors">
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <h4 className="text-[17px] font-semibold text-foreground break-words">
-                  {item.title}
-                </h4>
-                {item.priority === 3 && (
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                )}
-              </div>
-
-              {item.description && (
-                <p className="text-[15px] text-ios-gray mb-2 break-words leading-snug">
-                  {item.description}
-                </p>
-              )}
-
-              <div className="flex flex-wrap gap-2 mb-2">
-                {wishlist?.enable_price && item.price_range && (
-                  <CurrencyBadge amount={item.price_range} />
-                )}
-                {wishlist?.enable_priority &&
-                  item.priority &&
-                  item.priority > 0 && (
-                    <span
-                      className={`px-2 py-0.5 text-[12px] font-medium rounded-full ${
-                        item.priority === 3
-                          ? 'bg-destructive/10 text-destructive'
-                          : item.priority === 2
-                          ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-400'
-                          : 'bg-ios-tertiary text-ios-gray'
-                      }`}>
-                      {item.priority === 3
-                        ? t('priority.high')
-                        : item.priority === 2
-                        ? t('priority.medium')
-                        : t('priority.low')}
-                    </span>
-                  )}
-              </div>
-
-              {wishlist?.enable_links && item.link && (
-                <a
-                  href={formatUrl(item.link)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[15px] text-ios-blue hover:underline flex items-center gap-1 break-all">
-                  {t('manageWishlist.viewLink')}
-                  <ExternalLink className="w-3.5 h-3.5 flex-shrink-0" />
-                </a>
-              )}
-            </div>
-
-            <div className="flex gap-1 self-center">
-              {/* Edit button with conditional functionality */}
-              {hasActiveShareLink ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => onEditDescriptionOnly?.(item)}
-                      className="text-ios-blue hover:bg-transparent active:opacity-50 h-9 w-9">
-                      <Edit className="w-5 h-5" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{t('messages.editDescriptionOnlyTooltip')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEditItem(item)}
-                  className="text-ios-blue hover:bg-transparent active:opacity-50 h-9 w-9">
-                  <Edit className="w-5 h-5" />
-                </Button>
-              )}
-              <AlertDialog>
-                {hasActiveShareLink ? (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span onClick={handleDisabledDeleteClick}>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          disabled={hasActiveShareLink}
-                          className="text-destructive hover:bg-transparent active:opacity-50 h-9 w-9 disabled:opacity-30">
-                          <Trash2 className="w-5 h-5" />
-                        </Button>
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{t('messages.deleteDisabledTooltip')}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                ) : (
-                  <AlertDialogTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled={hasActiveShareLink}
-                      className="text-destructive hover:bg-transparent active:opacity-50 h-9 w-9 disabled:opacity-30">
-                      <Trash2 className="w-5 h-5" />
-                    </Button>
-                  </AlertDialogTrigger>
-                )}
-                <AlertDialogContent className="rounded-[14px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
-                  <AlertDialogHeader>
-                    <AlertDialogTitle className="text-center text-[17px] font-semibold">
-                      {t('deleteDialog.title')}
-                    </AlertDialogTitle>
-                    <AlertDialogDescription className="text-center text-[13px] text-foreground">
-                      {t('deleteDialog.description', {
-                        title: item.title,
-                      })}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-ios-separator mt-4">
-                    <AlertDialogAction
-                      onClick={() => onDeleteItem(item.id)}
-                      className="bg-transparent text-destructive hover:bg-transparent active:bg-ios-tertiary font-semibold text-[17px] py-3 rounded-none border-b border-ios-separator">
-                      {t('deleteDialog.delete')}
-                    </AlertDialogAction>
-                    <AlertDialogCancel className="bg-transparent border-none text-ios-blue hover:bg-transparent active:bg-ios-tertiary font-normal text-[17px] py-3 rounded-none">
-                      {t('deleteDialog.cancel')}
-                    </AlertDialogCancel>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+      {items.map((item) => (
+        <button
+          key={item.id}
+          onClick={() =>
+            hasActiveShareLink
+              ? onEditDescriptionOnly?.(item)
+              : onEditItem(item)
+          }
+          className="relative aspect-square bg-ios-secondary rounded-[24px] overflow-hidden group active:scale-[0.97] transition-all text-left border border-ios-separator/5 shadow-sm">
+          {/* Image Placeholder */}
+          <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ios-tertiary/10 to-ios-tertiary/30">
+            <div className="relative">
+              <Gift className="w-12 h-12 text-ios-blue opacity-10 absolute -top-2 -left-2" />
+              <Gift className="w-16 h-16 text-ios-blue opacity-20 absolute top-2 left-2" />
+              <Gift className="w-20 h-20 text-ios-blue relative z-10" />
             </div>
           </div>
-        </div>
+
+          {/* Badges */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            {item.priority === 3 && (
+              <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-full border border-white/10">
+                <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
+              </div>
+            )}
+            {wishlist?.enable_price && item.price_range && (
+              <div className="bg-black/20 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
+                <span className="text-[10px] font-bold text-white">
+                  {item.price_range}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Title Overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+            <h4 className="text-[15px] font-bold text-white truncate leading-tight">
+              {item.title}
+            </h4>
+            {item.description && (
+              <p className="text-[11px] text-white/60 truncate mt-0.5">
+                {item.description}
+              </p>
+            )}
+          </div>
+        </button>
       ))}
     </div>
   );

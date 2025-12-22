@@ -1,8 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/button';
-import { Star, Check, ExternalLink, ChevronRight } from 'lucide-react';
+import { Star, Check, Gift } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
-import { CurrencyBadge } from '@/components/CurrencyBadge';
 
 interface WishlistItemCardProps {
   item: WishlistItem;
@@ -18,77 +16,56 @@ export const WishlistItemCard = ({
   const { t } = useTranslation();
 
   return (
-    <div
-      className={`flex items-center justify-between p-4 active:bg-ios-tertiary transition-colors ${
-        item.is_taken ? 'opacity-50' : ''
+    <button
+      onClick={() => !item.is_taken && onClaimItem(item.id)}
+      disabled={item.is_taken}
+      className={`relative aspect-square bg-ios-secondary rounded-[24px] overflow-hidden group active:scale-[0.97] transition-all text-left border border-ios-separator/5 shadow-sm ${
+        item.is_taken ? 'opacity-50 grayscale-[0.5]' : ''
       }`}>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-0.5">
-          <h3 className="text-[17px] font-medium truncate">{item.title}</h3>
-          {item.priority === 3 && (
-            <Star className="w-4 h-4 text-ios-yellow fill-current" />
-          )}
-          {item.is_taken && (
-            <span className="flex items-center gap-1 text-[13px] text-ios-label-secondary">
-              <Check className="w-3.5 h-3.5 text-ios-green" />
-              {t('publicWishlist.taken')}
-            </span>
-          )}
-        </div>
-
-        {item.description && (
-          <p className="text-[13px] text-ios-label-secondary line-clamp-1 mb-1">
-            {item.description}
-          </p>
-        )}
-
-        <div className="flex flex-wrap gap-2 items-center">
-          {wishlist?.enable_price && item.price_range && (
-            <CurrencyBadge amount={item.price_range} />
-          )}
-          {wishlist?.enable_priority && item.priority > 0 && (
-            <span
-              className={`text-[12px] font-medium ${
-                item.priority === 3
-                  ? 'text-ios-red'
-                  : item.priority === 2
-                  ? 'text-ios-yellow'
-                  : 'text-ios-label-secondary'
-              }`}>
-              {item.priority === 3
-                ? t('priority.high')
-                : item.priority === 2
-                ? t('priority.medium')
-                : t('priority.low')}
-            </span>
-          )}
-          {wishlist?.enable_links && item.link && (
-            <a
-              href={
-                item.link.startsWith('http')
-                  ? item.link
-                  : `https://${item.link}`
-              }
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[13px] text-ios-blue hover:underline flex items-center gap-0.5"
-              onClick={(e) => e.stopPropagation()}>
-              {t('manageWishlist.viewLink')}
-              <ExternalLink className="w-3 h-3" />
-            </a>
-          )}
+      {/* Image Placeholder */}
+      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ios-tertiary/10 to-ios-tertiary/30">
+        <div className="relative">
+          <Gift className="w-12 h-12 text-ios-blue opacity-10 absolute -top-2 -left-2" />
+          <Gift className="w-16 h-16 text-ios-blue opacity-20 absolute top-2 left-2" />
+          <Gift className="w-20 h-20 text-ios-blue relative z-10" />
         </div>
       </div>
 
-      {!item.is_taken && (
-        <Button
-          onClick={() => onClaimItem(item.id)}
-          variant="ghost"
-          className="h-auto py-1.5 px-3 text-ios-blue hover:bg-transparent active:opacity-50 font-medium text-[15px] flex items-center gap-1">
-          {t('publicWishlist.illGetThis')}
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-      )}
-    </div>
+      {/* Badges */}
+      <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        {item.priority === 3 && (
+          <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-full border border-white/10">
+            <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
+          </div>
+        )}
+        {wishlist?.enable_price && item.price_range && (
+          <div className="bg-black/20 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
+            <span className="text-[10px] font-bold text-white">
+              {item.price_range}
+            </span>
+          </div>
+        )}
+        {item.is_taken && (
+          <div className="bg-ios-green/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-green/30 flex items-center gap-1">
+            <Check className="w-3 h-3 text-ios-green" />
+            <span className="text-[10px] font-bold text-ios-green uppercase tracking-wider">
+              {t('publicWishlist.taken')}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Title Overlay */}
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        <h4 className="text-[15px] font-bold text-white truncate leading-tight">
+          {item.title}
+        </h4>
+        {item.description && (
+          <p className="text-[11px] text-white/60 truncate mt-0.5">
+            {item.description}
+          </p>
+        )}
+      </div>
+    </button>
   );
 };

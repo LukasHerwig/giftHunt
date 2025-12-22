@@ -50,7 +50,7 @@ const PublicWishlist = () => {
     <div className="min-h-screen bg-ios-background">
       <WishlistHeader wishlist={wishlist} />
 
-      <main className="pb-20">
+      <main className="pb-20 max-w-4xl mx-auto">
         <div className="px-4 py-4">
           <InfoSection />
         </div>
@@ -59,18 +59,14 @@ const PublicWishlist = () => {
           {items.length === 0 ? (
             <EmptyWishlistState />
           ) : (
-            <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
-              {items.map((item, index) => (
-                <div key={item.id}>
-                  <WishlistItemCard
-                    item={item}
-                    wishlist={wishlist}
-                    onClaimItem={openClaimDialog}
-                  />
-                  {index < items.length - 1 && (
-                    <div className="ml-16 border-b border-ios-separator" />
-                  )}
-                </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {items.map((item) => (
+                <WishlistItemCard
+                  key={item.id}
+                  item={item}
+                  wishlist={wishlist}
+                  onClaimItem={openClaimDialog}
+                />
               ))}
             </div>
           )}

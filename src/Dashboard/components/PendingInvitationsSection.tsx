@@ -32,7 +32,7 @@ export const PendingInvitationsSection = ({
         <AlertCircle className="w-4 h-4" />
         {t('dashboard.pendingInvitations')}
       </h2>
-      <div className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {invitations.map((invitation) => (
           <div
             key={invitation.id}
