@@ -9,15 +9,27 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
 } from '@/components/ui/dropdown-menu';
-import { Settings, LogOut, Languages, User } from 'lucide-react';
-import LanguageSwitcher from '@/components/LanguageSwitcher';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import {
+  Settings,
+  LogOut,
+  Languages,
+  User,
+  Sun,
+  Moon,
+  Monitor,
+} from 'lucide-react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const AppHeader = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { signOut } = useAuth();
+  const { theme, setMode, isDark } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
@@ -27,6 +39,11 @@ const AppHeader = () => {
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'sv' : 'en';
     i18n.changeLanguage(newLang);
+  };
+
+  const getCurrentThemeIcon = () => {
+    if (theme.mode === 'system') return <Monitor className="w-5 h-5" />;
+    return isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />;
   };
 
   return (
@@ -52,6 +69,36 @@ const AppHeader = () => {
                 <User className="w-5 h-5" />
                 {t('common.profile')}
               </DropdownMenuItem>
+
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white data-[state=open]:bg-ios-blue data-[state=open]:text-white">
+                  {getCurrentThemeIcon()}
+                  <span>{t('theme.appearance')}</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent className="w-40 rounded-[12px] p-1 bg-ios-secondary/95 backdrop-blur-lg border-ios-separator shadow-2xl">
+                    <DropdownMenuItem
+                      onClick={() => setMode('light')}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                      <Sun className="w-5 h-5" />
+                      {t('theme.light')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setMode('dark')}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                      <Moon className="w-5 h-5" />
+                      {t('theme.dark')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => setMode('system')}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                      <Monitor className="w-5 h-5" />
+                      {t('theme.system')}
+                    </DropdownMenuItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+
               <DropdownMenuItem
                 onClick={toggleLanguage}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">

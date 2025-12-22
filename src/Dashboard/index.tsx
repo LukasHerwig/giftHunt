@@ -5,7 +5,7 @@ import { CreateWishlistDialog } from './components/CreateWishlistDialog';
 import { PendingInvitationsSection } from './components/PendingInvitationsSection';
 import { CreateWishlistButton } from './components/CreateWishlistButton';
 import { MyWishlistsSection } from './components/MyWishlistsSection';
-import { AdminWishlistsSection } from './components/AdminWishlistsSection';
+import { SharedWishlistsLink } from './components/SharedWishlistsLink';
 import AppHeader from '@/components/AppHeader';
 import PageSubheader from '@/components/PageSubheader';
 import { useTranslation } from 'react-i18next';
@@ -69,7 +69,7 @@ const Dashboard = () => {
             onAcceptInvitation={handleAcceptInvitation}
           />
 
-          <AdminWishlistsSection adminWishlists={adminWishlists} />
+          <SharedWishlistsLink />
 
           <MyWishlistsSection wishlists={wishlists} />
         </div>

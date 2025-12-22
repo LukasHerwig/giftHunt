@@ -31,10 +31,10 @@
   "navigation": {
     "dashboard": "Instrumentpanel",
     "myWishlists": "Mina Önskelistor",
-    "adminAccess": "Administrerade av mig"
+    "adminAccess": "Administreras av mig"
   },
   "dashboard": {
-    "title": "Instrumentpanel",
+    "title": "Önskelistor",
     "description": "Hantera dina önskelistor och visa inbjudningar",
     "createNewWishlist": "Skapa Ny Önskelista",
     "noWishlistsYet": "Inga önskelistor än",
@@ -51,7 +51,10 @@
     "adminInvitation": "Admin Inbjudan",
     "invitedBy": "Inbjuden av",
     "acceptInvitation": "Acceptera Inbjudan",
-    "localDevMode": "🚧 LOKAL UTVECKLINGSLÄGE - Använder Lokal Supabase"
+    "localDevMode": "🚧 LOKAL UTVECKLINGSLÄGE - Använder Lokal Supabase",
+    "sharedWishlistsDescription": "Önskelistor där du har administrativ åtkomst",
+    "noSharedWishlists": "Inga delade önskelistor",
+    "noSharedWishlistsDesc": "Ingen har delat en önskelista med dig än"
   },
   "createWishlist": {
     "title": "Skapa Ny Önskelista",

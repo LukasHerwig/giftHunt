@@ -34,7 +34,7 @@
     "adminAccess": "Administered by you"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Wishlists",
     "description": "Manage your wishlists and view invitations",
     "createNewWishlist": "Create New Wishlist",
     "noWishlistsYet": "No wishlists yet",
@@ -51,7 +51,10 @@
     "adminInvitation": "Admin Invitation",
     "invitedBy": "Invited by",
     "acceptInvitation": "Accept Invitation",
-    "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase"
+    "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase",
+    "sharedWishlistsDescription": "Wishlists where you have administrative access",
+    "noSharedWishlists": "No shared wishlists",
+    "noSharedWishlistsDesc": "Nobody shared wishlists with you yet"
   },
   "createWishlist": {
     "title": "Create New Wishlist",
