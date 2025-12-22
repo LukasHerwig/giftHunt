@@ -1,10 +1,15 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import {
+  ChevronLeft,
+  Loader2,
+  Edit2,
+  Share2,
+  Trash2,
+  Plus,
+} from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
-import AppHeader from '@/components/AppHeader';
-import PageSubheader from '@/components/PageSubheader';
 
 import { useManageWishlist } from './hooks';
 import {
@@ -102,43 +107,61 @@ const ManageWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-ios-background pb-20">
-      <AppHeader />
-      <div className="sticky top-11 z-40 w-full bg-ios-secondary/80 backdrop-blur-xl border-b border-ios-separator">
-        <div className="container mx-auto px-4 h-12 flex items-center justify-between relative">
-          <Button
-            variant="ghost"
+    <div className="min-h-screen bg-ios-background pb-32">
+      {/* Immersive Header */}
+      <div className="relative h-[45vh] min-h-[350px] w-full overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-ios-blue/40 via-purple-500/40 to-pink-500/40">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-ios-background" />
+        </div>
+
+        {/* Top Navigation */}
+        <div className="absolute top-12 left-4 z-10">
+          <button
             onClick={() => navigate('/')}
-            className="text-ios-blue hover:bg-transparent active:opacity-50 p-0 h-auto font-normal text-[17px] z-10">
-            <ArrowLeft className="w-5 h-5 mr-1" />
-            {t('common.back')}
-          </Button>
+            className="w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full text-white active:scale-90 transition-all border border-white/10">
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+        </div>
 
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <h2 className="text-[17px] font-semibold tracking-tight text-foreground">
+        {/* Title Card */}
+        <div className="absolute inset-x-0 bottom-16 px-4 flex justify-center">
+          <div className="w-full max-w-3xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[32px] px-8 py-8 flex items-center justify-between shadow-2xl">
+            <h1 className="text-[32px] font-bold text-white tracking-tight leading-tight">
               {wishlist?.title || t('manageWishlist.title')}
-            </h2>
-          </div>
-
-          <div className="z-10">
-            <SettingsDialog
-              open={settingsDialogOpen}
-              onOpenChange={setSettingsDialogOpen}
-              wishlist={wishlist}
-              setWishlist={setWishlist}
-              settings={settings}
-              setSettings={setSettings}
-              onSubmit={handleUpdateSettings}
-              onDeleteWishlist={handleDeleteWishlist}
-              updatingSettings={updatingSettings}
-              deleteDialogOpen={deleteDialogOpen}
-              setDeleteDialogOpen={setDeleteDialogOpen}
-            />
+            </h1>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setSettingsDialogOpen(true)}
+                className="w-12 h-12 flex items-center justify-center bg-black/40 rounded-full text-white/90 hover:text-white transition-colors">
+                <Edit2 className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
-      <main className="container mx-auto px-4 max-w-3xl pt-6">
+      <main className="container mx-auto px-4 max-w-3xl -mt-10 relative z-10">
+        {/* Action Buttons */}
+        <div className="flex gap-4 mb-10">
+          <Button
+            onClick={() => setInviteDialogOpen(true)}
+            className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-foreground rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">
+            <Share2 className="w-6 h-6" />
+            <span className="text-[17px] font-semibold">
+              {t('manageWishlist.invite')}
+            </span>
+          </Button>
+          <Button
+            onClick={() => setDeleteDialogOpen(true)}
+            className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-[#FF453A] rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">
+            <Trash2 className="w-6 h-6" />
+            <span className="text-[17px] font-semibold">
+              {t('common.delete')}
+            </span>
+          </Button>
+        </div>
+
         <ShareLinkWarning hasActiveShareLink={hasActiveShareLink} />
 
         {(admins.length > 0 || invitations.length > 0) && (
@@ -153,10 +176,25 @@ const ManageWishlist = () => {
           </div>
         )}
 
-        <div className="mb-6 flex justify-between items-center">
-          <h3 className="text-[13px] font-medium text-ios-gray uppercase tracking-wider px-4 mb-2">
+        <div className="mb-6">
+          <h3 className="text-[13px] font-normal text-ios-label-secondary uppercase tracking-wider mb-2 ml-4">
             {t('manageWishlist.items')}
           </h3>
+
+          <WishlistItems
+            items={items}
+            wishlist={wishlist}
+            hasActiveShareLink={hasActiveShareLink}
+            onEditItem={handleEditItem}
+            onEditDescriptionOnly={handleEditDescriptionOnly}
+            onDeleteItem={handleDeleteItem}
+            formatUrl={formatUrl}
+            onAddItem={() => setDialogOpen(true)}
+          />
+        </div>
+
+        {/* Dialogs (Hidden) */}
+        <div className="hidden">
           <AddItemDialog
             open={dialogOpen}
             onOpenChange={setDialogOpen}
@@ -166,9 +204,7 @@ const ManageWishlist = () => {
             onSubmit={handleAddItem}
             adding={adding}
           />
-        </div>
 
-        <div className="hidden">
           <EditItemDialog
             open={editDialogOpen}
             onOpenChange={setEditDialogOpen}
@@ -205,29 +241,29 @@ const ManageWishlist = () => {
             onSubmit={handleInviteAdmin}
             inviting={inviting}
           />
+
+          <SettingsDialog
+            open={settingsDialogOpen}
+            onOpenChange={setSettingsDialogOpen}
+            wishlist={wishlist}
+            setWishlist={setWishlist}
+            settings={settings}
+            setSettings={setSettings}
+            onSubmit={handleUpdateSettings}
+            onDeleteWishlist={handleDeleteWishlist}
+            updatingSettings={updatingSettings}
+            deleteDialogOpen={deleteDialogOpen}
+            setDeleteDialogOpen={setDeleteDialogOpen}
+          />
         </div>
-
-        <WishlistItems
-          items={items}
-          wishlist={wishlist}
-          hasActiveShareLink={hasActiveShareLink}
-          onEditItem={handleEditItem}
-          onEditDescriptionOnly={handleEditDescriptionOnly}
-          onDeleteItem={handleDeleteItem}
-          formatUrl={formatUrl}
-        />
-
-        {canInviteAdmin && (
-          <div className="mt-8 px-4">
-            <Button
-              variant="outline"
-              onClick={() => setInviteDialogOpen(true)}
-              className="w-full py-6 rounded-[12px] border-ios-separator bg-ios-secondary text-ios-blue font-medium text-[17px] hover:bg-ios-tertiary active:opacity-70 transition-all">
-              {t('manageWishlist.inviteAdmin')}
-            </Button>
-          </div>
-        )}
       </main>
+
+      {/* Floating Action Button */}
+      <button
+        onClick={() => setDialogOpen(true)}
+        className="fixed bottom-10 right-8 w-16 h-16 bg-ios-secondary/90 backdrop-blur-2xl border border-ios-separator/20 rounded-full flex items-center justify-center text-foreground shadow-2xl active:scale-90 transition-all z-50">
+        <Plus className="w-9 h-9" />
+      </button>
     </div>
   );
 };

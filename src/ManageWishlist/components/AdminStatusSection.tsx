@@ -51,7 +51,7 @@ export const AdminStatusSection = ({
   const pendingInvitations = invitations.filter((inv) => !inv.accepted);
 
   return (
-    <div className="mb-8 px-4">
+    <div className="mb-8">
       <h2 className="text-[13px] font-normal text-ios-label-secondary uppercase tracking-wider mb-2 ml-4">
         {t('manageWishlist.adminStatus')}
       </h2>

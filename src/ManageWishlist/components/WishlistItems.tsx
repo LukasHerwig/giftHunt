@@ -18,7 +18,14 @@ import {
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { ExternalLink, Star, DollarSign, Edit, Trash2 } from 'lucide-react';
+import {
+  ExternalLink,
+  Star,
+  DollarSign,
+  Edit,
+  Trash2,
+  Gift,
+} from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 import { CurrencyBadge } from '@/components/CurrencyBadge';
 
@@ -30,6 +37,7 @@ interface WishlistItemsProps {
   onEditDescriptionOnly?: (item: WishlistItem) => void;
   onDeleteItem: (itemId: string) => Promise<void>;
   formatUrl: (url: string) => string;
+  onAddItem?: () => void;
 }
 
 export const WishlistItems = ({
@@ -40,6 +48,7 @@ export const WishlistItems = ({
   onEditDescriptionOnly,
   onDeleteItem,
   formatUrl,
+  onAddItem,
 }: WishlistItemsProps) => {
   const { t } = useTranslation();
   const { toast } = useToast();
@@ -65,10 +74,30 @@ export const WishlistItems = ({
 
   if (items.length === 0) {
     return (
-      <div className="bg-ios-secondary rounded-[12px] border border-ios-separator p-8 text-center">
-        <p className="text-ios-gray text-[17px]">
+      <div className="flex flex-col items-center justify-center py-12 text-center">
+        <div className="relative w-48 h-48 mb-6">
+          <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative">
+              <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+              <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+              <Gift className="w-32 h-32 text-ios-blue relative z-10" />
+            </div>
+          </div>
+        </div>
+
+        <h3 className="text-[22px] font-bold text-foreground mb-1">
           {t('manageWishlist.noItemsYet')}
+        </h3>
+        <p className="text-ios-gray text-[17px] mb-8">
+          {t('manageWishlist.createFirstWish')}
         </p>
+
+        <Button
+          onClick={onAddItem}
+          className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-8 py-6 text-[17px] font-semibold shadow-lg active:scale-95 transition-all">
+          {t('manageWishlist.addItem')}
+        </Button>
       </div>
     );
   }
