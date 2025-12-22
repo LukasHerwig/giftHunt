@@ -12,14 +12,11 @@ export const CreateWishlistButton = ({
   const { t } = useTranslation();
 
   return (
-    <div className="mb-8">
-      <Button
-        size="lg"
-        className="w-full sm:w-auto bg-primary hover:bg-primary/90"
-        onClick={onClick}>
-        <Plus className="w-5 h-5 mr-2" />
-        {t('dashboard.createNewWishlist')}
-      </Button>
-    </div>
+    <button
+      onClick={onClick}
+      className="w-14 h-14 bg-ios-blue text-white rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-all hover:bg-ios-blue/90"
+      aria-label={t('dashboard.createNewWishlist')}>
+      <Plus className="w-8 h-8" />
+    </button>
   );
 };

@@ -14,10 +14,10 @@ export const CurrencyBadge = ({
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 px-2 py-1 text-xs bg-primary/10 text-primary rounded-full',
+        'inline-flex items-center gap-1 px-2 py-0.5 text-[12px] bg-ios-blue/10 text-ios-blue rounded-full font-medium',
         className
       )}>
-      <span className="text-xs font-medium">{currency}</span>
+      <span className="opacity-70">{currency}</span>
       {amount}
     </span>
   );

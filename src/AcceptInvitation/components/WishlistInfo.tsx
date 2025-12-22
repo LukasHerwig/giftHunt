@@ -1,4 +1,5 @@
 import { InvitationData } from '../types';
+import { Gift } from 'lucide-react';
 
 interface WishlistInfoProps {
   invitationData: InvitationData;
@@ -8,15 +9,20 @@ export const WishlistInfo = ({ invitationData }: WishlistInfoProps) => {
   if (!invitationData.wishlistTitle) return null;
 
   return (
-    <div className="bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800 p-4 rounded-lg">
-      <h3 className="font-semibold text-green-800 dark:text-green-200 mb-1">
-        {invitationData.wishlistTitle}
-      </h3>
-      {invitationData.wishlistDescription && (
-        <p className="text-sm text-green-700 dark:text-green-300">
-          {invitationData.wishlistDescription}
-        </p>
-      )}
+    <div className="flex items-center gap-3 p-4">
+      <div className="w-10 h-10 rounded-full bg-ios-blue/10 flex items-center justify-center flex-shrink-0">
+        <Gift className="w-5 h-5 text-ios-blue" />
+      </div>
+      <div className="min-w-0">
+        <h3 className="text-[17px] font-semibold truncate">
+          {invitationData.wishlistTitle}
+        </h3>
+        {invitationData.wishlistDescription && (
+          <p className="text-[13px] text-ios-label-secondary line-clamp-1">
+            {invitationData.wishlistDescription}
+          </p>
+        )}
+      </div>
     </div>
   );
 };

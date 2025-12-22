@@ -1,14 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Users } from 'lucide-react';
+import { Users, ChevronRight } from 'lucide-react';
 import { AdminWishlist } from '../types';
 
 interface AdminWishlistsSectionProps {
@@ -26,53 +18,26 @@ export const AdminWishlistsSection = ({
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <Users className="w-5 h-5" />
-        {t('navigation.adminAccess')}
-      </h2>
-      <div className="grid gap-4 sm:grid-cols-2">
+    <div className="space-y-2">
+      <div className="grid grid-cols-1 gap-3">
         {adminWishlists.map((wishlist) => (
-          <Card
+          <button
             key={wishlist.id}
-            className="hover:shadow-lg transition-all duration-200 cursor-pointer border hover:border-primary/30"
+            className="w-full bg-ios-secondary/50 rounded-[16px] px-4 py-4 flex items-center gap-3 active:bg-ios-secondary transition-colors border border-ios-separator/10 group"
             onClick={() => navigate(`/wishlist/${wishlist.id}/admin`)}>
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex-1">
-                  <CardTitle className="text-xl mb-1 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-primary" />
-                    {wishlist.title}
-                  </CardTitle>
-                  {wishlist.description && (
-                    <CardDescription className="text-base line-clamp-2">
-                      {wishlist.description}
-                    </CardDescription>
-                  )}
-                </div>
-                <div className="flex flex-row items-end gap-1 shrink-0">
-                  <Badge variant="secondary">{t('dashboard.admin')}</Badge>
-                  <Badge variant="outline" className="text-xs">
-                    {t('dashboard.itemCount', {
-                      count: wishlist.item_count || 0,
-                    })}
-                  </Badge>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              <div className="flex items-center justify-between text-sm text-muted-foreground">
-                <span className="flex items-center gap-1 truncate">
-                  <span>
-                    {t('dashboard.owner')}: {wishlist.owner_profile?.email}
-                  </span>
-                </span>
-                <span className="text-primary font-medium hover:underline">
-                  {t('dashboard.manageAction')}
-                </span>
-              </div>
-            </CardContent>
-          </Card>
+            <div className="w-10 h-10 rounded-full bg-ios-green/10 flex items-center justify-center shrink-0">
+              <Users className="w-5 h-5 text-ios-green" />
+            </div>
+            <div className="flex-1 text-left">
+              <h3 className="text-[17px] font-semibold text-foreground">
+                {t('navigation.adminAccess')}
+              </h3>
+              <p className="text-[13px] text-ios-gray truncate">
+                {wishlist.title} • {wishlist.owner_profile?.email}
+              </p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-ios-separator group-active:text-ios-gray transition-colors" />
+          </button>
         ))}
       </div>
     </div>

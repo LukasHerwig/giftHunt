@@ -60,27 +60,29 @@ export const SettingsDialog = ({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size={isMobile ? 'default' : 'lg'}>
-          <Settings className="w-5 h-5" />
-          {!isMobile && (
-            <>
-              <span className="ml-2">{t('manageWishlist.settings')}</span>
-            </>
-          )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-ios-blue hover:bg-transparent active:opacity-50 h-9 w-9">
+          <Settings className="w-6 h-6" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('manageWishlist.settingsTitle')}</DialogTitle>
-          <DialogDescription>
+      <DialogContent className="sm:max-w-[425px] rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator p-0 overflow-hidden">
+        <DialogHeader className="p-6 pb-2">
+          <DialogTitle className="text-center text-[17px] font-semibold">
+            {t('manageWishlist.settingsTitle')}
+          </DialogTitle>
+          <DialogDescription className="text-center text-[13px] text-ios-gray">
             {t('manageWishlist.settingsDescription')}
           </DialogDescription>
         </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="p-6 pt-2 space-y-6">
           {/* Wishlist Basic Information */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="wishlist-title">
+          <div className="bg-ios-background rounded-[12px] border border-ios-separator overflow-hidden">
+            <div className="px-4 py-3 border-b border-ios-separator">
+              <Label
+                htmlFor="wishlist-title"
+                className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
                 {t('manageWishlist.wishlistTitle')} *
               </Label>
               <Input
@@ -92,13 +94,16 @@ export const SettingsDialog = ({
                     wishlist ? { ...wishlist, title: e.target.value } : null
                   )
                 }
-                className="text-base"
+                className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50"
                 disabled={updatingSettings}
+                required
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="wishlist-description">
+            <div className="px-4 py-3">
+              <Label
+                htmlFor="wishlist-description"
+                className="text-[13px] text-ios-gray uppercase tracking-wider mb-1 block">
                 {t('manageWishlist.wishlistDescription')}
               </Label>
               <Textarea
@@ -112,24 +117,20 @@ export const SettingsDialog = ({
                       : null
                   )
                 }
-                className="text-base resize-none"
-                rows={3}
+                className="border-none bg-transparent p-0 h-auto text-[17px] focus-visible:ring-0 placeholder:text-ios-gray/50 resize-none min-h-[80px]"
                 disabled={updatingSettings}
               />
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-border my-4"></div>
-
-          {/* Field Configuration */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          {/* Feature Toggles */}
+          <div className="bg-ios-background rounded-[12px] border border-ios-separator overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-ios-separator">
               <div className="space-y-0.5">
-                <label className="text-sm font-medium">
+                <Label className="text-[17px] font-normal text-foreground">
                   {t('createWishlist.enableLinks')}
-                </label>
-                <p className="text-xs text-muted-foreground">
+                </Label>
+                <p className="text-[12px] text-ios-gray">
                   {t('createWishlist.enableLinksDescription')}
                 </p>
               </div>
@@ -139,15 +140,16 @@ export const SettingsDialog = ({
                   setSettings({ ...settings, enableLinks: checked })
                 }
                 disabled={updatingSettings}
+                className="data-[state=checked]:bg-ios-green"
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-ios-separator">
               <div className="space-y-0.5">
-                <label className="text-sm font-medium">
+                <Label className="text-[17px] font-normal text-foreground">
                   {t('createWishlist.enablePrice')}
-                </label>
-                <p className="text-xs text-muted-foreground">
+                </Label>
+                <p className="text-[12px] text-ios-gray">
                   {t('createWishlist.enablePriceDescription')}
                 </p>
               </div>
@@ -157,15 +159,16 @@ export const SettingsDialog = ({
                   setSettings({ ...settings, enablePrice: checked })
                 }
                 disabled={updatingSettings}
+                className="data-[state=checked]:bg-ios-green"
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between px-4 py-3">
               <div className="space-y-0.5">
-                <label className="text-sm font-medium">
+                <Label className="text-[17px] font-normal text-foreground">
                   {t('createWishlist.enablePriority')}
-                </label>
-                <p className="text-xs text-muted-foreground">
+                </Label>
+                <p className="text-[12px] text-ios-gray">
                   {t('createWishlist.enablePriorityDescription')}
                 </p>
               </div>
@@ -175,61 +178,63 @@ export const SettingsDialog = ({
                   setSettings({ ...settings, enablePriority: checked })
                 }
                 disabled={updatingSettings}
+                className="data-[state=checked]:bg-ios-green"
               />
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-primary hover:bg-primary/90"
-            disabled={updatingSettings}>
-            {updatingSettings ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {t('common.updating')}
-              </>
-            ) : (
-              t('common.saveChanges')
-            )}
-          </Button>
-        </form>
+          <div className="space-y-3">
+            <Button
+              type="submit"
+              className="w-full bg-ios-blue hover:bg-ios-blue/90 text-white rounded-[12px] py-6 font-semibold text-[17px] shadow-lg active:opacity-70 transition-all"
+              disabled={updatingSettings}>
+              {updatingSettings ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  {t('common.updating')}
+                </>
+              ) : (
+                t('common.saveChanges')
+              )}
+            </Button>
 
-        {/* Danger Zone */}
-        <div className="pt-4 border-t border-destructive/20">
-          <h4 className="text-sm font-medium text-destructive mb-3">
-            {t('manageWishlist.dangerZone')}
-          </h4>
-          <AlertDialog
-            open={deleteDialogOpen}
-            onOpenChange={setDeleteDialogOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="destructive" className="w-full">
-                <Trash2 className="w-4 h-4 mr-2" />
-                {t('manageWishlist.deleteWishlist')}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {t('deleteWishlistDialog.title')}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('deleteWishlistDialog.description', {
-                    title: wishlist?.title,
-                  })}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={onDeleteWishlist}
-                  className="bg-destructive hover:bg-destructive/90">
-                  {t('common.delete')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+            <AlertDialog
+              open={deleteDialogOpen}
+              onOpenChange={setDeleteDialogOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full text-destructive hover:bg-transparent active:bg-ios-tertiary rounded-[12px] py-6 font-normal text-[17px]">
+                  <Trash2 className="w-5 h-5 mr-2" />
+                  {t('manageWishlist.deleteWishlist')}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="rounded-[14px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
+                <AlertDialogHeader>
+                  <AlertDialogTitle className="text-center text-[17px] font-semibold">
+                    {t('deleteWishlistDialog.title')}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="text-center text-[13px] text-foreground">
+                    {t('deleteWishlistDialog.description', {
+                      title: wishlist?.title,
+                    })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-ios-separator mt-4">
+                  <AlertDialogAction
+                    onClick={onDeleteWishlist}
+                    className="bg-transparent text-destructive hover:bg-transparent active:bg-ios-tertiary font-semibold text-[17px] py-3 rounded-none border-b border-ios-separator">
+                    {t('common.delete')}
+                  </AlertDialogAction>
+                  <AlertDialogCancel className="bg-transparent border-none text-ios-blue hover:bg-transparent active:bg-ios-tertiary font-normal text-[17px] py-3 rounded-none">
+                    {t('common.cancel')}
+                  </AlertDialogCancel>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </form>
       </DialogContent>
     </Dialog>
   );

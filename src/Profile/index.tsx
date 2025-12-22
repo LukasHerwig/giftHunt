@@ -20,7 +20,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    <div className="min-h-screen bg-ios-background">
       <AppHeader />
 
       <PageSubheader
@@ -28,7 +28,7 @@ const Profile = () => {
         description={t('profile.description')}
       />
 
-      <main className="container mx-auto px-4 py-8 max-w-2xl space-y-6">
+      <main className="pb-20">
         <PersonalInformationCard
           profile={profile}
           fullName={fullName}

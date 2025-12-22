@@ -7,8 +7,11 @@ import { CreateWishlistButton } from './components/CreateWishlistButton';
 import { MyWishlistsSection } from './components/MyWishlistsSection';
 import { AdminWishlistsSection } from './components/AdminWishlistsSection';
 import AppHeader from '@/components/AppHeader';
+import PageSubheader from '@/components/PageSubheader';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const {
     wishlists,
     adminWishlists,
@@ -36,7 +39,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    <div className="min-h-screen bg-ios-background pb-24">
       <EnvironmentIndicator />
       <AppHeader />
 
@@ -57,18 +60,24 @@ const Dashboard = () => {
         creating={creating}
       />
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <PendingInvitationsSection
-          invitations={pendingInvitations}
-          onAcceptInvitation={handleAcceptInvitation}
-        />
+      <main className="mx-auto max-w-2xl w-full">
+        <PageSubheader title={t('dashboard.title')} />
 
-        <CreateWishlistButton onClick={() => setCreateDialogOpen(true)} />
+        <div className="px-4 space-y-6">
+          <PendingInvitationsSection
+            invitations={pendingInvitations}
+            onAcceptInvitation={handleAcceptInvitation}
+          />
 
-        <MyWishlistsSection wishlists={wishlists} />
+          <AdminWishlistsSection adminWishlists={adminWishlists} />
 
-        <AdminWishlistsSection adminWishlists={adminWishlists} />
+          <MyWishlistsSection wishlists={wishlists} />
+        </div>
       </main>
+
+      <div className="fixed bottom-8 right-6 z-50">
+        <CreateWishlistButton onClick={() => setCreateDialogOpen(true)} />
+      </div>
     </div>
   );
 };

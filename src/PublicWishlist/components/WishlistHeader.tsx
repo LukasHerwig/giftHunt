@@ -12,23 +12,31 @@ export const WishlistHeader = ({ wishlist }: WishlistHeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <header className="border-b bg-card/50 backdrop-blur-sm">
-      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-        <ThemeToggle />
-        <LanguageSwitcher />
-      </div>
-      <div className="container mx-auto px-4 py-6 text-center">
-        <div className="mx-auto flex items-center justify-center mb-4 relative overflow-hidden">
-          <GiftHuntIcon size={60} />
+    <header className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator">
+      <div className="flex items-center justify-between px-4 h-14">
+        <div className="flex items-center gap-2">
+          <GiftHuntIcon size={24} />
+          <span className="text-[17px] font-semibold tracking-tight">
+            GiftHunt
+          </span>
         </div>
-        <h1 className="text-3xl font-bold mb-2">{wishlist.title}</h1>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <LanguageSwitcher />
+        </div>
+      </div>
+
+      <div className="px-4 py-6 bg-ios-background">
+        <h1 className="text-[34px] font-bold tracking-tight leading-tight mb-1">
+          {wishlist.title}
+        </h1>
         {wishlist.creator_name && (
-          <p className="text-sm text-muted-foreground mb-2">
+          <p className="text-[15px] text-ios-label-secondary mb-2">
             {t('publicWishlist.createdBy')} {wishlist.creator_name}
           </p>
         )}
         {wishlist.description && (
-          <p className="text-muted-foreground text-lg">
+          <p className="text-[17px] text-ios-label-primary leading-relaxed">
             {wishlist.description}
           </p>
         )}

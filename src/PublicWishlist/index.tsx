@@ -47,30 +47,34 @@ const PublicWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
+    <div className="min-h-screen bg-ios-background">
       <WishlistHeader wishlist={wishlist} />
 
-      <div className="container mx-auto px-4 py-4 max-w-3xl">
-        <InfoSection />
-      </div>
+      <main className="pb-20">
+        <div className="px-4 py-4">
+          <InfoSection />
+        </div>
 
-      <main className="container mx-auto px-4 py-4 max-w-3xl">
-        {items.length === 0 ? (
-          <EmptyWishlistState />
-        ) : (
-          <div className="space-y-3">
-            {items
-              // .filter((item) => !item.is_taken)
-              .map((item) => (
-                <WishlistItemCard
-                  key={item.id}
-                  item={item}
-                  wishlist={wishlist}
-                  onClaimItem={openClaimDialog}
-                />
+        <div className="px-4">
+          {items.length === 0 ? (
+            <EmptyWishlistState />
+          ) : (
+            <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
+              {items.map((item, index) => (
+                <div key={item.id}>
+                  <WishlistItemCard
+                    item={item}
+                    wishlist={wishlist}
+                    onClaimItem={openClaimDialog}
+                  />
+                  {index < items.length - 1 && (
+                    <div className="ml-16 border-b border-ios-separator" />
+                  )}
+                </div>
               ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
 
         <ClaimItemDialog
           isOpen={dialogOpen}

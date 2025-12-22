@@ -102,22 +102,25 @@ const ManageWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20 pb-20">
+    <div className="min-h-screen bg-ios-background pb-20">
       <AppHeader />
-      <PageSubheader
-        actions={
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              onClick={() => navigate('/')}
-              className="flex items-center">
-              <ArrowLeft className="w-4 h-4" />
-              <span className="ml-2">{t('common.back')}</span>
-            </Button>
+      <div className="sticky top-11 z-40 w-full bg-ios-secondary/80 backdrop-blur-xl border-b border-ios-separator">
+        <div className="container mx-auto px-4 h-12 flex items-center justify-between relative">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/')}
+            className="text-ios-blue hover:bg-transparent active:opacity-50 p-0 h-auto font-normal text-[17px] z-10">
+            <ArrowLeft className="w-5 h-5 mr-1" />
+            {t('common.back')}
+          </Button>
+
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <h2 className="text-[17px] font-semibold tracking-tight text-foreground">
+              {wishlist?.title || t('manageWishlist.title')}
+            </h2>
           </div>
-        }
-        trailing={
-          <div className="flex gap-2">
+
+          <div className="z-10">
             <SettingsDialog
               open={settingsDialogOpen}
               onOpenChange={setSettingsDialogOpen}
@@ -132,74 +135,76 @@ const ManageWishlist = () => {
               setDeleteDialogOpen={setDeleteDialogOpen}
             />
           </div>
-        }
-      />
+        </div>
+      </div>
 
-      <main className="container mx-auto px-4 max-w-3xl">
+      <main className="container mx-auto px-4 max-w-3xl pt-6">
         <ShareLinkWarning hasActiveShareLink={hasActiveShareLink} />
 
         {(admins.length > 0 || invitations.length > 0) && (
-          <AdminStatusSection
-            admins={admins}
-            invitations={invitations}
-            hasActiveShareLink={hasActiveShareLink}
-            onRemoveInvitation={handleRemoveInvitation}
-            onRemoveAdmin={handleRemoveAdmin}
-          />
-        )}
-
-        <div
-          className={`mb-8 flex gap-2 ${
-            isMobile ? 'flex-wrap' : 'justify-between'
-          }`}>
-          <div className={`flex gap-2 ${isMobile ? 'flex-wrap flex-1' : ''}`}>
-            <AddItemDialog
-              open={dialogOpen}
-              onOpenChange={setDialogOpen}
-              wishlist={wishlist}
-              newItem={newItem}
-              setNewItem={setNewItem}
-              onSubmit={handleAddItem}
-              adding={adding}
-            />
-
-            <EditItemDialog
-              open={editDialogOpen}
-              onOpenChange={setEditDialogOpen}
-              wishlist={wishlist}
-              editItem={editItem}
-              setEditItem={setEditItem}
-              onSubmit={handleUpdateItem}
-              updating={updating}
-            />
-
-            <EditLimitedDialog
-              open={editDescriptionDialogOpen}
-              onOpenChange={setEditDescriptionDialogOpen}
-              item={editingDescriptionItem}
-              wishlist={wishlist}
-              description={editDescription}
-              setDescription={setEditDescription}
-              link={editLinkLimited}
-              setLink={setEditLinkLimited}
-              priceRange={editPriceRangeLimited}
-              setPriceRange={setEditPriceRangeLimited}
-              priority={editPriorityLimited}
-              setPriority={setEditPriorityLimited}
-              onSubmit={handleUpdateDescriptionOnly}
-              updating={updating}
-            />
-
-            <InviteAdminDialog
-              open={inviteDialogOpen}
-              onOpenChange={setInviteDialogOpen}
-              canInviteAdmin={canInviteAdmin}
-              inviteEmail={inviteEmail}
-              setInviteEmail={setInviteEmail}
-              onSubmit={handleInviteAdmin}
-              inviting={inviting}
+          <div className="mb-8">
+            <AdminStatusSection
+              admins={admins}
+              invitations={invitations}
+              hasActiveShareLink={hasActiveShareLink}
+              onRemoveInvitation={handleRemoveInvitation}
+              onRemoveAdmin={handleRemoveAdmin}
             />
           </div>
+        )}
+
+        <div className="mb-6 flex justify-between items-center">
+          <h3 className="text-[13px] font-medium text-ios-gray uppercase tracking-wider px-4 mb-2">
+            {t('manageWishlist.items')}
+          </h3>
+          <AddItemDialog
+            open={dialogOpen}
+            onOpenChange={setDialogOpen}
+            wishlist={wishlist}
+            newItem={newItem}
+            setNewItem={setNewItem}
+            onSubmit={handleAddItem}
+            adding={adding}
+          />
+        </div>
+
+        <div className="hidden">
+          <EditItemDialog
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+            wishlist={wishlist}
+            editItem={editItem}
+            setEditItem={setEditItem}
+            onSubmit={handleUpdateItem}
+            updating={updating}
+          />
+
+          <EditLimitedDialog
+            open={editDescriptionDialogOpen}
+            onOpenChange={setEditDescriptionDialogOpen}
+            item={editingDescriptionItem}
+            wishlist={wishlist}
+            description={editDescription}
+            setDescription={setEditDescription}
+            link={editLinkLimited}
+            setLink={setEditLinkLimited}
+            priceRange={editPriceRangeLimited}
+            setPriceRange={setEditPriceRangeLimited}
+            priority={editPriorityLimited}
+            setPriority={setEditPriorityLimited}
+            onSubmit={handleUpdateDescriptionOnly}
+            updating={updating}
+          />
+
+          <InviteAdminDialog
+            open={inviteDialogOpen}
+            onOpenChange={setInviteDialogOpen}
+            canInviteAdmin={canInviteAdmin}
+            inviteEmail={inviteEmail}
+            setInviteEmail={setInviteEmail}
+            onSubmit={handleInviteAdmin}
+            inviting={inviting}
+          />
         </div>
 
         <WishlistItems
@@ -211,6 +216,17 @@ const ManageWishlist = () => {
           onDeleteItem={handleDeleteItem}
           formatUrl={formatUrl}
         />
+
+        {canInviteAdmin && (
+          <div className="mt-8 px-4">
+            <Button
+              variant="outline"
+              onClick={() => setInviteDialogOpen(true)}
+              className="w-full py-6 rounded-[12px] border-ios-separator bg-ios-secondary text-ios-blue font-medium text-[17px] hover:bg-ios-tertiary active:opacity-70 transition-all">
+              {t('manageWishlist.inviteAdmin')}
+            </Button>
+          </div>
+        )}
       </main>
     </div>
   );

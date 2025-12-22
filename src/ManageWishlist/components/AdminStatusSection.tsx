@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { getBaseUrl } from '@/lib/urlUtils';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,7 +12,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Trash2, Copy } from 'lucide-react';
+import { Trash2, Copy, User, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { WishlistAdmin, WishlistInvitation } from '../types';
 
@@ -49,151 +48,154 @@ export const AdminStatusSection = ({
     return null;
   }
 
+  const pendingInvitations = invitations.filter((inv) => !inv.accepted);
+
   return (
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle className="text-lg">
-          {t('manageWishlist.adminStatus')}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div>
-          <h4 className="font-semibold text-sm text-muted-foreground mb-2">
-            {t('manageWishlist.adminAccess')}
-          </h4>
-          <div className="space-y-2">
-            {/* Show pending invitations */}
-            {invitations
-              .filter((inv) => !inv.accepted)
-              .map((invitation) => (
-                <div
-                  key={invitation.id}
-                  className="flex items-center justify-between p-3 bg-primary/5 dark:bg-primary/10 rounded-lg">
-                  <div>
-                    <p className="font-medium">{invitation.email}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {t('inviteDialog.invited')}{' '}
-                      {new Date(invitation.created_at).toLocaleDateString()} •{' '}
-                      {t('inviteDialog.expires')}{' '}
-                      {new Date(invitation.expires_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-primary font-medium">
-                      {t('manageWishlist.pending')}
-                    </span>
+    <div className="mb-8 px-4">
+      <h2 className="text-[13px] font-normal text-ios-label-secondary uppercase tracking-wider mb-2 ml-4">
+        {t('manageWishlist.adminStatus')}
+      </h2>
+
+      <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
+        {/* Show pending invitations */}
+        {pendingInvitations.map((invitation, index) => (
+          <div key={invitation.id}>
+            <div className="flex items-center justify-between p-4 active:bg-ios-tertiary transition-colors">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-full bg-ios-blue/10 flex items-center justify-center flex-shrink-0">
+                  <Mail className="w-5 h-5 text-ios-blue" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[17px] font-medium truncate">
+                    {invitation.email}
+                  </p>
+                  <p className="text-[13px] text-ios-label-secondary">
+                    {t('manageWishlist.pending')} •{' '}
+                    {new Date(invitation.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() =>
+                    handleCopyInviteLink(invitation.invitation_token)
+                  }
+                  className="h-8 w-8 text-ios-blue hover:bg-transparent active:opacity-50">
+                  <Copy className="w-4 h-4" />
+                </Button>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
                     <Button
                       variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        handleCopyInviteLink(invitation.invitation_token)
-                      }
-                      className="text-primary hover:text-primary/80">
-                      <Copy className="w-4 h-4" />
+                      size="icon"
+                      className="h-8 w-8 text-ios-red hover:bg-transparent active:opacity-50">
+                      <Trash2 className="w-4 h-4" />
                     </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive hover:text-destructive">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            {t('removeInvitationDialog.title')}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            {t('removeInvitationDialog.description', {
-                              email: invitation.email,
-                            })}
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>
-                            {t('removeInvitationDialog.cancel')}
-                          </AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => onRemoveInvitation(invitation.id)}
-                            className="bg-destructive hover:bg-destructive/90">
-                            {t('removeInvitationDialog.remove')}
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
-                </div>
-              ))}
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="rounded-[20px] border-none bg-ios-secondary/95 backdrop-blur-xl max-w-[90%] sm:max-w-[400px]">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle className="text-center text-[17px] font-semibold">
+                        {t('removeInvitationDialog.title')}
+                      </AlertDialogTitle>
+                      <AlertDialogDescription className="text-center text-[13px] text-ios-label-secondary">
+                        {t('removeInvitationDialog.description', {
+                          email: invitation.email,
+                        })}
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-ios-separator mt-4">
+                      <AlertDialogAction
+                        onClick={() => onRemoveInvitation(invitation.id)}
+                        className="bg-transparent text-ios-red hover:bg-transparent active:bg-ios-tertiary font-semibold py-3 h-auto rounded-none border-b border-ios-separator">
+                        {t('removeInvitationDialog.remove')}
+                      </AlertDialogAction>
+                      <AlertDialogCancel className="bg-transparent text-ios-blue hover:bg-transparent active:bg-ios-tertiary py-3 h-auto rounded-none border-none">
+                        {t('removeInvitationDialog.cancel')}
+                      </AlertDialogCancel>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+            {(index < pendingInvitations.length - 1 || admins.length > 0) && (
+              <div className="ml-16 border-b border-ios-separator" />
+            )}
+          </div>
+        ))}
 
-            {/* Show current admins */}
-            {admins.map((admin) => (
-              <div
-                key={admin.id}
-                className="flex items-center justify-between p-3 bg-primary/10 dark:bg-primary/20 rounded-lg">
-                <div>
-                  <p className="font-medium">
+        {/* Show current admins */}
+        {admins.map((admin, index) => (
+          <div key={admin.id}>
+            <div className="flex items-center justify-between p-4 active:bg-ios-tertiary transition-colors">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-full bg-ios-green/10 flex items-center justify-center flex-shrink-0">
+                  <User className="w-5 h-5 text-ios-green" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-[17px] font-medium truncate">
                     {admin.profiles?.email || t('manageWishlist.unknownUser')}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {t('manageWishlist.adminSince')}{' '}
+                  <p className="text-[13px] text-ios-label-secondary">
+                    {t('manageWishlist.activeAdmin')} •{' '}
                     {new Date(admin.created_at).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-primary font-medium">
-                    {t('manageWishlist.activeAdmin')}
-                  </span>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive">
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {t('removeAdminDialog.title')}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t('removeAdminDialog.description', {
-                            email:
-                              admin.profiles?.email ||
-                              t('manageWishlist.unknownUser'),
-                          })}
-                          {hasActiveShareLink && (
-                            <>
-                              <br />
-                              <br />
-                              <strong className="text-destructive">
-                                {t('removeAdminDialog.shareLinkWarning')}
-                              </strong>
-                            </>
-                          )}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          {t('removeAdminDialog.cancel')}
-                        </AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => onRemoveAdmin(admin.id)}
-                          className="bg-destructive hover:bg-destructive/90">
-                          {t('removeAdminDialog.remove')}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </div>
               </div>
-            ))}
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-ios-red hover:bg-transparent active:opacity-50">
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="rounded-[20px] border-none bg-ios-secondary/95 backdrop-blur-xl max-w-[90%] sm:max-w-[400px]">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-center text-[17px] font-semibold">
+                      {t('removeAdminDialog.title')}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription className="text-center text-[13px] text-ios-label-secondary">
+                      {t('removeAdminDialog.description', {
+                        email:
+                          admin.profiles?.email ||
+                          t('manageWishlist.unknownUser'),
+                      })}
+                      {hasActiveShareLink && (
+                        <>
+                          <br />
+                          <br />
+                          <span className="text-ios-red font-semibold">
+                            {t('removeAdminDialog.shareLinkWarning')}
+                          </span>
+                        </>
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-ios-separator mt-4">
+                    <AlertDialogAction
+                      onClick={() => onRemoveAdmin(admin.id)}
+                      className="bg-transparent text-ios-red hover:bg-transparent active:bg-ios-tertiary font-semibold py-3 h-auto rounded-none border-b border-ios-separator">
+                      {t('removeAdminDialog.remove')}
+                    </AlertDialogAction>
+                    <AlertDialogCancel className="bg-transparent text-ios-blue hover:bg-transparent active:bg-ios-tertiary py-3 h-auto rounded-none border-none">
+                      {t('removeAdminDialog.cancel')}
+                    </AlertDialogCancel>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+            {index < admins.length - 1 && (
+              <div className="ml-16 border-b border-ios-separator" />
+            )}
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        ))}
+      </div>
+    </div>
   );
 };
