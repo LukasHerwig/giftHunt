@@ -73,159 +73,103 @@ export const AuthPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="absolute top-4 right-4"></div>
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center space-y-3">
-          <GiftHuntIcon className="mx-auto w-16 h-16" />
-          <CardTitle className="text-3xl">GiftHunt</CardTitle>
-          <CardDescription className="text-base">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-ios-background">
+      <div className="w-full max-w-[400px] space-y-8">
+        <div className="text-center space-y-2">
+          <GiftHuntIcon className="mx-auto w-20 h-20 text-ios-blue" />
+          <h1 className="text-4xl font-bold tracking-tight text-foreground">
+            GiftHunt
+          </h1>
+          <p className="text-ios-gray text-lg">
             {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Mode Toggle Buttons */}
-          <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg">
-            <Button
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Mode Toggle Buttons (iOS Segmented Control Style) */}
+          <div className="p-[2px] bg-ios-tertiary/80 backdrop-blur-md rounded-[9px] flex shadow-inner">
+            <button
               type="button"
-              variant="ghost"
               onClick={() => setIsLogin(true)}
-              className={`flex items-center gap-2 transition-all ${
+              className={`flex-1 py-1.5 text-[13px] font-medium rounded-[7px] transition-all duration-200 ${
                 isLogin
-                  ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-background/70 hover:text-foreground'
+                  ? 'bg-ios-secondary dark:bg-ios-quaternary text-foreground shadow-sm'
+                  : 'text-ios-gray hover:text-foreground'
               }`}
               disabled={loading}>
-              <LogIn className="w-4 h-4" />
               {t('common.signIn')}
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant="ghost"
               onClick={() => setIsLogin(false)}
-              className={`flex items-center gap-2 transition-all ${
+              className={`flex-1 py-1.5 text-[13px] font-medium rounded-[7px] transition-all duration-200 ${
                 !isLogin
-                  ? 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
-                  : 'text-muted-foreground hover:bg-background/70 hover:text-foreground'
+                  ? 'bg-ios-secondary dark:bg-ios-quaternary text-foreground shadow-sm'
+                  : 'text-ios-gray hover:text-foreground'
               }`}
               disabled={loading}>
-              <UserPlus className="w-4 h-4" />
               {t('common.signUp')}
-            </Button>
+            </button>
           </div>
 
-          {/* Additional Context for Each Mode */}
-          <div className="text-center">
-            {isLogin ? (
-              <div className="space-y-2">
-                <h3 className="font-semibold text-lg">
-                  {t('auth.welcomeBackTitle')}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('auth.signInDescription')}
-                </p>
+          <form onSubmit={handleAuth} className="space-y-6">
+            <div className="bg-ios-secondary rounded-[10px] overflow-hidden">
+              <div className="px-4">
+                <input
+                  type="email"
+                  placeholder={t('common.email')}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full h-11 bg-transparent text-[17px] outline-none placeholder-[#C7C7CC] dark:placeholder-[#48484A]"
+                  disabled={loading}
+                />
               </div>
-            ) : (
-              <div className="space-y-2">
-                <h3 className="font-semibold text-lg">
-                  {t('auth.createAccountTitle')}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {t('auth.signUpDescription')}
-                </p>
+              <div className="h-[0.5px] bg-ios-separator ml-4"></div>
+              <div className="px-4">
+                <input
+                  type="password"
+                  placeholder={t('common.password')}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full h-11 bg-transparent text-[17px] outline-none placeholder-[#C7C7CC] dark:placeholder-[#48484A]"
+                  disabled={loading}
+                />
               </div>
+            </div>
+
+            {!isLogin && (
+              <p className="px-4 text-[13px] text-ios-gray">
+                {t('auth.passwordRequirement')}
+              </p>
             )}
-          </div>
 
-          <Separator />
-
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div className="space-y-2">
-              <Input
-                type="email"
-                placeholder={t('common.email')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="h-12 text-base"
-                disabled={loading}
-              />
-            </div>
-            <div className="space-y-2">
-              <Input
-                type="password"
-                placeholder={t('common.password')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="h-12 text-base"
-                disabled={loading}
-              />
-              {!isLogin && (
-                <p className="text-xs text-muted-foreground">
-                  {t('auth.passwordRequirement')}
-                </p>
-              )}
-            </div>
-            <Button
+            <button
               type="submit"
-              className={`w-full h-12 text-base font-semibold ${
-                isLogin
-                  ? 'bg-primary hover:bg-primary/90'
-                  : 'bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600'
-              }`}
+              className={`w-full h-12 rounded-[12px] text-[17px] font-semibold transition-all active:opacity-70 flex items-center justify-center ${
+                isLogin ? 'bg-ios-blue text-white' : 'bg-ios-green text-white'
+              } disabled:opacity-50`}
               disabled={loading}>
               {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  {isLogin ? t('auth.signingIn') : t('auth.creatingAccount')}
-                </>
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : isLogin ? (
+                t('auth.signInButton')
               ) : (
-                <>
-                  {isLogin ? (
-                    <>
-                      <LogIn className="w-4 h-4 mr-2" />
-                      {t('auth.signInButton')}
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="w-4 h-4 mr-2" />
-                      {t('auth.createAccountButton')}
-                    </>
-                  )}
-                </>
+                t('auth.createAccountButton')
               )}
-            </Button>
+            </button>
           </form>
 
-          {/* Additional Help Text */}
-          {isLogin ? (
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                {t('auth.newUserQuestion')}{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(false)}
-                  className="text-primary hover:text-primary/80 font-medium underline"
-                  disabled={loading}>
-                  {t('auth.createNewAccount')}
-                </button>
-              </p>
-            </div>
-          ) : (
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground">
-                {t('auth.existingUserQuestion')}{' '}
-                <button
-                  type="button"
-                  onClick={() => setIsLogin(true)}
-                  className="text-primary hover:text-primary/80 font-medium underline"
-                  disabled={loading}>
-                  {t('auth.signInInstead')}
-                </button>
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+          <div className="text-center">
+            <button
+              type="button"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-ios-blue text-[17px] hover:underline"
+              disabled={loading}>
+              {isLogin ? t('auth.createNewAccount') : t('auth.signInInstead')}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
