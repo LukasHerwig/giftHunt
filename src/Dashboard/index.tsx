@@ -7,7 +7,6 @@ import { CreateWishlistButton } from './components/CreateWishlistButton';
 import { MyWishlistsSection } from './components/MyWishlistsSection';
 import { SharedWishlistsLink } from './components/SharedWishlistsLink';
 import AppHeader from '@/components/AppHeader';
-import PageSubheader from '@/components/PageSubheader';
 import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
@@ -61,7 +60,11 @@ const Dashboard = () => {
       />
 
       <main className="mx-auto max-w-2xl w-full">
-        <PageSubheader title={t('dashboard.title')} />
+        <div className="px-4 pt-4 mb-8">
+          <h1 className="text-[34px] font-bold tracking-tight text-foreground">
+            {t('dashboard.title')}
+          </h1>
+        </div>
 
         <div className="px-4 space-y-6">
           <PendingInvitationsSection
@@ -71,7 +74,10 @@ const Dashboard = () => {
 
           <SharedWishlistsLink />
 
-          <MyWishlistsSection wishlists={wishlists} />
+          <MyWishlistsSection
+            wishlists={wishlists}
+            onCreateClick={() => setCreateDialogOpen(true)}
+          />
         </div>
       </main>
 

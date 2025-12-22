@@ -31,14 +31,14 @@
   "navigation": {
     "dashboard": "Dashboard",
     "myWishlists": "My Wishlists",
-    "adminAccess": "Administered by you"
+    "adminAccess": "Shared wishlists"
   },
   "dashboard": {
     "title": "Wishlists",
     "description": "Manage your wishlists and view invitations",
-    "createNewWishlist": "Create New Wishlist",
-    "noWishlistsYet": "No wishlists yet",
-    "createFirstWishlist": "Create your first wishlist to get started",
+    "createNewWishlist": "New wishlist",
+    "noWishlistsYet": "No wishlists",
+    "createFirstWishlist": "Create your first wishlist",
     "itemCount": "{{count}} item",
     "itemCount_other": "{{count}} items",
     "createdOn": "Created {{date}}",

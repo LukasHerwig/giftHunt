@@ -5,29 +5,47 @@ import { Wishlist } from '../types';
 
 interface MyWishlistsSectionProps {
   wishlists: Wishlist[];
+  onCreateClick: () => void;
 }
 
-export const MyWishlistsSection = ({ wishlists }: MyWishlistsSectionProps) => {
+export const MyWishlistsSection = ({
+  wishlists,
+  onCreateClick,
+}: MyWishlistsSectionProps) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <div className="space-y-2">
-      <h2 className="text-[13px] font-medium text-ios-gray uppercase tracking-wider">
-        {t('navigation.myWishlists')}
-      </h2>
+      {wishlists.length > 0 && (
+        <h2 className="text-[13px] font-medium text-ios-gray uppercase tracking-wider px-1">
+          {t('navigation.myWishlists')}
+        </h2>
+      )}
 
       {wishlists.length === 0 ? (
-        <div className="p-8 bg-ios-secondary rounded-[20px] text-center space-y-3 border border-ios-separator/10">
-          <Gift className="w-12 h-12 mx-auto text-ios-gray/50" />
-          <div className="space-y-1">
-            <h3 className="text-[17px] font-semibold">
-              {t('dashboard.noWishlistsYet')}
-            </h3>
-            <p className="text-[15px] text-ios-gray">
-              {t('dashboard.createFirstWishlist')}
-            </p>
+        <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+          <div className="w-48 h-48 mb-8 relative">
+            <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+            <div className="relative w-full h-full flex items-center justify-center">
+              <div className="relative">
+                <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+                <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+                <Gift className="w-32 h-32 text-ios-blue relative z-10" />
+              </div>
+            </div>
           </div>
+          <h3 className="text-[22px] font-bold text-foreground mb-2">
+            {t('dashboard.noWishlistsYet')}
+          </h3>
+          <p className="text-[17px] text-ios-gray max-w-[260px] mb-8">
+            {t('dashboard.createFirstWishlist')}
+          </p>
+          <button
+            onClick={onCreateClick}
+            className="bg-ios-blue hover:opacity-90 text-white px-8 py-3 rounded-full text-[17px] font-bold shadow-lg active:scale-95 transition-all">
+            {t('dashboard.createNewWishlist')}
+          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6">

@@ -31,14 +31,14 @@
   "navigation": {
     "dashboard": "Instrumentpanel",
     "myWishlists": "Mina Önskelistor",
-    "adminAccess": "Administreras av mig"
+    "adminAccess": "Delade önskelistor"
   },
   "dashboard": {
     "title": "Önskelistor",
     "description": "Hantera dina önskelistor och visa inbjudningar",
-    "createNewWishlist": "Skapa Ny Önskelista",
-    "noWishlistsYet": "Inga önskelistor än",
-    "createFirstWishlist": "Skapa din första önskelista för att komma igång",
+    "createNewWishlist": "Ny önskelista",
+    "noWishlistsYet": "Inga önskelistor",
+    "createFirstWishlist": "Skapa din första önskelista",
     "itemCount": "{{count}} önskning",
     "itemCount_other": "{{count}} önskningar",
     "createdOn": "Skapad {{date}}",
