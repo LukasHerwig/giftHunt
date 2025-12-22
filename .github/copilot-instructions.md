@@ -133,30 +133,6 @@ src/
 - System/infrastructure components (404 pages, error boundaries)
 - Single-purpose components without complex logic
 
-## �🎯 Component Architecture
-
-### Dialog Components Pattern
-
-- **Structure**: Always wrap DialogTrigger in Dialog component
-- **State management**: Use separate state for dialog open/close
-- **Error handling**: Use try/catch with proper user feedback via `toast`
-- **Example**:
-  ```tsx
-  <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-    <DialogTrigger asChild>
-      <Button>Open Dialog</Button>
-    </DialogTrigger>
-    <DialogContent>{/* Dialog content */}</DialogContent>
-  </Dialog>
-  ```
-
-### Form Handling
-
-- **Validation**: Always validate on both client and server
-- **Loading states**: Use loading state for buttons during async operations
-- **Error feedback**: Use `toast.error()` and `toast.success()` for user feedback
-- **Reset**: Clear form state after successful submission
-
 ## 🔄 State Management Patterns
 
 ### Data Loading
@@ -443,21 +419,84 @@ if (error) throw error;
 - **User feedback**: Always inform users about errors and successes
 - **Logging**: Comprehensive logging for debugging
 
-## 🎨 UI/UX Guidelines
+## 🎨 UI/UX Guidelines (iOS Design System)
 
-### Design System
+This application follows a strict **iOS-inspired design system** to provide a premium, native-like experience.
 
-- **Consistent spacing**: Use Tailwind spacing scale
-- **Color scheme**: Stick to defined color palette
-- **Typography**: Consistent font sizes and weights
-- **Interactive states**: Proper hover, focus, and disabled states
+### Design Tokens
+
+- **Backgrounds**: Pure black (`#000000`) for main backgrounds, dark gray (`#1C1C1E`) for secondary surfaces.
+- **Accents**: iOS Blue (`#007AFF`) for primary actions, iOS Green (`#34C759`) for success states.
+- **Radii**: Large corner radii (typically `24px` or `rounded-[24px]`) for cards and dialogs.
+- **Typography**: Bold, tracking-tight headers (`tracking-tight`) and standard system font sizes (17px for body, 13px for labels).
+
+### Layout Patterns
+
+- **Grid Systems**:
+  - Item lists: `grid-cols-2` on mobile, `md:grid-cols-3` on desktop.
+  - Dashboard sections: `grid-cols-1` on mobile, `md:grid-cols-2` on desktop.
+- **Immersive Headers**: Large, high-contrast headers with backdrop blurs (`backdrop-blur-xl`) and gradient overlays.
+- **Card Design**: Square aspect ratios (`aspect-square`) for item cards with centered content or bottom-aligned labels.
+
+### Responsive Overlays
+
+- **Mobile**: Always use **Bottom Sheets** (`Drawer` from `@/components/ui/drawer`) for forms and settings.
+- **Desktop**: Use centered **Dialogs** (`Dialog` from `@/components/ui/dialog`).
+- **Implementation**: Use the `useIsMobile` hook to switch between `Drawer` and `Dialog` dynamically.
 
 ### Accessibility
 
 - **Semantic HTML**: Use proper HTML elements
 - **ARIA labels**: Add labels for screen readers
 - **Keyboard navigation**: Ensure all features work with keyboard
-- **Focus management**: Proper focus handling in dialogs and forms
+- **Focus management**: Proper focus handling in dialogs and forms. **Crucial**: Define form content outside the main component to prevent focus loss during re-renders.
+
+## 🏗️ Component Architecture & Stability
+
+### Preventing Focus Loss in Forms
+
+A critical pattern in this app is ensuring that input fields do not lose focus during re-renders.
+
+- **Rule**: Never define a sub-component (like `FormContent`) inside the body of another component.
+- **Pattern**: Define the `FormContent` as a standalone component outside the main component file or at the top level of the file.
+- **Reason**: Defining components inline causes React to treat them as new types on every render, destroying the DOM state and focus.
+
+### Dialog/Drawer Structure
+
+```tsx
+// 1. Define FormContent OUTSIDE the main component
+const FormContent = ({ ...props }) => <form>/* inputs here */</form>;
+
+// 2. Main component handles the responsive wrapper
+export const MyDialog = ({ open, onOpenChange, ...props }) => {
+  const isMobile = useIsMobile();
+  const formProps = { ...props, onOpenChange };
+
+  if (isMobile) {
+    return (
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <DrawerContent>
+          <FormContent {...formProps} />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <FormContent {...formProps} />
+      </DialogContent>
+    </Dialog>
+  );
+};
+```
+
+### Action Placement
+
+- **Primary Actions**: Top right of the header (e.g., "Save" or "Check" icon).
+- **Cancel/Close**: Top left of the header (e.g., "X" icon).
+- **Destructive Actions**: Full-width button at the very bottom of the form/scrollable area (e.g., "Remove Item").
 
 ## 📝 Documentation Standards
 
