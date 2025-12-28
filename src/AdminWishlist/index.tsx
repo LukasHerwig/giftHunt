@@ -81,21 +81,23 @@ const AdminWishlist = () => {
         </div>
 
         {/* Title Card */}
-        <div className="absolute inset-x-0 bottom-16 px-4 flex justify-center">
-          <div className="w-full max-w-4xl bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-ios-separator/10 dark:border-white/20 rounded-[32px] px-8 py-8 flex flex-col items-center justify-center shadow-2xl">
-            <h1 className="text-[32px] font-bold text-foreground dark:text-white tracking-tight leading-tight text-center">
-              {wishlist.title}
-            </h1>
-            {wishlist.creator_name && (
-              <p className="text-[17px] text-muted-foreground dark:text-white/70 mt-2">
-                {t('adminWishlist.createdBy')} {wishlist.creator_name}
-              </p>
-            )}
+        <div className="absolute inset-x-0 bottom-16 flex justify-center">
+          <div className="w-full max-w-4xl px-4">
+            <div className="w-full bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-ios-separator/10 dark:border-white/20 rounded-[32px] px-8 py-8 flex flex-col items-center justify-center shadow-2xl">
+              <h1 className="text-[32px] font-bold text-foreground dark:text-white tracking-tight leading-tight text-center">
+                {wishlist.title}
+              </h1>
+              {wishlist.creator_name && (
+                <p className="text-[17px] text-muted-foreground dark:text-white/70 mt-2">
+                  {t('adminWishlist.createdBy')} {wishlist.creator_name}
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      <main className="container mx-auto px-4 max-w-4xl -mt-10 relative z-10">
+      <main className="mx-auto max-w-4xl w-full px-4 -mt-10 relative z-10">
         {/* Action Buttons */}
         <div className="flex gap-4 mb-10">
           <Button

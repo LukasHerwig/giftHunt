@@ -59,14 +59,14 @@ const Dashboard = () => {
         creating={creating}
       />
 
-      <main className="mx-auto max-w-4xl w-full">
-        <div className="px-4 pt-4 mb-8">
+      <main className="mx-auto max-w-4xl w-full px-4">
+        <div className="pt-4 mb-8">
           <h1 className="text-[34px] font-bold tracking-tight text-foreground">
             {t('dashboard.title')}
           </h1>
         </div>
 
-        <div className="px-4 space-y-6">
+        <div className="space-y-6">
           <PendingInvitationsSection
             invitations={pendingInvitations}
             onAcceptInvitation={handleAcceptInvitation}
