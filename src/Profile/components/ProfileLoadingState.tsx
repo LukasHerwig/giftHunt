@@ -1,17 +1,17 @@
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
-import AppHeader from '@/components/AppHeader';
 
 export const ProfileLoadingState = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <AppHeader />
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-        <span className="ml-2">{t('common.loading')}</span>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-ios-background">
+      <div className="w-16 h-16 bg-ios-secondary backdrop-blur-xl rounded-[24px] flex items-center justify-center border border-ios-separator/10 shadow-xl">
+        <Loader2 className="w-8 h-8 animate-spin text-ios-blue" />
       </div>
+      <span className="mt-4 text-[17px] font-medium text-foreground">
+        {t('common.loading')}
+      </span>
     </div>
   );
 };

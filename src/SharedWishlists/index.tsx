@@ -37,7 +37,7 @@ const SharedWishlists = () => {
     <div className="min-h-screen bg-ios-background pb-24">
       <AppHeader />
 
-      <main className="mx-auto max-w-2xl w-full">
+      <main className="mx-auto max-w-4xl w-full">
         <div className="px-4 pt-4 mb-6">
           <button
             onClick={() => navigate('/')}

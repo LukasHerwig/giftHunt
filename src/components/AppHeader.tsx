@@ -48,7 +48,7 @@ const AppHeader = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-ios-background/80 backdrop-blur-xl">
-      <div className="mx-auto max-w-2xl w-full px-4 h-14 flex items-center justify-end relative">
+      <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-end relative">
         {/* Action buttons and Hamburger Menu */}
         <div className="flex items-center gap-1 z-10">
           <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
@@ -56,7 +56,7 @@ const AppHeader = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="text-ios-label-primary bg-ios-secondary/50 hover:bg-ios-secondary active:opacity-50 h-10 w-10 rounded-full">
+                className="text-foreground bg-ios-secondary hover:bg-ios-tertiary active:opacity-50 h-10 w-10 rounded-full shadow-sm border border-ios-separator/10">
                 <Settings className="w-6 h-6" />
               </Button>
             </DropdownMenuTrigger>
