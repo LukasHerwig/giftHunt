@@ -8,7 +8,7 @@ export const EnvironmentIndicator = () => {
   }
 
   return (
-    <div className="bg-orange-500 text-white text-center py-1 text-sm font-medium">
+    <div className="bg-orange-500 text-white text-center py-1 text-[12px] font-semibold uppercase tracking-wider">
       {t('dashboard.localDevMode')}
     </div>
   );

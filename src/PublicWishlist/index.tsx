@@ -1,18 +1,21 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { usePublicWishlist } from './hooks/usePublicWishlist';
 import {
   LoadingState,
   AccessDeniedState,
-  WishlistHeader,
   WishlistItemCard,
   ClaimItemDialog,
   EmptyWishlistState,
   InfoSection,
 } from './components';
-import PageSubheader from '@/components/PageSubheader';
+import GiftHuntIcon from '@/components/GiftHuntIcon';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 const PublicWishlist = () => {
+  const { t } = useTranslation();
   const { token } = useParams();
   const {
     wishlist,
@@ -47,21 +50,67 @@ const PublicWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-muted/30 via-background to-muted/20">
-      <WishlistHeader wishlist={wishlist} />
+    <div className="min-h-screen bg-ios-background pb-20">
+      {/* Immersive Header */}
+      <div className="relative h-[45vh] min-h-[350px] w-full overflow-hidden">
+        {/* Background Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-ios-blue/40 via-indigo-500/40 to-purple-500/40">
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-ios-background" />
+        </div>
 
-      <div className="container mx-auto px-4 py-4 max-w-3xl">
-        <InfoSection />
+        {/* Top Navigation */}
+        <div className="sticky top-0 z-50 w-full h-14">
+          <div className="mx-auto max-w-4xl w-full px-4 h-full flex items-center justify-between">
+            <Link
+              to="/"
+              className="flex items-center gap-3 active:opacity-50 transition-opacity">
+              <GiftHuntIcon
+                size={28}
+                className="text-ios-blue drop-shadow-sm"
+              />
+              <h1 className="text-[20px] font-bold text-white tracking-tight drop-shadow-sm">
+                GiftHunt
+              </h1>
+            </Link>
+            <div className="flex items-center gap-2">
+              <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-lg text-white hover:bg-black/30 transition-colors">
+                <ThemeToggle />
+              </div>
+              <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-lg text-white hover:bg-black/30 transition-colors">
+                <LanguageSwitcher />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Title Card */}
+        <div className="absolute inset-x-0 bottom-16 flex justify-center">
+          <div className="w-full max-w-4xl px-4">
+            <div className="w-full bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-ios-separator/10 dark:border-white/20 rounded-[32px] px-8 py-8 flex flex-col items-center justify-center shadow-2xl">
+              <h1 className="text-[32px] font-bold text-foreground dark:text-white tracking-tight leading-tight text-center">
+                {wishlist.title}
+              </h1>
+              {wishlist.creator_name && (
+                <p className="text-[17px] text-muted-foreground dark:text-white/70 mt-2">
+                  {t('publicWishlist.createdBy')} {wishlist.creator_name}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
-      <main className="container mx-auto px-4 py-4 max-w-3xl">
-        {items.length === 0 ? (
-          <EmptyWishlistState />
-        ) : (
-          <div className="space-y-3">
-            {items
-              // .filter((item) => !item.is_taken)
-              .map((item) => (
+      <main className="mx-auto max-w-4xl w-full -mt-10 relative z-10 px-4">
+        <div className="mb-8">
+          <InfoSection />
+        </div>
+
+        <div>
+          {items.length === 0 ? (
+            <EmptyWishlistState />
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {items.map((item) => (
                 <WishlistItemCard
                   key={item.id}
                   item={item}
@@ -69,8 +118,9 @@ const PublicWishlist = () => {
                   onClaimItem={openClaimDialog}
                 />
               ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
 
         <ClaimItemDialog
           isOpen={dialogOpen}

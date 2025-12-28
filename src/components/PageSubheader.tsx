@@ -16,18 +16,28 @@ const PageSubheader = ({
   trailing,
 }: PageSubheaderProps) => {
   return (
-    <div className="container mx-auto px-4 py-4">
-      <div className="flex items-center justify-between">
-        {actions && <div className="flex items-center gap-2">{actions}</div>}
-        <div className="flex-1">
-          {title && <h2 className="text-xl font-semibold">{title}</h2>}
-          {description && (
-            <p className="text-muted-foreground text-sm mt-1">{description}</p>
+    <div className="px-4 py-6 bg-ios-background">
+      <div className="flex items-center justify-between mb-1">
+        <div className="flex-1 min-w-0">
+          {title && (
+            <h2 className="text-[34px] font-bold tracking-tight leading-tight">
+              {title}
+            </h2>
           )}
         </div>
-        {children}
-        {trailing}
+        {(actions || trailing) && (
+          <div className="flex items-center gap-2 ml-4">
+            {actions}
+            {trailing}
+          </div>
+        )}
       </div>
+      {description && (
+        <p className="text-[17px] text-ios-label-secondary leading-snug mt-1">
+          {description}
+        </p>
+      )}
+      {children && <div className="mt-4">{children}</div>}
     </div>
   );
 };

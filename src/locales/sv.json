@@ -31,14 +31,14 @@
   "navigation": {
     "dashboard": "Instrumentpanel",
     "myWishlists": "Mina Önskelistor",
-    "adminAccess": "Administrerade av mig"
+    "adminAccess": "Delade önskelistor"
   },
   "dashboard": {
-    "title": "Instrumentpanel",
+    "title": "Önskelistor",
     "description": "Hantera dina önskelistor och visa inbjudningar",
-    "createNewWishlist": "Skapa Ny Önskelista",
-    "noWishlistsYet": "Inga önskelistor än",
-    "createFirstWishlist": "Skapa din första önskelista för att komma igång",
+    "createNewWishlist": "Ny önskelista",
+    "noWishlistsYet": "Inga önskelistor",
+    "createFirstWishlist": "Skapa din första önskelista",
     "itemCount": "{{count}} önskning",
     "itemCount_other": "{{count}} önskningar",
     "createdOn": "Skapad {{date}}",
@@ -51,7 +51,10 @@
     "adminInvitation": "Admin Inbjudan",
     "invitedBy": "Inbjuden av",
     "acceptInvitation": "Acceptera Inbjudan",
-    "localDevMode": "🚧 LOKAL UTVECKLINGSLÄGE - Använder Lokal Supabase"
+    "localDevMode": "🚧 LOKAL UTVECKLINGSLÄGE - Använder Lokal Supabase",
+    "sharedWishlistsDescription": "Önskelistor där du har administrativ åtkomst",
+    "noSharedWishlists": "Inga delade önskelistor",
+    "noSharedWishlistsDesc": "Ingen har delat en önskelista med dig än"
   },
   "createWishlist": {
     "title": "Skapa Ny Önskelista",
@@ -65,7 +68,8 @@
     "enablePriority": "Aktivera prioritetsnivåer",
     "enablePriorityDescription": "Tillåt att sätta prioritetsnivåer på önskningar",
     "createButton": "Skapa Önskelista",
-    "creating": "Skapar..."
+    "creating": "Skapar...",
+    "addPhoto": "Lägg till bild"
   },
   "createWishlistDialog": {
     "title": "Skapa Ny Önskelista",
@@ -124,7 +128,7 @@
     "linkExpired": "Denna delningslänk har gått ut",
     "failedToLoad": "Misslyckades att ladda önskelista",
     "howItWorks": "Så Fungerar Det",
-    "howItWorksStep1": "Klicka \"Jag tar den här!\" på föremål du vill köpa som present. Detta reserverar föremålet så andra inte väljer samma sak.",
+    "howItWorksStep1": "Tryck eller klicka på ett föremål du vill köpa som present. Detta reserverar föremålet så att andra inte väljer samma sak.",
     "howItWorksStep2": "Ditt namn visas för önskelistans administratör så de vet vem som ska ge vilken present, men det förblir dolt för andra besökare.",
     "changeOfMind": "Ångrat dig? Kontakta önskelistans administratör för att avboka din reservation."
   },
@@ -142,7 +146,9 @@
     "wishlistDescriptionPlaceholder": "Beskriv vad denna önskelista är till för (valfritt)",
     "dangerZone": "Farozonen",
     "deleteWishlist": "Ta bort Önskelista",
-    "noItemsYet": "Inga önskningar än. Lägg till din första önskning!",
+    "noItemsYet": "Inga önskningar",
+    "createFirstWish": "Skapa din första önskning",
+    "invite": "Bjud in",
     "loading": "Laddar...",
     "adminStatus": "Listans administratör",
     "adminAccess": "Administreras av",
@@ -189,7 +195,9 @@
     "priorityLabel": "Prioritet",
     "priorityPlaceholder": "Välj prioritet (valfritt)",
     "updateButton": "Uppdatera Önskning",
-    "updating": "Uppdaterar..."
+    "updating": "Uppdaterar...",
+    "removeItem": "Ta bort föremål",
+    "removeItem": "Ta bort föremål"
   },
   "editLimitedDialog": {
     "title": "Redigera Önskning",

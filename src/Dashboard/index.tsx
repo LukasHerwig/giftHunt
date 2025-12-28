@@ -5,10 +5,12 @@ import { CreateWishlistDialog } from './components/CreateWishlistDialog';
 import { PendingInvitationsSection } from './components/PendingInvitationsSection';
 import { CreateWishlistButton } from './components/CreateWishlistButton';
 import { MyWishlistsSection } from './components/MyWishlistsSection';
-import { AdminWishlistsSection } from './components/AdminWishlistsSection';
+import { SharedWishlistsLink } from './components/SharedWishlistsLink';
 import AppHeader from '@/components/AppHeader';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const {
     wishlists,
     adminWishlists,
@@ -36,7 +38,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    <div className="min-h-screen bg-ios-background pb-24">
       <EnvironmentIndicator />
       <AppHeader />
 
@@ -57,18 +59,31 @@ const Dashboard = () => {
         creating={creating}
       />
 
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
-        <PendingInvitationsSection
-          invitations={pendingInvitations}
-          onAcceptInvitation={handleAcceptInvitation}
-        />
+      <main className="mx-auto max-w-4xl w-full px-4">
+        <div className="pt-4 mb-8">
+          <h1 className="text-[34px] font-bold tracking-tight text-foreground">
+            {t('dashboard.title')}
+          </h1>
+        </div>
 
-        <CreateWishlistButton onClick={() => setCreateDialogOpen(true)} />
+        <div className="space-y-6">
+          <PendingInvitationsSection
+            invitations={pendingInvitations}
+            onAcceptInvitation={handleAcceptInvitation}
+          />
 
-        <MyWishlistsSection wishlists={wishlists} />
+          <SharedWishlistsLink />
 
-        <AdminWishlistsSection adminWishlists={adminWishlists} />
+          <MyWishlistsSection
+            wishlists={wishlists}
+            onCreateClick={() => setCreateDialogOpen(true)}
+          />
+        </div>
       </main>
+
+      <div className="fixed bottom-8 right-6 z-50">
+        <CreateWishlistButton onClick={() => setCreateDialogOpen(true)} />
+      </div>
     </div>
   );
 };

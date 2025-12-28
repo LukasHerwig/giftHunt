@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { WishlistItem } from '../types';
+import { Gift, CheckCircle2, Package } from 'lucide-react';
 
 interface SummaryStatsProps {
   items: WishlistItem[];
@@ -13,38 +13,36 @@ export const SummaryStats = ({ items }: SummaryStatsProps) => {
   const availableItems = items.filter((item) => !item.is_taken);
 
   return (
-    <Card className="mb-6">
-      <CardHeader>
-        <CardTitle>{t('adminWishlist.summary')}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-4 text-center">
-          <div>
-            <div className="text-2xl font-bold text-primary">
-              {items.length}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {t('adminWishlist.totalItems')}
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary">
-              {availableItems.length}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {t('adminWishlist.available')}
-            </div>
-          </div>
-          <div>
-            <div className="text-2xl font-bold text-primary">
-              {takenItems.length}
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {t('adminWishlist.taken')}
-            </div>
-          </div>
+    <div className="grid grid-cols-3 gap-4 mb-8">
+      <div className="bg-ios-secondary/50 backdrop-blur-xl rounded-[24px] p-4 border border-ios-separator/10 flex flex-col items-center justify-center text-center">
+        <Package className="w-5 h-5 text-ios-blue mb-2 opacity-60" />
+        <div className="text-[24px] font-bold text-foreground leading-none">
+          {items.length}
         </div>
-      </CardContent>
-    </Card>
+        <div className="text-[11px] font-medium text-ios-gray uppercase tracking-wider mt-1">
+          {t('adminWishlist.totalItems')}
+        </div>
+      </div>
+
+      <div className="bg-ios-secondary/50 backdrop-blur-xl rounded-[24px] p-4 border border-ios-separator/10 flex flex-col items-center justify-center text-center">
+        <Gift className="w-5 h-5 text-ios-blue mb-2 opacity-60" />
+        <div className="text-[24px] font-bold text-foreground leading-none">
+          {availableItems.length}
+        </div>
+        <div className="text-[11px] font-medium text-ios-gray uppercase tracking-wider mt-1">
+          {t('adminWishlist.available')}
+        </div>
+      </div>
+
+      <div className="bg-ios-secondary/50 backdrop-blur-xl rounded-[24px] p-4 border border-ios-separator/10 flex flex-col items-center justify-center text-center">
+        <CheckCircle2 className="w-5 h-5 text-ios-green mb-2 opacity-60" />
+        <div className="text-[24px] font-bold text-foreground leading-none">
+          {takenItems.length}
+        </div>
+        <div className="text-[11px] font-medium text-ios-gray uppercase tracking-wider mt-1">
+          {t('adminWishlist.taken')}
+        </div>
+      </div>
+    </div>
   );
 };

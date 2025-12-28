@@ -1,16 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { Card, CardContent } from '@/components/ui/card';
 
 export const EmptyWishlistState = () => {
   const { t } = useTranslation();
 
   return (
-    <Card className="text-center py-12">
-      <CardContent>
-        <p className="text-muted-foreground">
-          {t('publicWishlist.noItemsYet')}
-        </p>
-      </CardContent>
-    </Card>
+    <div className="text-center py-12 px-4">
+      <p className="text-[17px] text-ios-label-secondary">
+        {t('publicWishlist.noItemsYet')}
+      </p>
+    </div>
   );
 };

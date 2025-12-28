@@ -11,10 +11,10 @@ const GiftHuntIcon = ({ className = '', size = 40 }: GiftHuntIconProps) => {
       className={className}
       width={size}
       height={size}>
-      {/* GitHub-style background: dark with rounded corners */}
+      {/* iOS Squircle background */}
       <path
-        d="M20 0 h60 a20 20 0 0 1 20 20 v60 a20 20 0 0 1 -20 20 h-60 a20 20 0 0 1 -20 -20 v-60 a20 20 0 0 1 20 -20 z"
-        fill="#24292f"
+        d="M 0,50 C 0,5 5,0 50,0 C 95,0 100,5 100,50 C 100,95 95,100 50,100 C 5,100 0,95 0,50"
+        fill="currentColor"
       />
 
       {/* Subtle gradient overlay for depth (GitHub style) */}

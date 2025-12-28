@@ -31,14 +31,14 @@
   "navigation": {
     "dashboard": "Dashboard",
     "myWishlists": "My Wishlists",
-    "adminAccess": "Administered by you"
+    "adminAccess": "Shared wishlists"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Wishlists",
     "description": "Manage your wishlists and view invitations",
-    "createNewWishlist": "Create New Wishlist",
-    "noWishlistsYet": "No wishlists yet",
-    "createFirstWishlist": "Create your first wishlist to get started",
+    "createNewWishlist": "New wishlist",
+    "noWishlistsYet": "No wishlists",
+    "createFirstWishlist": "Create your first wishlist",
     "itemCount": "{{count}} item",
     "itemCount_other": "{{count}} items",
     "createdOn": "Created {{date}}",
@@ -51,7 +51,10 @@
     "adminInvitation": "Admin Invitation",
     "invitedBy": "Invited by",
     "acceptInvitation": "Accept Invitation",
-    "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase"
+    "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase",
+    "sharedWishlistsDescription": "Wishlists where you have administrative access",
+    "noSharedWishlists": "No shared wishlists",
+    "noSharedWishlistsDesc": "Nobody shared wishlists with you yet"
   },
   "createWishlist": {
     "title": "Create New Wishlist",
@@ -65,7 +68,8 @@
     "enablePriority": "Enable priority levels",
     "enablePriorityDescription": "Allow setting priority levels on items",
     "createButton": "Create Wishlist",
-    "creating": "Creating..."
+    "creating": "Creating...",
+    "addPhoto": "Add Photo"
   },
   "createWishlistDialog": {
     "title": "Create New Wishlist",
@@ -124,7 +128,7 @@
     "linkExpired": "This share link has expired",
     "failedToLoad": "Failed to load wishlist",
     "howItWorks": "How It Works",
-    "howItWorksStep1": "Click \"I'll get this!\" on any item you want to buy as a gift. This reserves the item so others won't choose the same thing.",
+    "howItWorksStep1": "Tap or click on any item card you want to buy as a gift. This reserves the item so others won't choose the same thing.",
     "howItWorksStep2": "Your name will be shown to the wishlist administrator so they know who's getting what gift, but it stays hidden from other visitors.",
     "changeOfMind": "Changed your mind? Contact the wishlist admin to cancel your reservation."
   },
@@ -142,7 +146,9 @@
     "wishlistDescriptionPlaceholder": "Describe what this wishlist is for (optional)",
     "dangerZone": "Danger Zone",
     "deleteWishlist": "Delete Wishlist",
-    "noItemsYet": "No items yet. Add your first wish!",
+    "noItemsYet": "No wish",
+    "createFirstWish": "Create your first wish",
+    "invite": "Invite",
     "loading": "Loading...",
     "adminStatus": "Admin Status",
     "adminAccess": "Administered by you",
@@ -189,7 +195,9 @@
     "priorityLabel": "Priority",
     "priorityPlaceholder": "Select priority (optional)",
     "updateButton": "Update Item",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "removeItem": "Remove Item",
+    "removeItem": "Remove Item"
   },
   "editLimitedDialog": {
     "title": "Edit Item",

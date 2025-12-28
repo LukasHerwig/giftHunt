@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card } from '@/components/ui/card';
 import {
   Info,
   Heart,
@@ -14,43 +13,55 @@ export const InfoSection = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card className="bg-muted/50 border-dashed border-muted-foreground/30">
-      <div className="p-6">
-        <button
-          onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors w-full text-left"
-          aria-expanded={isExpanded}>
-          {isExpanded ? (
-            <ChevronDown className="h-5 w-5" />
-          ) : (
-            <ChevronRight className="h-5 w-5" />
-          )}
-          <Info className="h-5 w-5" />
-          <h3 className="font-medium">{t('publicWishlist.howItWorks')}</h3>
-        </button>
+    <div className="bg-ios-secondary rounded-[24px] border border-ios-separator/5 shadow-sm overflow-hidden">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center justify-between p-5 active:bg-ios-tertiary transition-colors w-full text-left"
+        aria-expanded={isExpanded}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-ios-blue/10 flex items-center justify-center">
+            <Info className="h-5 w-5 text-ios-blue" />
+          </div>
+          <h3 className="text-[17px] font-semibold tracking-tight">
+            {t('publicWishlist.howItWorks')}
+          </h3>
+        </div>
+        {isExpanded ? (
+          <ChevronDown className="h-5 w-5 text-ios-label-secondary" />
+        ) : (
+          <ChevronRight className="h-5 w-5 text-ios-label-secondary" />
+        )}
+      </button>
 
-        {isExpanded && (
-          <div className="mt-4 space-y-4">
-            <div className="space-y-3 text-sm text-muted-foreground">
-              <div className="flex items-start gap-3">
-                <Heart className="h-4 w-4 sm:h-4 sm:w-4 h-9 w-9 mt-0.5 text-primary/60" />
-                <p>{t('publicWishlist.howItWorksStep1')}</p>
+      {isExpanded && (
+        <div className="px-5 pb-5 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="space-y-4">
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-full bg-ios-red/10 flex items-center justify-center shrink-0">
+                <Heart className="h-4 w-4 text-ios-red" />
               </div>
-
-              <div className="flex items-start gap-3">
-                <MessageCircle className="h-4 w-4 sm:h-4 sm:w-4 h-9 w-9 mt-0.5 text-primary/60" />
-                <p>{t('publicWishlist.howItWorksStep2')}</p>
-              </div>
+              <p className="text-[15px] text-ios-label-primary leading-snug pt-1.5">
+                {t('publicWishlist.howItWorksStep1')}
+              </p>
             </div>
 
-            <div className="pt-2 border-t border-muted-foreground/20">
-              <p className="text-xs text-muted-foreground/80">
-                {t('publicWishlist.changeOfMind')}
+            <div className="flex items-start gap-4">
+              <div className="w-8 h-8 rounded-full bg-ios-blue/10 flex items-center justify-center shrink-0">
+                <MessageCircle className="h-4 w-4 text-ios-blue" />
+              </div>
+              <p className="text-[15px] text-ios-label-primary leading-snug pt-1.5">
+                {t('publicWishlist.howItWorksStep2')}
               </p>
             </div>
           </div>
-        )}
-      </div>
-    </Card>
+
+          <div className="pt-4 border-t border-ios-separator/10">
+            <p className="text-[13px] text-ios-label-secondary italic">
+              {t('publicWishlist.changeOfMind')}
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };

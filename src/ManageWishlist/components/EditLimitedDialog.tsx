@@ -1,14 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Drawer, DrawerContent } from '@/components/ui/drawer';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -17,7 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Loader2 } from 'lucide-react';
+import { Loader2, X, Check, Gift, Trash2 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { WishlistItem, Wishlist } from '../types';
 
 interface EditLimitedDialogProps {
@@ -34,11 +27,15 @@ interface EditLimitedDialogProps {
   priority: number | null;
   setPriority: (priority: number | null) => void;
   onSubmit: (e: React.FormEvent) => Promise<void>;
+  onDelete?: () => void;
   updating: boolean;
 }
 
-export const EditLimitedDialog = ({
-  open,
+interface FormContentProps extends EditLimitedDialogProps {
+  t: any;
+}
+
+const FormContent = ({
   onOpenChange,
   item,
   wishlist,
@@ -51,179 +48,227 @@ export const EditLimitedDialog = ({
   priority,
   setPriority,
   onSubmit,
+  onDelete,
   updating,
-}: EditLimitedDialogProps) => {
-  const { t } = useTranslation();
+  t,
+}: FormContentProps) => (
+  <form onSubmit={onSubmit} className="flex flex-col h-full">
+    {/* Header */}
+    <div className="flex items-center justify-between px-4 h-16">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onOpenChange(false)}
+          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
+          <X className="w-5 h-5" />
+        </button>
+      </div>
+      <h2 className="text-[20px] font-bold text-foreground">
+        {t('editLimitedDialog.title')}
+      </h2>
+      <button
+        type="submit"
+        disabled={updating}
+        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
+        {updating ? (
+          <Loader2 className="w-5 h-5 animate-spin" />
+        ) : (
+          <Check className="w-5 h-5" />
+        )}
+      </button>
+    </div>
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('editLimitedDialog.title')}</DialogTitle>
-          <DialogDescription>
-            {t('editLimitedDialog.description')}
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={onSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="item-title-readonly">
-              {t('editLimitedDialog.titleLabel')}
-            </Label>
-            <div className="px-3 py-2 text-sm bg-muted text-muted-foreground rounded-md border">
-              {item?.title}
+    <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+      {/* Icon Placeholder */}
+      <div className="flex flex-col items-center">
+        <div className="w-48 h-48 relative">
+          <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <div className="relative">
+              <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+              <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+              <Gift className="w-32 h-32 text-ios-blue relative z-10" />
             </div>
-            <p className="text-xs text-muted-foreground">
+          </div>
+        </div>
+        <p className="text-center text-[15px] text-ios-gray max-w-[260px] mt-4">
+          {t('editLimitedDialog.description')}
+        </p>
+      </div>
+
+      {/* Inputs */}
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
+            {t('editLimitedDialog.titleLabel')}
+          </Label>
+          <div className="bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+            <div className="text-[17px] text-ios-gray">{item?.title}</div>
+            <p className="text-[11px] text-ios-gray/60 mt-1">
               {t('editLimitedDialog.titleReadonlyNote')}
             </p>
           </div>
+        </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="edit-description-only">
-              {t('editLimitedDialog.descriptionLabel')}
-            </Label>
-            <Textarea
-              id="edit-description-only"
+        <div className="space-y-2">
+          <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
+            {t('editLimitedDialog.descriptionLabel')}
+          </Label>
+          <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+            <textarea
               placeholder={t('editLimitedDialog.descriptionPlaceholder')}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="text-base resize-none"
+              className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground resize-none"
               rows={3}
               disabled={updating}
             />
           </div>
+        </div>
 
-          {/* Link field - conditional logic based on current link state */}
-          {wishlist?.enable_links && (
-            <div className="space-y-2">
-              <Label htmlFor="edit-link-limited">
-                {t('editLimitedDialog.linkLabel')}
-              </Label>
-              {item?.link ? (
-                // Item already has a link - show as read-only
-                <>
-                  <div className="px-3 py-2 text-sm bg-muted text-muted-foreground rounded-md border">
-                    {item.link}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {t('editLimitedDialog.linkReadonlyNote')}
-                  </p>
-                </>
-              ) : (
-                // Item has no link - allow adding one
-                <>
-                  <Input
-                    id="edit-link-limited"
-                    placeholder={t('editLimitedDialog.linkPlaceholder')}
-                    value={link}
-                    onChange={(e) => setLink(e.target.value)}
-                    className="text-base"
-                    disabled={updating}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    {t('editLimitedDialog.linkAddNote')}
-                  </p>
-                </>
-              )}
-            </div>
-          )}
+        {wishlist?.enable_links && (
+          <div className="space-y-2">
+            <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
+              {t('editLimitedDialog.linkLabel')}
+            </Label>
+            {item?.link ? (
+              <div className="bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                <div className="text-[15px] text-ios-gray">{item.link}</div>
+                <p className="text-[11px] text-ios-gray/60 mt-1">
+                  {t('editLimitedDialog.linkReadonlyNote')}
+                </p>
+              </div>
+            ) : (
+              <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                <input
+                  placeholder={t('editLimitedDialog.linkPlaceholder')}
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                  className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+                  disabled={updating}
+                />
+                <p className="text-[11px] text-ios-gray/60 mt-1">
+                  {t('editLimitedDialog.linkAddNote')}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
-          {/* Price Range field - conditional logic based on current price state */}
+        <div className="grid grid-cols-2 gap-4">
           {wishlist?.enable_price && (
             <div className="space-y-2">
-              <Label htmlFor="edit-price-limited">
+              <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
                 {t('editLimitedDialog.priceLabel')}
               </Label>
               {item?.price_range ? (
-                // Item already has a price range - show as read-only
-                <>
-                  <div className="px-3 py-2 text-sm bg-muted text-muted-foreground rounded-md border">
+                <div className="bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                  <div className="text-[15px] text-ios-gray">
                     {item.price_range}
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[11px] text-ios-gray/60 mt-1">
                     {t('editLimitedDialog.priceReadonlyNote')}
                   </p>
-                </>
+                </div>
               ) : (
-                // Item has no price range - allow adding one
-                <>
-                  <Input
-                    id="edit-price-limited"
+                <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                  <input
                     placeholder={t('editLimitedDialog.pricePlaceholder')}
                     value={priceRange}
                     onChange={(e) => setPriceRange(e.target.value)}
-                    className="text-base"
+                    className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
                     disabled={updating}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[11px] text-ios-gray/60 mt-1">
                     {t('editLimitedDialog.priceAddNote')}
                   </p>
-                </>
+                </div>
               )}
             </div>
           )}
 
-          {/* Priority field - conditional logic based on current priority state */}
           {wishlist?.enable_priority && (
             <div className="space-y-2">
-              <Label htmlFor="edit-priority-limited">
+              <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
                 {t('editLimitedDialog.priorityLabel')}
               </Label>
               {item?.priority && item.priority > 0 ? (
-                // Item already has a priority - show as read-only
-                <>
-                  <div className="px-3 py-2 text-sm bg-muted text-muted-foreground rounded-md border">
+                <div className="bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+                  <div className="text-[15px] text-ios-gray">
                     {item.priority === 3
                       ? t('priority.high')
                       : item.priority === 2
                       ? t('priority.medium')
                       : t('priority.low')}
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[11px] text-ios-gray/60 mt-1">
                     {t('editLimitedDialog.priorityReadonlyNote')}
                   </p>
-                </>
+                </div>
               ) : (
-                // Item has no priority - allow adding one
-                <>
+                <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
                   <Select
                     value={priority?.toString() || 'none'}
                     onValueChange={(value) =>
                       setPriority(value === 'none' ? null : parseInt(value))
                     }>
-                    <SelectTrigger>
+                    <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none text-foreground">
                       <SelectValue
                         placeholder={t('editLimitedDialog.priorityPlaceholder')}
                       />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
                       <SelectItem value="none">{t('priority.none')}</SelectItem>
                       <SelectItem value="1">{t('priority.low')}</SelectItem>
                       <SelectItem value="2">{t('priority.medium')}</SelectItem>
                       <SelectItem value="3">{t('priority.high')}</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-[11px] text-ios-gray/60 mt-1">
                     {t('editLimitedDialog.priorityAddNote')}
                   </p>
-                </>
+                </div>
               )}
             </div>
           )}
+        </div>
 
-          <Button
-            type="submit"
-            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-            disabled={updating}>
-            {updating ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                {t('editLimitedDialog.updating')}
-              </>
-            ) : (
-              t('editLimitedDialog.updateButton')
-            )}
-          </Button>
-        </form>
+        {onDelete && (
+          <div className="pt-4">
+            <button
+              type="button"
+              onClick={onDelete}
+              className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2">
+              <Trash2 className="w-5 h-5" />
+              {t('editLimitedDialog.removeItem')}
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  </form>
+);
+
+export const EditLimitedDialog = (props: EditLimitedDialogProps) => {
+  const { t } = useTranslation();
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <Drawer open={props.open} onOpenChange={props.onOpenChange}>
+        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
+          <FormContent {...props} t={t} />
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
+      <DialogContent
+        hideClose
+        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
+        <FormContent {...props} t={t} />
       </DialogContent>
     </Dialog>
   );

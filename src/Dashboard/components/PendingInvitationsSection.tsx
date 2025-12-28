@@ -27,42 +27,42 @@ export const PendingInvitationsSection = ({
   }
 
   return (
-    <div className="mb-8">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <AlertCircle className="w-5 h-5 text-primary" />
+    <div className="mb-8 space-y-2">
+      <h2 className="text-[13px] font-medium text-ios-gray uppercase tracking-wider flex items-center gap-2">
+        <AlertCircle className="w-4 h-4" />
         {t('dashboard.pendingInvitations')}
       </h2>
-      <div className="grid gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {invitations.map((invitation) => (
-          <Card key={invitation.id} className="border-primary/20 bg-primary/5">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center justify-between">
-                {invitation.wishlists.title}
-                <Badge
-                  variant="outline"
-                  className="text-primary border-primary">
+          <div
+            key={invitation.id}
+            className="bg-ios-secondary rounded-[20px] p-5 space-y-4 shadow-sm border border-ios-blue/20">
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[17px] font-semibold">
+                  {invitation.wishlists.title}
+                </h3>
+                <span className="text-[12px] font-medium text-ios-blue bg-ios-blue/10 px-2 py-0.5 rounded-full">
                   {t('dashboard.adminInvitation')}
-                </Badge>
-              </CardTitle>
+                </span>
+              </div>
               {invitation.wishlists.description && (
-                <CardDescription>
+                <p className="text-[15px] text-ios-gray line-clamp-2">
                   {invitation.wishlists.description}
-                </CardDescription>
+                </p>
               )}
-              <CardDescription className="text-sm">
+              <p className="text-[13px] text-ios-gray">
                 {t('dashboard.invitedBy')}:{' '}
                 {invitation.wishlists.owner_profile?.email}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button
-                onClick={() => onAcceptInvitation(invitation.id)}
-                className="w-full bg-primary hover:bg-primary/90">
-                <Check className="w-4 h-4 mr-2" />
-                {t('dashboard.acceptInvitation')}
-              </Button>
-            </CardContent>
-          </Card>
+              </p>
+            </div>
+            <button
+              onClick={() => onAcceptInvitation(invitation.id)}
+              className="w-full h-12 bg-ios-blue text-white rounded-[12px] text-[17px] font-semibold flex items-center justify-center gap-2 active:opacity-70 transition-all">
+              <Check className="w-4 h-4" />
+              {t('dashboard.acceptInvitation')}
+            </button>
+          </div>
         ))}
       </div>
     </div>
