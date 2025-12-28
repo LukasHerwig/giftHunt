@@ -48,7 +48,7 @@ const AppHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10">
+    <header className="sticky top-0 z-50 w-full bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10 pt-[env(safe-area-inset-top)]">
       <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between relative">
         {/* Logo/Home Link */}
         <Link

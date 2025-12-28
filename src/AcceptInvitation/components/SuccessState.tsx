@@ -21,7 +21,7 @@ export const SuccessState = ({
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-ios-background">
-      <div className="absolute top-4 right-4 flex items-center gap-2">
+      <div className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-4 flex items-center gap-2">
         <ThemeToggle />
         <LanguageSwitcher />
       </div>

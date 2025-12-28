@@ -16,7 +16,7 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-4">
         <LanguageSwitcher />
       </div>
       <div className="text-center">

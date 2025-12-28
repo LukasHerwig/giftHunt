@@ -23,9 +23,9 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-ios-background pb-32">
+    <div className="min-h-screen bg-ios-background pb-32 pb-safe">
       {/* Simple Navigation Header */}
-      <div className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10">
+      <div className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10 pt-[env(safe-area-inset-top)]">
         <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <BackButton to="/" />

@@ -14,7 +14,7 @@ export const ErrorState = ({ error, onGoHome }: ErrorStateProps) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-4">
         <LanguageSwitcher />
       </div>
       <Card className="max-w-md text-center">

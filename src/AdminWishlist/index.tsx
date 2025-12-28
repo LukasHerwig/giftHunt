@@ -65,7 +65,7 @@ const AdminWishlist = () => {
   const availableItems = items.filter((item) => !item.is_taken);
 
   return (
-    <div className="min-h-screen bg-ios-background pb-32">
+    <div className="min-h-screen bg-ios-background pb-32 pb-safe">
       {/* Immersive Header */}
       <div className="relative h-[45vh] min-h-[350px] w-full overflow-hidden">
         {/* Background Gradient */}
@@ -74,8 +74,8 @@ const AdminWishlist = () => {
         </div>
 
         {/* Top Navigation */}
-        <div className="sticky top-0 z-50 w-full h-14">
-          <div className="mx-auto max-w-4xl w-full px-4 h-full flex items-center gap-3">
+        <div className="sticky top-0 z-50 w-full pt-[env(safe-area-inset-top)]">
+          <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center gap-3">
             <BackButton to="/" variant="glass" />
           </div>
         </div>

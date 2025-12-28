@@ -81,7 +81,7 @@ const Dashboard = () => {
         </div>
       </main>
 
-      <div className="fixed bottom-8 right-6 z-50">
+      <div className="fixed bottom-8 right-6 z-50 mb-safe">
         <CreateWishlistButton onClick={() => setCreateDialogOpen(true)} />
       </div>
     </div>
