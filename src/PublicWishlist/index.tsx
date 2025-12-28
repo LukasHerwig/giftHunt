@@ -50,7 +50,7 @@ const PublicWishlist = () => {
   }
 
   return (
-    <div className="min-h-screen bg-ios-background pb-20">
+    <div className="min-h-screen bg-ios-background pb-20 pb-safe">
       {/* Immersive Header */}
       <div className="relative h-[45vh] min-h-[350px] w-full overflow-hidden">
         {/* Background Gradient */}
@@ -59,8 +59,8 @@ const PublicWishlist = () => {
         </div>
 
         {/* Top Navigation */}
-        <div className="sticky top-0 z-50 w-full h-14">
-          <div className="mx-auto max-w-4xl w-full px-4 h-full flex items-center justify-between">
+        <div className="sticky top-0 z-50 w-full pt-[env(safe-area-inset-top)]">
+          <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between">
             <Link
               to="/"
               className="flex items-center gap-3 active:opacity-50 transition-opacity">
