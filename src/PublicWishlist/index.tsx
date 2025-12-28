@@ -64,14 +64,21 @@ const PublicWishlist = () => {
             <Link
               to="/"
               className="flex items-center gap-3 active:opacity-50 transition-opacity">
-              <GiftHuntIcon size={28} className="text-white drop-shadow-sm" />
+              <GiftHuntIcon
+                size={28}
+                className="text-ios-blue drop-shadow-sm"
+              />
               <h1 className="text-[20px] font-bold text-white tracking-tight drop-shadow-sm">
                 GiftHunt
               </h1>
             </Link>
             <div className="flex items-center gap-2">
-              <ThemeToggle className="bg-black/20 backdrop-blur-md border-white/10 text-white hover:bg-black/30" />
-              <LanguageSwitcher className="bg-black/20 backdrop-blur-md border-white/10 text-white hover:bg-black/30" />
+              <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-lg text-white hover:bg-black/30 transition-colors">
+                <ThemeToggle />
+              </div>
+              <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-lg text-white hover:bg-black/30 transition-colors">
+                <LanguageSwitcher />
+              </div>
             </div>
           </div>
         </div>
