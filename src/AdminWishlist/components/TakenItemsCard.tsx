@@ -36,13 +36,13 @@ const TakenItemCard = ({
       <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-20">
         <div className="flex flex-col gap-1.5">
           {item.priority === 3 && (
-            <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-full border border-white/10">
+            <div className="bg-white/80 dark:bg-black/20 backdrop-blur-md p-1.5 rounded-full border border-ios-separator/10 dark:border-white/10">
               <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
             </div>
           )}
           {wishlist?.enable_price && item.price_range && (
-            <div className="bg-black/20 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
-              <span className="text-[10px] font-bold text-white">
+            <div className="bg-white/80 dark:bg-black/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-separator/10 dark:border-white/10">
+              <span className="text-[10px] font-bold text-foreground dark:text-white">
                 {item.price_range}
               </span>
             </div>
@@ -72,11 +72,11 @@ const TakenItemCard = ({
       </div>
 
       {/* Title Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-zinc-900/50 via-zinc-900/20 to-transparent z-10">
-        <h4 className="text-[15px] font-bold text-white truncate leading-tight">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-white/95 via-white/50 to-transparent dark:from-zinc-900/90 dark:via-zinc-900/50 dark:to-transparent z-10">
+        <h4 className="text-[15px] font-bold text-foreground dark:text-white truncate leading-tight">
           {item.title}
         </h4>
-        <div className="flex items-center gap-1 mt-1 text-[11px] text-white/60 font-medium">
+        <div className="flex items-center gap-1 mt-1 text-[11px] text-muted-foreground dark:text-white/60 font-medium">
           <User className="w-3 h-3" />
           <span className="truncate">{item.taken_by_name}</span>
         </div>

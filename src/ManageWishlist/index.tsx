@@ -118,8 +118,8 @@ const ManageWishlist = () => {
 
         {/* Title Card */}
         <div className="absolute inset-x-0 bottom-16 px-4 flex justify-center">
-          <div className="w-full max-w-4xl bg-white/10 backdrop-blur-2xl border border-white/20 rounded-[32px] px-8 py-8 flex items-center justify-center shadow-2xl">
-            <h1 className="text-[32px] font-bold text-white tracking-tight leading-tight">
+          <div className="w-full max-w-4xl bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-ios-separator/10 dark:border-white/20 rounded-[32px] px-8 py-8 flex items-center justify-center shadow-2xl">
+            <h1 className="text-[32px] font-bold text-foreground dark:text-white tracking-tight leading-tight">
               {wishlist?.title || t('manageWishlist.title')}
             </h1>
           </div>
