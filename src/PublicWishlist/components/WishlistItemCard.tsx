@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Star, Check, Gift } from 'lucide-react';
+import { Star, Check, Gift, ExternalLink } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 
 interface WishlistItemCardProps {
@@ -32,36 +32,54 @@ export const WishlistItemCard = ({
       </div>
 
       {/* Badges */}
-      <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-        {item.priority === 3 && (
-          <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-full border border-white/10">
-            <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
-          </div>
-        )}
-        {wishlist?.enable_price && item.price_range && (
-          <div className="bg-black/20 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
-            <span className="text-[10px] font-bold text-white">
-              {item.price_range}
-            </span>
-          </div>
-        )}
-        {item.is_taken && (
-          <div className="bg-ios-green/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-green/30 flex items-center gap-1">
-            <Check className="w-3 h-3 text-ios-green" />
-            <span className="text-[10px] font-bold text-ios-green uppercase tracking-wider">
-              {t('publicWishlist.taken')}
-            </span>
+      <div className="absolute top-3 left-3 right-3 flex justify-between items-start z-20">
+        <div className="flex flex-col gap-1.5">
+          {item.priority === 3 && (
+            <div className="bg-black/20 backdrop-blur-md p-1.5 rounded-full border border-white/10">
+              <Star className="w-3.5 h-3.5 text-yellow-500 fill-current" />
+            </div>
+          )}
+          {wishlist?.enable_price && item.price_range && (
+            <div className="bg-black/20 backdrop-blur-md px-2 py-1 rounded-full border border-white/10">
+              <span className="text-[10px] font-bold text-white">
+                {item.price_range}
+              </span>
+            </div>
+          )}
+          {item.is_taken && (
+            <div className="bg-ios-green/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-green/30 flex items-center gap-1">
+              <Check className="w-3 h-3 text-ios-green" />
+              <span className="text-[10px] font-bold text-ios-green uppercase tracking-wider">
+                {t('publicWishlist.taken')}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {item.link && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open(
+                item.link?.startsWith('http')
+                  ? item.link
+                  : `https://${item.link}`,
+                '_blank'
+              );
+            }}
+            className="bg-ios-blue/20 backdrop-blur-md p-2 rounded-full border border-ios-blue/30 hover:bg-ios-blue/40 transition-colors">
+            <ExternalLink className="w-4 h-4 text-ios-blue" />
           </div>
         )}
       </div>
 
       {/* Title Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10">
         <h4 className="text-[15px] font-bold text-white truncate leading-tight">
           {item.title}
         </h4>
         {item.description && (
-          <p className="text-[11px] text-white/60 truncate mt-0.5">
+          <p className="text-[11px] text-white/70 line-clamp-1 mt-0.5">
             {item.description}
           </p>
         )}
