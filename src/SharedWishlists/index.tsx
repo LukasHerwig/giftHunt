@@ -4,8 +4,9 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/components/auth/useAuth';
 import { DashboardService } from '@/Dashboard/services/DashboardService';
 import { AdminWishlist } from '@/Dashboard/types';
-import { Gift, ChevronLeft, ChevronRight, Users } from 'lucide-react';
+import { Gift, ChevronRight, Users } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
+import { BackButton } from '@/components/BackButton';
 import { toast } from 'sonner';
 
 const SharedWishlists = () => {
@@ -35,17 +36,17 @@ const SharedWishlists = () => {
 
   return (
     <div className="min-h-screen bg-ios-background pb-24">
-      <AppHeader />
-
-      <main className="mx-auto max-w-4xl w-full">
-        <div className="px-4 pt-4 mb-6">
-          <button
-            onClick={() => navigate('/')}
-            className="w-10 h-10 rounded-full bg-ios-secondary/80 backdrop-blur-md flex items-center justify-center text-ios-blue active:bg-ios-secondary transition-colors border border-ios-separator/10">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+      {/* Simple Navigation Header */}
+      <div className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10">
+        <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center gap-3">
+          <BackButton to="/" />
+          <h1 className="text-[20px] font-bold text-foreground tracking-tight">
+            {t('navigation.adminAccess')}
+          </h1>
         </div>
+      </div>
 
+      <main className="mx-auto max-w-4xl w-full mt-8">
         <div className="px-4 mb-8">
           <h1 className="text-[34px] font-bold tracking-tight text-foreground">
             {t('navigation.adminAccess')}

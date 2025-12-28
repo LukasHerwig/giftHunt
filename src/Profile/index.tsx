@@ -4,8 +4,9 @@ import { useProfile } from './hooks/useProfile';
 import { ProfileLoadingState } from './components/ProfileLoadingState';
 import { ProfileNotFoundState } from './components/ProfileNotFoundState';
 import { PersonalInformationCard } from './components/PersonalInformationCard';
-import { ChevronLeft, Loader2, Check } from 'lucide-react';
+import { Loader2, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -25,13 +26,9 @@ const Profile = () => {
     <div className="min-h-screen bg-ios-background pb-32">
       {/* Simple Navigation Header */}
       <div className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10">
-        <div className="container mx-auto max-w-4xl px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate('/')}
-              className="w-10 h-10 flex items-center justify-center bg-ios-secondary rounded-full text-foreground active:scale-90 transition-all shadow-sm border border-ios-separator/10">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
+        <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BackButton to="/" />
             <h1 className="text-[20px] font-bold text-foreground tracking-tight">
               {t('profile.title')}
             </h1>

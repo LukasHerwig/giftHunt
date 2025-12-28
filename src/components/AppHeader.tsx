@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/components/auth/useAuth';
 import { Button } from '@/components/ui/button';
+import GiftHuntIcon from './GiftHuntIcon';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -47,8 +48,18 @@ const AppHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-ios-background/80 backdrop-blur-xl">
-      <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-end relative">
+    <header className="sticky top-0 z-50 w-full bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10">
+      <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between relative">
+        {/* Logo/Home Link */}
+        <Link
+          to="/"
+          className="flex items-center gap-3 active:opacity-50 transition-opacity">
+          <GiftHuntIcon size={28} className="text-ios-blue" />
+          <span className="text-[20px] font-bold text-foreground tracking-tight">
+            GiftHunt
+          </span>
+        </Link>
+
         {/* Action buttons and Hamburger Menu */}
         <div className="flex items-center gap-1 z-10">
           <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>

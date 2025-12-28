@@ -72,7 +72,7 @@ const TakenItemCard = ({
       </div>
 
       {/* Title Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-10">
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-zinc-900/50 via-zinc-900/20 to-transparent z-10">
         <h4 className="text-[15px] font-bold text-white truncate leading-tight">
           {item.title}
         </h4>

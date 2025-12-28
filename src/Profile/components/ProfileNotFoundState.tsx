@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, UserX } from 'lucide-react';
+import { UserX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 
 export const ProfileNotFoundState = () => {
   const { t } = useTranslation();
@@ -10,11 +11,7 @@ export const ProfileNotFoundState = () => {
   return (
     <div className="min-h-screen bg-ios-background flex flex-col">
       <div className="p-4">
-        <button
-          onClick={() => navigate('/')}
-          className="w-10 h-10 flex items-center justify-center bg-ios-secondary rounded-full text-foreground active:scale-90 transition-all shadow-sm border border-ios-separator/10">
-          <ChevronLeft className="w-6 h-6" />
-        </button>
+        <BackButton to="/" />
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-6 text-center">

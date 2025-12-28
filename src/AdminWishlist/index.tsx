@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, Share2, Loader2 } from 'lucide-react';
+import { Share2, Loader2 } from 'lucide-react';
 import { useAdminWishlist } from './hooks/useAdminWishlist';
+import { BackButton } from '@/components/BackButton';
 import { LoadingState } from './components/LoadingState';
 import { AccessDeniedState } from './components/AccessDeniedState';
 import { ShareLinkInfo } from './components/ShareLinkInfo';
@@ -73,12 +74,10 @@ const AdminWishlist = () => {
         </div>
 
         {/* Top Navigation */}
-        <div className="absolute top-12 left-4 z-10">
-          <button
-            onClick={() => navigate('/')}
-            className="w-10 h-10 flex items-center justify-center bg-black/20 backdrop-blur-md rounded-full text-white active:scale-90 transition-all border border-white/10">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+        <div className="sticky top-0 z-50 w-full h-14">
+          <div className="mx-auto max-w-4xl w-full px-4 h-full flex items-center gap-3">
+            <BackButton to="/" variant="glass" />
+          </div>
         </div>
 
         {/* Title Card */}

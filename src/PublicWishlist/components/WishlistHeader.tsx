@@ -12,11 +12,11 @@ export const WishlistHeader = ({ wishlist }: WishlistHeaderProps) => {
   const { t } = useTranslation();
 
   return (
-    <header className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator">
-      <div className="flex items-center justify-between px-4 h-14">
-        <div className="flex items-center gap-2">
-          <GiftHuntIcon size={24} />
-          <span className="text-[17px] font-semibold tracking-tight">
+    <header className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10">
+      <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <GiftHuntIcon size={28} className="text-ios-blue" />
+          <span className="text-[20px] font-bold text-foreground tracking-tight">
             GiftHunt
           </span>
         </div>
@@ -26,8 +26,8 @@ export const WishlistHeader = ({ wishlist }: WishlistHeaderProps) => {
         </div>
       </div>
 
-      <div className="px-4 py-6 bg-ios-background">
-        <h1 className="text-[34px] font-bold tracking-tight leading-tight mb-1">
+      <div className="mx-auto max-w-4xl w-full px-4 py-8">
+        <h1 className="text-[34px] font-bold tracking-tight leading-tight mb-1 text-foreground">
           {wishlist.title}
         </h1>
         {wishlist.creator_name && (
