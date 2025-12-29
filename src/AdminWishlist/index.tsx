@@ -76,7 +76,7 @@ const AdminWishlist = () => {
         {/* Top Navigation */}
         <div className="sticky top-0 z-50 w-full pt-[env(safe-area-inset-top)]">
           <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center gap-3">
-            <BackButton to="/" variant="glass" />
+            <BackButton to="/shared-wishlists" variant="glass" />
           </div>
         </div>
 
