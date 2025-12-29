@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { AdminWishlistService } from '../services/AdminWishlistService';
+import { fetchLinkMetadata } from '@/lib/metadataUtils';
 import {
   AdminWishlistState,
   AdminWishlistActions,
@@ -33,6 +34,7 @@ export const useAdminWishlist = (
       title: '',
       description: '',
       link: '',
+      url: '',
       priceRange: '',
       priority: null,
     },
@@ -41,6 +43,25 @@ export const useAdminWishlist = (
     selectedDeleteItem: null,
     deleting: false,
   });
+
+  // Fetch metadata when link changes
+  useEffect(() => {
+    if (!state.editFormData.link || !state.editFormData.link.trim()) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      const metadata = await fetchLinkMetadata(state.editFormData.link);
+      if (metadata?.image) {
+        setState((prev) => ({
+          ...prev,
+          editFormData: { ...prev.editFormData, url: metadata.image },
+        }));
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [state.editFormData.link]);
 
   const checkAdminAccess = useCallback(async () => {
     if (!id) return;
@@ -179,6 +200,7 @@ export const useAdminWishlist = (
         title: item.title,
         description: item.description || '',
         link: item.link || '',
+        url: item.url || '',
         priceRange: item.price_range || '',
         priority: item.priority || null,
       },
@@ -198,6 +220,7 @@ export const useAdminWishlist = (
               title: '',
               description: '',
               link: '',
+              url: '',
               priceRange: '',
               priority: null,
             },
@@ -223,6 +246,7 @@ export const useAdminWishlist = (
           title: state.editFormData.title,
           description: state.editFormData.description,
           link: state.editFormData.link,
+          url: state.editFormData.url,
           price_range: state.editFormData.priceRange,
           priority: state.editFormData.priority || 0,
         });
@@ -237,6 +261,7 @@ export const useAdminWishlist = (
                   title: state.editFormData.title,
                   description: state.editFormData.description || null,
                   link: state.editFormData.link || null,
+                  url: state.editFormData.url || null,
                   price_range: state.editFormData.priceRange || null,
                   priority: state.editFormData.priority || 0,
                 }
@@ -248,6 +273,7 @@ export const useAdminWishlist = (
             title: '',
             description: '',
             link: '',
+            url: '',
             priceRange: '',
             priority: null,
           },

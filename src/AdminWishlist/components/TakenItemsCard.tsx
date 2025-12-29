@@ -25,7 +25,21 @@ const TakenItemCard = ({
       className="relative aspect-square bg-ios-secondary rounded-[24px] overflow-hidden group active:scale-[0.97] transition-all text-left border border-ios-separator/5 shadow-sm grayscale-[0.4]">
       {/* Image Placeholder */}
       <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ios-tertiary/10 to-ios-tertiary/30">
-        <div className="relative">
+        {item.url ? (
+          <img
+            src={item.url}
+            alt={item.title}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.style.display = 'none';
+              const fallback =
+                target.parentElement?.querySelector('.gift-fallback');
+              if (fallback) fallback.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        <div className={`relative ${item.url ? 'hidden gift-fallback' : ''}`}>
           <Gift className="w-12 h-12 text-ios-green opacity-10 absolute -top-2 -left-2" />
           <Gift className="w-16 h-16 text-ios-green opacity-20 absolute top-2 left-2" />
           <Gift className="w-20 h-20 text-ios-green relative z-10" />

@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getBaseUrl } from '@/lib/urlUtils';
+import { fetchLinkMetadata } from '@/lib/metadataUtils';
 import { Wishlist, WishlistItem } from '../types';
 
 interface WishlistWithProfile {
@@ -147,16 +148,32 @@ export class AdminWishlistService {
       title: string;
       description?: string;
       link?: string;
+      url?: string;
       price_range?: string;
       priority?: number;
     }
   ): Promise<void> {
+    let imageUrl = updates.url;
+
+    // If link is provided and no image URL, try to fetch it
+    if (updates.link && !imageUrl) {
+      try {
+        const metadata = await fetchLinkMetadata(updates.link);
+        if (metadata?.image) {
+          imageUrl = metadata.image;
+        }
+      } catch (e) {
+        console.error('Failed to fetch metadata in Admin updateItem:', e);
+      }
+    }
+
     const { error } = await supabase
       .from('wishlist_items')
       .update({
         title: updates.title,
         description: updates.description || null,
         link: updates.link || null,
+        url: imageUrl || null,
         price_range: updates.price_range || null,
         priority: updates.priority || 0,
       })

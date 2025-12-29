@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Drawer, DrawerContent } from '@/components/ui/drawer';
@@ -22,6 +23,8 @@ interface EditLimitedDialogProps {
   setDescription: (description: string) => void;
   link: string;
   setLink: (link: string) => void;
+  url: string;
+  setUrl: (url: string) => void;
   priceRange: string;
   setPriceRange: (priceRange: string) => void;
   priority: number | null;
@@ -43,6 +46,8 @@ const FormContent = ({
   setDescription,
   link,
   setLink,
+  url,
+  setUrl,
   priceRange,
   setPriceRange,
   priority,
@@ -81,15 +86,25 @@ const FormContent = ({
     <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
       {/* Icon Placeholder */}
       <div className="flex flex-col items-center">
-        <div className="w-48 h-48 relative">
-          <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
-          <div className="relative w-full h-full flex items-center justify-center">
-            <div className="relative">
-              <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
-              <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
-              <Gift className="w-32 h-32 text-ios-blue relative z-10" />
-            </div>
-          </div>
+        <div className="w-48 h-48 relative rounded-[24px] overflow-hidden">
+          {url ? (
+            <img
+              src={url}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <>
+              <div className="absolute inset-0 bg-ios-blue/10 rounded-full blur-3xl" />
+              <div className="relative w-full h-full flex items-center justify-center">
+                <div className="relative">
+                  <Gift className="w-24 h-24 text-ios-blue opacity-20 absolute -top-4 -left-4" />
+                  <Gift className="w-24 h-24 text-ios-blue opacity-40 absolute top-4 left-4" />
+                  <Gift className="w-32 h-32 text-ios-blue relative z-10" />
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <p className="text-center text-[15px] text-ios-gray max-w-[260px] mt-4">
           {t('editLimitedDialog.description')}
@@ -245,9 +260,9 @@ const FormContent = ({
           </div>
         )}
       </div>
-    </div>
-  </form>
-);
+      </div>
+    </form>
+  );
 
 export const EditLimitedDialog = (props: EditLimitedDialogProps) => {
   const { t } = useTranslation();

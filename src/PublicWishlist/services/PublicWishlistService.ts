@@ -74,7 +74,9 @@ export class PublicWishlistService {
     // Load all items (but hide who took what from public users)
     const { data: itemsData, error: itemsError } = await supabase
       .from('wishlist_items')
-      .select('id, title, description, link, price_range, priority, is_taken')
+      .select(
+        'id, title, description, link, url, price_range, priority, is_taken'
+      )
       .eq('wishlist_id', shareLinkData.wishlist_id)
       .order('priority', { ascending: false }) // Show high priority items first
       .order('created_at', { ascending: false });

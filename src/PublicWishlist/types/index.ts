@@ -3,6 +3,7 @@ export interface WishlistItem {
   title: string;
   description: string | null;
   link: string | null;
+  url: string | null;
   price_range: string | null;
   priority: number;
   is_taken: boolean;

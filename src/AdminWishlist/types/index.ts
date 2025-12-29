@@ -3,6 +3,7 @@ export interface WishlistItem {
   title: string;
   description: string | null;
   link: string | null;
+  url: string | null;
   price_range: string | null;
   priority: number;
   is_taken: boolean;
@@ -25,6 +26,7 @@ export interface ItemFormData {
   title: string;
   description: string;
   link: string;
+  url?: string;
   priceRange: string;
   priority: number | null;
 }

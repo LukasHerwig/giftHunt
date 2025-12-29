@@ -55,6 +55,23 @@ const FormContent = ({
 
   return (
     <form onSubmit={onSubmit} className="space-y-6 p-4 md:p-0">
+      {/* Preview Image */}
+      <div className="flex flex-col items-center mb-2">
+        <div className="w-48 h-48 relative rounded-[24px] overflow-hidden">
+          {editItem.url ? (
+            <img
+              src={editItem.url}
+              alt="Preview"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-ios-secondary">
+              <Gift className="w-20 h-20 text-ios-blue opacity-20" />
+            </div>
+          )}
+        </div>
+      </div>
+
       {isTakenItem && selectedItem && (
         <div className="bg-ios-secondary/50 border border-ios-separator/10 p-4 rounded-[20px]">
           <p className="text-[13px] text-ios-gray font-medium mb-1">

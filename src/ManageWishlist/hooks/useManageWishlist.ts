@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ManageWishlistService } from '../services/ManageWishlistService';
+import { fetchLinkMetadata } from '@/lib/metadataUtils';
 import {
   WishlistItem,
   Wishlist,
@@ -40,6 +41,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     title: '',
     description: '',
     link: '',
+    url: '',
     priceRange: '',
     priority: null,
   });
@@ -49,18 +51,76 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     title: '',
     description: '',
     link: '',
+    url: '',
     priceRange: '',
     priority: null,
   });
+
+  // Fetch metadata when link changes for new item
+  useEffect(() => {
+    if (!newItem.link || !newItem.link.trim()) {
+      if (newItem.url) setNewItem((prev) => ({ ...prev, url: '' }));
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      console.log('Fetching metadata for:', newItem.link);
+      // Only fetch if we don't have a URL yet or if the link changed significantly
+      const metadata = await fetchLinkMetadata(newItem.link);
+      console.log('Metadata result:', metadata);
+      if (metadata?.image) {
+        setNewItem((prev) => ({ ...prev, url: metadata.image }));
+        // If title is empty, maybe fill it too?
+        if (!newItem.title && metadata.title) {
+          setNewItem((prev) => ({ ...prev, title: metadata.title }));
+        }
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [newItem.link]);
+
+  // Fetch metadata when link changes for editing item
+  useEffect(() => {
+    if (!editItem.link || !editItem.link.trim()) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      const metadata = await fetchLinkMetadata(editItem.link);
+      if (metadata?.image) {
+        setEditItem((prev) => ({ ...prev, url: metadata.image }));
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [editItem.link]);
 
   const [editingDescriptionItem, setEditingDescriptionItem] =
     useState<WishlistItem | null>(null);
   const [editDescription, setEditDescription] = useState('');
   const [editLinkLimited, setEditLinkLimited] = useState('');
+  const [editUrlLimited, setEditUrlLimited] = useState('');
   const [editPriceRangeLimited, setEditPriceRangeLimited] = useState('');
   const [editPriorityLimited, setEditPriorityLimited] = useState<number | null>(
     null
   );
+
+  // Fetch metadata when link changes for limited editing item
+  useEffect(() => {
+    if (!editLinkLimited || !editLinkLimited.trim()) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      const metadata = await fetchLinkMetadata(editLinkLimited);
+      if (metadata?.image) {
+        setEditUrlLimited(metadata.image);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [editLinkLimited]);
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [settings, setSettings] = useState<SettingsFormData>({
@@ -126,6 +186,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         title: newItem.title.trim(),
         description: newItem.description.trim() || null,
         link: newItem.link.trim() || null,
+        url: newItem.url || null,
         price_range: newItem.priceRange.trim() || null,
         priority: newItem.priority,
       });
@@ -135,6 +196,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         title: '',
         description: '',
         link: '',
+        url: '',
         priceRange: '',
         priority: null,
       });
@@ -153,6 +215,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
       title: item.title,
       description: item.description || '',
       link: item.link || '',
+      url: item.url || '',
       priceRange: item.price_range || '',
       priority: item.priority || null,
     });
@@ -172,6 +235,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         title: editItem.title.trim(),
         description: editItem.description.trim() || null,
         link: editItem.link.trim() || null,
+        url: editItem.url || null,
         price_range: editItem.priceRange.trim() || null,
         priority: editItem.priority,
       });
@@ -183,6 +247,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         title: '',
         description: '',
         link: '',
+        url: '',
         priceRange: '',
         priority: null,
       });
@@ -208,6 +273,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     setEditingDescriptionItem(item);
     setEditDescription(item.description || '');
     setEditLinkLimited(item.link || ''); // Initialize with current link or empty
+    setEditUrlLimited(item.url || ''); // Initialize with current url or empty
     setEditPriceRangeLimited(item.price_range || ''); // Initialize with current price range or empty
     setEditPriorityLimited(item.priority || null); // Initialize with current priority or null
     setEditDescriptionDialogOpen(true);
@@ -227,6 +293,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
           title: editingDescriptionItem.title,
           description: editDescription.trim() || null,
           link: editLinkLimited.trim() || null, // Use the link from the form, allowing updates only if originally empty
+          url: editUrlLimited.trim() || null, // Use the url from the form
           price_range: editPriceRangeLimited.trim() || null, // Use the price range from the form, allowing updates only if originally empty
           priority: editPriorityLimited, // Use the priority from the form, allowing updates only if originally empty
         }
@@ -241,6 +308,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
       setEditingDescriptionItem(null);
       setEditDescription('');
       setEditLinkLimited('');
+      setEditUrlLimited('');
       setEditPriceRangeLimited('');
       setEditPriorityLimited(null);
       toast.success(t('messages.itemUpdated'));
@@ -419,6 +487,8 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     setEditDescription,
     editLinkLimited,
     setEditLinkLimited,
+    editUrlLimited,
+    setEditUrlLimited,
     editPriceRangeLimited,
     setEditPriceRangeLimited,
     editPriorityLimited,

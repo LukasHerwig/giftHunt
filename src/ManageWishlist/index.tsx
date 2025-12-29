@@ -58,6 +58,8 @@ const ManageWishlist = () => {
     setEditDescription,
     editLinkLimited,
     setEditLinkLimited,
+    editUrlLimited,
+    setEditUrlLimited,
     editPriceRangeLimited,
     setEditPriceRangeLimited,
     editPriorityLimited,
@@ -217,6 +219,8 @@ const ManageWishlist = () => {
             setDescription={setEditDescription}
             link={editLinkLimited}
             setLink={setEditLinkLimited}
+            url={editUrlLimited}
+            setUrl={setEditUrlLimited}
             priceRange={editPriceRangeLimited}
             setPriceRange={setEditPriceRangeLimited}
             priority={editPriorityLimited}
