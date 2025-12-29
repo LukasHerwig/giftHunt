@@ -14,6 +14,8 @@ const Profile = () => {
   const { profile, loading, saving, fullName, handleSave, setFullName } =
     useProfile();
 
+  const hasChanges = fullName.trim() !== (profile?.full_name || '');
+
   if (loading) {
     return <ProfileLoadingState />;
   }
@@ -34,19 +36,21 @@ const Profile = () => {
             </h1>
           </div>
 
-          <Button
-            onClick={handleSave}
-            disabled={saving || !fullName.trim()}
-            className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-6 h-10 font-semibold shadow-lg active:scale-95 transition-all">
-            {saving ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <div className="flex items-center gap-2">
-                <Check className="w-4 h-4" />
-                {t('common.save')}
-              </div>
-            )}
-          </Button>
+          {hasChanges && (
+            <Button
+              onClick={handleSave}
+              disabled={saving || !fullName.trim()}
+              className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-6 h-10 font-semibold shadow-lg active:scale-95 transition-all animate-in fade-in zoom-in duration-200">
+              {saving ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4" />
+                  {t('common.save')}
+                </div>
+              )}
+            </Button>
+          )}
         </div>
       </div>
 
