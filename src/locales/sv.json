@@ -196,7 +196,6 @@
     "priorityPlaceholder": "Välj prioritet (valfritt)",
     "updateButton": "Uppdatera Önskning",
     "updating": "Uppdaterar...",
-    "removeItem": "Ta bort föremål",
     "removeItem": "Ta bort föremål"
   },
   "editLimitedDialog": {
@@ -219,7 +218,8 @@
     "priorityReadonlyNote": "Prioritet kan inte ändras när den är inställd medan önskelistan har en aktiv delningslänk",
     "priorityAddNote": "Du kan lägga till en prioritet nu, men när den är tillagd kan den inte ändras medan delningslänken är aktiv",
     "updateButton": "Uppdatera Önskning",
-    "updating": "Uppdaterar..."
+    "updating": "Uppdaterar...",
+    "removeItem": "Ta bort föremål"
   },
   "inviteDialog": {
     "title": "Bjud in Admin",

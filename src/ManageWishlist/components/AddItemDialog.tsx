@@ -84,6 +84,7 @@ const FormContent = ({
                 src={newItem.url}
                 alt="Preview"
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
                 onError={() => setImageError(true)}
               />
             ) : (

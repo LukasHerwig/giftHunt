@@ -120,7 +120,9 @@ export const WishlistItems = ({
                 src={item.url}
                 alt={item.title}
                 className="w-full h-full object-cover"
+                referrerPolicy="no-referrer"
                 onError={(e) => {
+                  console.log('Image load error for:', item.url);
                   const target = e.target as HTMLImageElement;
                   target.style.display = 'none';
                   const parent = target.parentElement;

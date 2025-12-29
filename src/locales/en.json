@@ -196,7 +196,6 @@
     "priorityPlaceholder": "Select priority (optional)",
     "updateButton": "Update Item",
     "updating": "Updating...",
-    "removeItem": "Remove Item",
     "removeItem": "Remove Item"
   },
   "editLimitedDialog": {
@@ -219,7 +218,8 @@
     "priorityReadonlyNote": "Priority cannot be changed once set while wishlist has an active share link",
     "priorityAddNote": "You can add a priority now, but once added it cannot be changed while the share link is active",
     "updateButton": "Update Item",
-    "updating": "Updating..."
+    "updating": "Updating...",
+    "removeItem": "Remove Item"
   },
   "inviteDialog": {
     "title": "Invite Admin",
