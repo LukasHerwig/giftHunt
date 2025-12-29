@@ -58,6 +58,8 @@ const ManageWishlist = () => {
     setEditDescription,
     editLinkLimited,
     setEditLinkLimited,
+    editUrlLimited,
+    setEditUrlLimited,
     editPriceRangeLimited,
     setEditPriceRangeLimited,
     editPriorityLimited,
@@ -104,8 +106,9 @@ const ManageWishlist = () => {
     <div className="min-h-screen bg-ios-background pb-32 pb-safe">
       {/* Immersive Header */}
       <div className="relative h-[45vh] min-h-[350px] w-full overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-ios-blue/40 via-purple-500/40 to-pink-500/40">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-ios-blue/5">
+          <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-ios-background" />
         </div>
 
@@ -217,6 +220,8 @@ const ManageWishlist = () => {
             setDescription={setEditDescription}
             link={editLinkLimited}
             setLink={setEditLinkLimited}
+            url={editUrlLimited}
+            setUrl={setEditUrlLimited}
             priceRange={editPriceRangeLimited}
             setPriceRange={setEditPriceRangeLimited}
             priority={editPriorityLimited}

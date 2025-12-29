@@ -1,6 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { EmailService } from '@/lib/EmailService';
 import { getBaseUrl } from '@/lib/urlUtils';
+import { fetchLinkMetadata } from '@/lib/metadataUtils';
 import {
   WishlistItem,
   Wishlist,
@@ -37,7 +38,9 @@ export class ManageWishlistService {
     // Load all items for the owner (but don't show taken status to maintain surprise)
     const { data: itemsData, error: itemsError } = await supabase
       .from('wishlist_items')
-      .select('id, title, description, link, price_range, priority, created_at')
+      .select(
+        'id, title, description, link, url, price_range, priority, created_at'
+      )
       .eq('wishlist_id', wishlistId)
       .order('created_at', { ascending: false });
 
@@ -96,16 +99,36 @@ export class ManageWishlistService {
       title: string;
       description: string | null;
       link: string | null;
+      url?: string | null;
       price_range: string | null;
       priority: number | null;
     }
   ): Promise<WishlistItem> {
+    let imageUrl = itemData.url;
+
+    console.log('addItem called with:', { itemData, imageUrl });
+
+    // If link is provided but no image URL, try to fetch it
+    if (itemData.link && !imageUrl) {
+      try {
+        console.log('Fetching metadata in addItem for:', itemData.link);
+        const metadata = await fetchLinkMetadata(itemData.link);
+        console.log('Metadata result in addItem:', metadata);
+        if (metadata?.image) {
+          imageUrl = metadata.image;
+        }
+      } catch (e) {
+        console.error('Failed to fetch metadata in addItem:', e);
+      }
+    }
+
     const { data, error } = await supabase
       .from('wishlist_items')
       .insert([
         {
           wishlist_id: wishlistId,
           ...itemData,
+          url: imageUrl,
         },
       ])
       .select()
@@ -124,13 +147,32 @@ export class ManageWishlistService {
       title: string;
       description: string | null;
       link: string | null;
+      url?: string | null;
       price_range: string | null;
       priority: number | null;
     }
   ): Promise<WishlistItem> {
+    let imageUrl = itemData.url;
+
+    // If link is provided and it's different from before, or if we just want to refresh
+    // For simplicity, if link is present and url is not, we fetch
+    if (itemData.link && !imageUrl) {
+      try {
+        const metadata = await fetchLinkMetadata(itemData.link);
+        if (metadata?.image) {
+          imageUrl = metadata.image;
+        }
+      } catch (e) {
+        console.error('Failed to fetch metadata in updateItem:', e);
+      }
+    }
+
     const { data, error } = await supabase
       .from('wishlist_items')
-      .update(itemData)
+      .update({
+        ...itemData,
+        url: imageUrl,
+      })
       .eq('id', itemId)
       .select()
       .single();
