@@ -9,7 +9,7 @@ export const SharedWishlistsLink = () => {
   return (
     <button
       onClick={() => navigate('/shared-wishlists')}
-      className="w-full bg-ios-secondary/50 rounded-[20px] px-4 py-3 flex items-center gap-3 active:bg-ios-secondary transition-colors border border-ios-separator/10 group">
+      className="w-full bg-ios-secondary/50 rounded-[20px] px-4 py-6 flex items-center gap-3 active:bg-ios-secondary transition-colors border border-ios-separator/10 group">
       <Users className="w-5 h-5 text-ios-blue" />
       <span className="text-[17px] font-semibold text-foreground">
         {t('navigation.adminAccess')}

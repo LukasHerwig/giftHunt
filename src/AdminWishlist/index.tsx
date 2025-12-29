@@ -68,8 +68,9 @@ const AdminWishlist = () => {
     <div className="min-h-screen bg-ios-background pb-32 pb-safe">
       {/* Immersive Header */}
       <div className="relative h-[45vh] min-h-[350px] w-full overflow-hidden">
-        {/* Background Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-ios-green/40 via-emerald-500/40 to-ios-blue/40">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-ios-blue/5">
+          <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=2670&auto=format&fit=crop')] bg-cover bg-center" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-ios-background" />
         </div>
 
