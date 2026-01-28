@@ -204,6 +204,40 @@ const FormContent = ({
             </div>
           )}
         </div>
+
+        {/* Gift Card Toggle */}
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() =>
+              setNewItem({ ...newItem, isGiftcard: !newItem.isGiftcard })
+            }
+            disabled={adding}
+            className={`w-full bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between ${
+              adding ? 'opacity-50' : ''
+            }`}>
+            <div className="flex flex-col items-start">
+              <span className="text-[17px] font-medium text-foreground">
+                {t('addItemDialog.isGiftcard')}
+              </span>
+              <span className="text-[13px] text-ios-gray mt-0.5">
+                {t('addItemDialog.isGiftcardDescription')}
+              </span>
+            </div>
+            <div
+              className={`w-[51px] h-[31px] rounded-full transition-colors ${
+                newItem.isGiftcard ? 'bg-ios-green' : 'bg-ios-gray/30'
+              }`}>
+              <div
+                className={`w-[27px] h-[27px] bg-white rounded-full shadow-sm mt-[2px] transition-transform ${
+                  newItem.isGiftcard
+                    ? 'translate-x-[22px]'
+                    : 'translate-x-[2px]'
+                }`}
+              />
+            </div>
+          </button>
+        </div>
       </div>
     </form>
   );

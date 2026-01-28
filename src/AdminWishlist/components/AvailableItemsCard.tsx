@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Star, Gift, ExternalLink } from 'lucide-react';
+import { Star, Gift, ExternalLink, CreditCard } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 
 interface AvailableItemsCardProps {
@@ -18,6 +18,8 @@ const AvailableItemCard = ({
   wishlist: Wishlist | null;
   onEditItem: (item: WishlistItem) => void;
 }) => {
+  const isGiftcard = item.is_giftcard;
+
   return (
     <button
       onClick={() => onEditItem(item)}
@@ -60,6 +62,12 @@ const AvailableItemCard = ({
               </span>
             </div>
           )}
+          {/* Gift card badge */}
+          {isGiftcard && (
+            <div className="bg-ios-purple/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-purple/30 flex items-center gap-1">
+              <CreditCard className="w-3 h-3 text-ios-purple" />
+            </div>
+          )}
         </div>
 
         {item.link && (
@@ -70,7 +78,7 @@ const AvailableItemCard = ({
                 item.link?.startsWith('http')
                   ? item.link
                   : `https://${item.link}`,
-                '_blank'
+                '_blank',
               );
             }}
             className="bg-ios-blue/20 backdrop-blur-md p-2 rounded-full border border-ios-blue/30 hover:bg-ios-blue/40 transition-colors">

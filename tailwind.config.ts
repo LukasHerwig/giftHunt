@@ -59,6 +59,7 @@ export default {
           quaternary: 'hsl(var(--ios-quaternary-background))',
           blue: 'hsl(var(--ios-blue))',
           green: 'hsl(var(--ios-green))',
+          purple: 'hsl(var(--ios-purple))',
           gray: 'hsl(var(--ios-gray))',
           separator: 'hsl(var(--ios-separator))',
         },

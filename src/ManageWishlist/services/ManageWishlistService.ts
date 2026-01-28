@@ -39,7 +39,7 @@ export class ManageWishlistService {
     const { data: itemsData, error: itemsError } = await supabase
       .from('wishlist_items')
       .select(
-        'id, title, description, link, url, price_range, priority, created_at'
+        'id, title, description, link, url, price_range, priority, is_giftcard, created_at',
       )
       .eq('wishlist_id', wishlistId)
       .order('created_at', { ascending: false });
@@ -69,7 +69,7 @@ export class ManageWishlistService {
         profiles!admin_id (
           email
         )
-      `
+      `,
       )
       .eq('wishlist_id', wishlistId);
 
@@ -102,7 +102,8 @@ export class ManageWishlistService {
       url?: string | null;
       price_range: string | null;
       priority: number | null;
-    }
+      is_giftcard?: boolean;
+    },
   ): Promise<WishlistItem> {
     let imageUrl = itemData.url;
 
@@ -150,7 +151,8 @@ export class ManageWishlistService {
       url?: string | null;
       price_range: string | null;
       priority: number | null;
-    }
+      is_giftcard?: boolean;
+    },
   ): Promise<WishlistItem> {
     let imageUrl = itemData.url;
 
@@ -198,7 +200,7 @@ export class ManageWishlistService {
    */
   static async createAdminInvitation(
     wishlistId: string,
-    email: string
+    email: string,
   ): Promise<string> {
     const {
       data: { user },
@@ -246,7 +248,7 @@ export class ManageWishlistService {
         email.trim(),
         invitationLink,
         wishlistData?.title || 'Wishlist',
-        inviterData?.full_name || undefined
+        inviterData?.full_name || undefined,
       );
     } catch (emailError) {
       console.error('Failed to send invitation email:', emailError);
@@ -274,7 +276,7 @@ export class ManageWishlistService {
    */
   static async removeAdmin(
     adminId: string,
-    wishlistId: string
+    wishlistId: string,
   ): Promise<{
     adminEmail?: string;
     hadShareLinks: boolean;
@@ -328,7 +330,7 @@ export class ManageWishlistService {
       if (inviteError) {
         console.log(
           'Note: Could not find invitation record to clean up:',
-          inviteError
+          inviteError,
         );
       }
     }
@@ -350,7 +352,7 @@ export class ManageWishlistService {
       enable_links: boolean;
       enable_price: boolean;
       enable_priority: boolean;
-    }
+    },
   ): Promise<Wishlist> {
     const { data, error } = await supabase
       .from('wishlists')

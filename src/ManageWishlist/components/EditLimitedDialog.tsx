@@ -222,8 +222,8 @@ const FormContent = ({
                       {item.priority === 3
                         ? t('priority.high')
                         : item.priority === 2
-                        ? t('priority.medium')
-                        : t('priority.low')}
+                          ? t('priority.medium')
+                          : t('priority.low')}
                     </div>
                     <p className="text-[11px] text-ios-gray/60 mt-1">
                       {t('editLimitedDialog.priorityReadonlyNote')}
@@ -239,7 +239,7 @@ const FormContent = ({
                       <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none text-foreground">
                         <SelectValue
                           placeholder={t(
-                            'editLimitedDialog.priorityPlaceholder'
+                            'editLimitedDialog.priorityPlaceholder',
                           )}
                         />
                       </SelectTrigger>
@@ -261,6 +261,36 @@ const FormContent = ({
                 )}
               </div>
             )}
+          </div>
+
+          {/* Gift Card Toggle (Read-only when share link active) */}
+          <div className="space-y-2">
+            <div
+              className={`w-full bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between opacity-60`}>
+              <div className="flex flex-col items-start">
+                <span className="text-[17px] font-medium text-ios-gray">
+                  {t('editItemDialog.isGiftcard')}
+                </span>
+                <span className="text-[13px] text-ios-gray/60 mt-0.5">
+                  {t('editItemDialog.isGiftcardDescription')}
+                </span>
+              </div>
+              <div
+                className={`w-[51px] h-[31px] rounded-full transition-colors ${
+                  item?.is_giftcard ? 'bg-ios-green' : 'bg-ios-gray/30'
+                }`}>
+                <div
+                  className={`w-[27px] h-[27px] bg-white rounded-full shadow-sm mt-[2px] transition-transform ${
+                    item?.is_giftcard
+                      ? 'translate-x-[22px]'
+                      : 'translate-x-[2px]'
+                  }`}
+                />
+              </div>
+            </div>
+            <p className="text-[11px] text-ios-gray/60 px-1">
+              {t('editLimitedDialog.giftcardReadonlyNote')}
+            </p>
           </div>
 
           {onDelete && (

@@ -50,7 +50,7 @@ export class AdminWishlistService {
         profiles!creator_id (
           full_name
         )
-        `
+        `,
       )
       .eq('id', wishlistId)
       .single();
@@ -74,7 +74,44 @@ export class AdminWishlistService {
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+
+    const items = data || [];
+
+    // Fetch claims for ALL items (not just gift cards, in case gift card was toggled off)
+    const allItemIds = items.map((item) => item.id);
+
+    let claimsMap: Record<
+      string,
+      Array<{
+        id: string;
+        item_id: string;
+        claimer_name: string;
+        claimed_at: string;
+      }>
+    > = {};
+
+    if (allItemIds.length > 0) {
+      const { data: claimsData, error: claimsError } = await supabase
+        .from('item_claims')
+        .select('id, item_id, claimer_name, claimed_at')
+        .in('item_id', allItemIds)
+        .order('claimed_at', { ascending: true });
+
+      if (!claimsError && claimsData) {
+        claimsData.forEach((claim) => {
+          if (!claimsMap[claim.item_id]) {
+            claimsMap[claim.item_id] = [];
+          }
+          claimsMap[claim.item_id].push(claim);
+        });
+      }
+    }
+
+    // Attach claims to all items (needed for items where gift card was toggled off)
+    return items.map((item) => ({
+      ...item,
+      claims: claimsMap[item.id] || [],
+    }));
   }
 
   static async getShareLink(wishlistId: string): Promise<string | null> {
@@ -142,6 +179,30 @@ export class AdminWishlistService {
     if (error) throw error;
   }
 
+  /**
+   * Remove a specific claim from a gift card item
+   */
+  static async removeGiftcardClaim(claimId: string): Promise<void> {
+    const { error } = await supabase
+      .from('item_claims')
+      .delete()
+      .eq('id', claimId);
+
+    if (error) throw error;
+  }
+
+  /**
+   * Remove all claims from a gift card item
+   */
+  static async removeAllGiftcardClaims(itemId: string): Promise<void> {
+    const { error } = await supabase
+      .from('item_claims')
+      .delete()
+      .eq('item_id', itemId);
+
+    if (error) throw error;
+  }
+
   static async updateItem(
     itemId: string,
     updates: {
@@ -151,7 +212,8 @@ export class AdminWishlistService {
       url?: string;
       price_range?: string;
       priority?: number;
-    }
+      is_giftcard?: boolean;
+    },
   ): Promise<void> {
     let imageUrl = updates.url;
 
@@ -176,6 +238,7 @@ export class AdminWishlistService {
         url: imageUrl || null,
         price_range: updates.price_range || null,
         priority: updates.priority || 0,
+        is_giftcard: updates.is_giftcard ?? false,
       })
       .eq('id', itemId);
 

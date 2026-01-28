@@ -1,5 +1,12 @@
 import { useTranslation } from 'react-i18next';
-import { Star, Check, Gift, ExternalLink } from 'lucide-react';
+import {
+  Star,
+  Check,
+  Gift,
+  ExternalLink,
+  CreditCard,
+  Users,
+} from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 
 interface WishlistItemCardProps {
@@ -15,12 +22,20 @@ export const WishlistItemCard = ({
 }: WishlistItemCardProps) => {
   const { t } = useTranslation();
 
+  // Gift card items can always be claimed (not disabled when others have claimed)
+  // Regular items are disabled when taken OR when they have claims (was gift card, now disabled)
+  const claimCount = item.claim_count || 0;
+  const hasClaims = claimCount > 0;
+  const isDisabled = item.is_giftcard ? false : item.is_taken || hasClaims;
+  const showTakenBadge = !item.is_giftcard && (item.is_taken || hasClaims);
+  const showGiftcardBadge = item.is_giftcard;
+
   return (
     <button
-      onClick={() => !item.is_taken && onClaimItem(item.id)}
-      disabled={item.is_taken}
+      onClick={() => !isDisabled && onClaimItem(item.id)}
+      disabled={isDisabled}
       className={`relative aspect-square bg-ios-secondary rounded-[24px] overflow-hidden group active:scale-[0.97] transition-all text-left border border-ios-separator/5 shadow-sm ${
-        item.is_taken ? 'opacity-50 grayscale-[0.5]' : ''
+        isDisabled ? 'opacity-50 grayscale-[0.5]' : ''
       }`}>
       {/* Image Placeholder */}
       <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ios-tertiary/10 to-ios-tertiary/30">
@@ -60,7 +75,22 @@ export const WishlistItemCard = ({
               </span>
             </div>
           )}
-          {item.is_taken && (
+          {/* Gift card badge with claim count */}
+          {showGiftcardBadge && (
+            <div className="bg-ios-purple/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-purple/30 flex items-center gap-1">
+              <CreditCard className="w-3 h-3 text-ios-purple" />
+              {claimCount > 0 && (
+                <>
+                  <Users className="w-3 h-3 text-ios-purple" />
+                  <span className="text-[10px] font-bold text-ios-purple">
+                    {claimCount}
+                  </span>
+                </>
+              )}
+            </div>
+          )}
+          {/* Regular taken badge */}
+          {showTakenBadge && (
             <div className="bg-ios-green/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-green/30 flex items-center gap-1">
               <Check className="w-3 h-3 text-ios-green" />
               <span className="text-[10px] font-bold text-ios-green uppercase tracking-wider">
@@ -78,7 +108,7 @@ export const WishlistItemCard = ({
                 item.link?.startsWith('http')
                   ? item.link
                   : `https://${item.link}`,
-                '_blank'
+                '_blank',
               );
             }}
             className="bg-ios-blue/20 backdrop-blur-md p-2 rounded-full border border-ios-blue/30 hover:bg-ios-blue/40 transition-colors">

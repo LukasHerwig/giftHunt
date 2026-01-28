@@ -1,5 +1,13 @@
 import { useTranslation } from 'react-i18next';
-import { CheckCircle2, User, Gift, Star, ExternalLink } from 'lucide-react';
+import {
+  CheckCircle2,
+  User,
+  Gift,
+  Star,
+  ExternalLink,
+  CreditCard,
+  Users,
+} from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 
 interface TakenItemsCardProps {
@@ -19,10 +27,18 @@ const TakenItemCard = ({
   wishlist: Wishlist | null;
   onEditItem: (item: WishlistItem) => void;
 }) => {
+  const { t } = useTranslation();
+  const isGiftcard = item.is_giftcard;
+  const claimersCount = item.claims?.length || 0;
+  const hasClaims = claimersCount > 0;
+  const claimerNames = item.claims?.map((c) => c.claimer_name).join(', ') || '';
+
   return (
     <button
       onClick={() => onEditItem(item)}
-      className="relative aspect-square bg-ios-secondary rounded-[24px] overflow-hidden group active:scale-[0.97] transition-all text-left border border-ios-separator/5 shadow-sm grayscale-[0.4]">
+      className={`relative aspect-square bg-ios-secondary rounded-[24px] overflow-hidden group active:scale-[0.97] transition-all text-left border border-ios-separator/5 shadow-sm ${
+        isGiftcard ? '' : 'grayscale-[0.4]'
+      }`}>
       {/* Image Placeholder */}
       <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-ios-tertiary/10 to-ios-tertiary/30">
         {item.url ? (
@@ -61,12 +77,24 @@ const TakenItemCard = ({
               </span>
             </div>
           )}
+          {/* Gift card badge or claims badge */}
+          {(isGiftcard || hasClaims) && (
+            <div className="bg-ios-purple/20 backdrop-blur-md px-2 py-1 rounded-full border border-ios-purple/30 flex items-center gap-1">
+              <CreditCard className="w-3 h-3 text-ios-purple" />
+              <Users className="w-3 h-3 text-ios-purple" />
+              <span className="text-[10px] font-bold text-ios-purple">
+                {claimersCount}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-1.5 items-end">
-          <div className="bg-ios-green/20 backdrop-blur-md p-1.5 rounded-full border border-ios-green/30">
-            <CheckCircle2 className="w-4 h-4 text-ios-green" />
-          </div>
+          {!isGiftcard && !hasClaims && (
+            <div className="bg-ios-green/20 backdrop-blur-md p-1.5 rounded-full border border-ios-green/30">
+              <CheckCircle2 className="w-4 h-4 text-ios-green" />
+            </div>
+          )}
           {item.link && (
             <div
               onClick={(e) => {
@@ -75,7 +103,7 @@ const TakenItemCard = ({
                   item.link?.startsWith('http')
                     ? item.link
                     : `https://${item.link}`,
-                  '_blank'
+                  '_blank',
                 );
               }}
               className="bg-ios-blue/20 backdrop-blur-md p-2 rounded-full border border-ios-blue/30 hover:bg-ios-blue/40 transition-colors">
@@ -91,8 +119,19 @@ const TakenItemCard = ({
           {item.title}
         </h4>
         <div className="flex items-center gap-1 mt-1 text-[11px] text-muted-foreground dark:text-white/60 font-medium">
-          <User className="w-3 h-3" />
-          <span className="truncate">{item.taken_by_name}</span>
+          {hasClaims ? (
+            <>
+              <Users className="w-3 h-3" />
+              <span className="truncate" title={claimerNames}>
+                {claimersCount} {t('adminWishlist.claimers')}
+              </span>
+            </>
+          ) : (
+            <>
+              <User className="w-3 h-3" />
+              <span className="truncate">{item.taken_by_name}</span>
+            </>
+          )}
         </div>
       </div>
     </button>

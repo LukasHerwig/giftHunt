@@ -179,7 +179,9 @@
     "priorityLabel": "Priority",
     "priorityPlaceholder": "Select priority (optional)",
     "addButton": "Add Item",
-    "adding": "Adding..."
+    "adding": "Adding...",
+    "isGiftcard": "Gift Card / Group Gift",
+    "isGiftcardDescription": "Multiple people can claim this item"
   },
   "editItemDialog": {
     "title": "Edit Item",
@@ -196,7 +198,9 @@
     "priorityPlaceholder": "Select priority (optional)",
     "updateButton": "Update Item",
     "updating": "Updating...",
-    "removeItem": "Remove Item"
+    "removeItem": "Remove Item",
+    "isGiftcard": "Gift Card / Group Gift",
+    "isGiftcardDescription": "Multiple people can claim this item"
   },
   "editLimitedDialog": {
     "title": "Edit Item",
@@ -217,6 +221,7 @@
     "priorityPlaceholder": "Select priority (optional)",
     "priorityReadonlyNote": "Priority cannot be changed once set while wishlist has an active share link",
     "priorityAddNote": "You can add a priority now, but once added it cannot be changed while the share link is active",
+    "giftcardReadonlyNote": "Gift card setting cannot be changed while wishlist has an active share link",
     "updateButton": "Update Item",
     "updating": "Updating...",
     "removeItem": "Remove Item"
@@ -359,6 +364,7 @@
     "summary": "Summary",
     "totalItems": "Total Items",
     "available": "Available",
+    "claimers": "claimers",
     "taken": "Taken",
     "untakeItem": "Untake Item",
     "untaking": "Untaking...",
@@ -379,6 +385,8 @@
       "pricePlaceholder": "e.g., $10-20, Under $50",
       "priorityLabel": "Priority",
       "priorityPlaceholder": "Select priority",
+      "isGiftcard": "Gift Card / Group Gift",
+      "isGiftcardDescription": "Allow multiple people to claim this item",
       "cancel": "Cancel",
       "updateButton": "Update Item",
       "updating": "Updating...",
@@ -389,7 +397,14 @@
       "description": "Make changes to this item that has been claimed by someone",
       "warning": "⚠️ This item has been taken. Please notify the person who claimed it about any changes.",
       "takenBy": "Taken by",
+      "giftcardClaimers": "🎁 This gift card has been claimed by {{count}} person(s):",
       "editButton": "Edit"
+    },
+    "giftcardConfirm": {
+      "enableTitle": "Enable Gift Card Mode?",
+      "enableDescription": "This will allow multiple people to claim this item. Make sure this is intended, as it could lead to the item being purchased multiple times.",
+      "disableTitle": "Disable Gift Card Mode?",
+      "disableDescription": "This will prevent additional people from claiming this item. Anyone who has already claimed it will still be recorded."
     },
     "deleteItem": {
       "title": "Delete Item",

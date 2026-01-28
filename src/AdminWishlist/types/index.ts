@@ -1,3 +1,10 @@
+export interface ItemClaim {
+  id: string;
+  item_id: string;
+  claimer_name: string;
+  claimed_at: string;
+}
+
 export interface WishlistItem {
   id: string;
   title: string;
@@ -7,9 +14,12 @@ export interface WishlistItem {
   price_range: string | null;
   priority: number;
   is_taken: boolean;
+  is_giftcard: boolean | null;
   taken_by_name: string | null;
   taken_at: string | null;
   created_at: string;
+  // For gift card items: list of all claimers
+  claims?: ItemClaim[];
 }
 
 export interface Wishlist {
@@ -29,6 +39,7 @@ export interface ItemFormData {
   url?: string;
   priceRange: string;
   priority: number | null;
+  isGiftcard: boolean;
 }
 
 export interface AdminWishlistState {
