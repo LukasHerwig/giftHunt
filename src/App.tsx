@@ -23,7 +23,7 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
-        <div vaul-drawer-wrapper="" className="min-h-screen bg-ios-background">
+        <div id="app-root" className="min-h-screen bg-ios-background">
           <Toaster />
           <Sonner />
           <BrowserRouter basename={import.meta.env.PROD ? '/giftHunt' : ''}>

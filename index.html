@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <title>GiftHunt - Share Your Wishlist</title>
     <meta
       name="description"
@@ -85,7 +85,7 @@
           window.history.replaceState(
             null,
             null,
-            l.pathname.slice(0, -1) + decoded + l.hash
+            l.pathname.slice(0, -1) + decoded + l.hash,
           );
         }
       })(window.location);
@@ -102,7 +102,7 @@
 
         // Update theme color meta tag
         let themeColorMeta = document.querySelector(
-          'meta[name="theme-color"]:not([media])'
+          'meta[name="theme-color"]:not([media])',
         );
         if (!themeColorMeta) {
           themeColorMeta = document.createElement('meta');
@@ -112,7 +112,7 @@
 
         // Update apple status bar style
         let statusBarMeta = document.querySelector(
-          'meta[name="apple-mobile-web-app-status-bar-style"]'
+          'meta[name="apple-mobile-web-app-status-bar-style"]',
         );
         if (!statusBarMeta) {
           statusBarMeta = document.createElement('meta');

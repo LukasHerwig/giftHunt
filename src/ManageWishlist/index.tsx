@@ -209,6 +209,7 @@ const ManageWishlist = () => {
               }
             }}
             updating={updating}
+            hasActiveShareLink={hasActiveShareLink}
           />
 
           <EditLimitedDialog
@@ -234,6 +235,7 @@ const ManageWishlist = () => {
               }
             }}
             updating={updating}
+            hasActiveShareLink={hasActiveShareLink}
           />
 
           <InviteAdminDialog
