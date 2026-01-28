@@ -1,6 +1,10 @@
 import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import {
+  SheetDialog,
+  SheetDialogContent,
+  SheetDialogHeader,
+  SheetDialogBody,
+} from '@/components/ui/sheet-dialog';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,10 +17,8 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/switch';
 import { Switch } from '@/components/ui/switch';
 import { Loader2, Trash2, X, Check, Settings } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { Wishlist, SettingsFormData } from '../types';
 
 interface SettingsDialogProps {
@@ -44,7 +46,7 @@ interface FormContentProps {
   onDeleteWishlist: () => Promise<void>;
   deleteDialogOpen: boolean;
   setDeleteDialogOpen: (open: boolean) => void;
-  t: any;
+  t: ReturnType<typeof useTranslation>['t'];
 }
 
 const FormContent = ({
@@ -60,31 +62,23 @@ const FormContent = ({
   setDeleteDialogOpen,
   t,
 }: FormContentProps) => (
-  <form onSubmit={onSubmit} className="flex flex-col h-full">
-    {/* Header */}
-    <div className="flex items-center justify-between px-4 h-16">
-      <button
-        type="button"
-        onClick={() => onOpenChange(false)}
-        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
-        <X className="w-5 h-5" />
-      </button>
-      <h2 className="text-[20px] font-bold text-foreground">
-        {t('manageWishlist.settingsTitle')}
-      </h2>
-      <button
-        type="submit"
-        disabled={updatingSettings || !wishlist?.title.trim()}
-        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
-        {updatingSettings ? (
+  <form onSubmit={onSubmit}>
+    <SheetDialogHeader
+      title={t('manageWishlist.settingsTitle')}
+      onClose={() => onOpenChange(false)}
+      submitDisabled={updatingSettings || !wishlist?.title.trim()}
+      loading={updatingSettings}
+      closeIcon={<X className="w-5 h-5" />}
+      submitIcon={
+        updatingSettings ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
           <Check className="w-5 h-5" />
-        )}
-      </button>
-    </div>
+        )
+      }
+    />
 
-    <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+    <SheetDialogBody>
       {/* Icon Placeholder */}
       <div className="flex flex-col items-center">
         <div className="w-48 h-48 relative">
@@ -99,7 +93,7 @@ const FormContent = ({
         </div>
       </div>
 
-      {/* Inputs */}
+      {/* Title Input */}
       <div className="space-y-6">
         <div className="space-y-2">
           <label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
@@ -208,14 +202,13 @@ const FormContent = ({
 
         {/* Danger Zone */}
         <div className="pt-4">
-          <AlertDialog
-            open={deleteDialogOpen}
-            onOpenChange={setDeleteDialogOpen}>
+          <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <AlertDialogTrigger asChild>
               <Button
                 type="button"
                 variant="ghost"
-                className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive rounded-[20px] py-6 font-medium text-[17px] border border-destructive/20">
+                className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive rounded-[20px] py-6 font-medium text-[17px] border border-destructive/20"
+              >
                 <Trash2 className="w-5 h-5 mr-2" />
                 {t('manageWishlist.deleteWishlist')}
               </Button>
@@ -234,7 +227,8 @@ const FormContent = ({
               <AlertDialogFooter className="flex-col sm:flex-col gap-2 mt-4">
                 <AlertDialogAction
                   onClick={onDeleteWishlist}
-                  className="bg-destructive hover:bg-destructive/90 text-white rounded-[14px] py-6 font-semibold text-[17px] w-full">
+                  className="bg-destructive hover:bg-destructive/90 text-white rounded-[14px] py-6 font-semibold text-[17px] w-full"
+                >
                   {t('common.delete')}
                 </AlertDialogAction>
                 <AlertDialogCancel className="bg-ios-tertiary hover:bg-ios-tertiary/80 border-none rounded-[14px] py-6 font-medium text-[17px] w-full">
@@ -245,7 +239,7 @@ const FormContent = ({
           </AlertDialog>
         </div>
       </div>
-    </div>
+    </SheetDialogBody>
   </form>
 );
 
@@ -263,39 +257,24 @@ export const SettingsDialog = ({
   setDeleteDialogOpen,
 }: SettingsDialogProps) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
-
-  const formProps = {
-    onSubmit,
-    onOpenChange,
-    updatingSettings,
-    wishlist,
-    setWishlist,
-    settings,
-    setSettings,
-    onDeleteWishlist,
-    deleteDialogOpen,
-    setDeleteDialogOpen,
-    t,
-  };
-
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
-          <FormContent {...formProps} />
-        </DrawerContent>
-      </Drawer>
-    );
-  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        hideClose
-        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
-        <FormContent {...formProps} />
-      </DialogContent>
-    </Dialog>
+    <SheetDialog open={open} onOpenChange={onOpenChange}>
+      <SheetDialogContent>
+        <FormContent
+          onSubmit={onSubmit}
+          onOpenChange={onOpenChange}
+          updatingSettings={updatingSettings}
+          wishlist={wishlist}
+          setWishlist={setWishlist}
+          settings={settings}
+          setSettings={setSettings}
+          onDeleteWishlist={onDeleteWishlist}
+          deleteDialogOpen={deleteDialogOpen}
+          setDeleteDialogOpen={setDeleteDialogOpen}
+          t={t}
+        />
+      </SheetDialogContent>
+    </SheetDialog>
   );
 };

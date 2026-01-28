@@ -200,7 +200,8 @@
     "updating": "Updating...",
     "removeItem": "Remove Item",
     "isGiftcard": "Gift Card / Group Gift",
-    "isGiftcardDescription": "Multiple people can claim this item"
+    "isGiftcardDescription": "Multiple people can claim this item",
+    "contactAdminToDelete": "Contact your admin to remove items after sharing your list. Only admins can see which items are taken."
   },
   "editLimitedDialog": {
     "title": "Edit Item",

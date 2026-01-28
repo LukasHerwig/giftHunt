@@ -1,8 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import {
+  SheetDialog,
+  SheetDialogContent,
+  SheetDialogHeader,
+  SheetDialogBody,
+} from '@/components/ui/sheet-dialog';
 import { Loader2, X, Check, Gift } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface ClaimItemDialogProps {
   isOpen: boolean;
@@ -14,7 +17,7 @@ interface ClaimItemDialogProps {
 }
 
 interface FormContentProps extends ClaimItemDialogProps {
-  t: any;
+  t: ReturnType<typeof useTranslation>['t'];
 }
 
 const FormContent = ({
@@ -25,31 +28,23 @@ const FormContent = ({
   claiming,
   t,
 }: FormContentProps) => (
-  <form onSubmit={onSubmit} className="flex flex-col h-full">
-    {/* Header */}
-    <div className="flex items-center justify-between px-4 h-16">
-      <button
-        type="button"
-        onClick={onClose}
-        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
-        <X className="w-5 h-5" />
-      </button>
-      <h2 className="text-[20px] font-bold text-foreground">
-        {t('publicWishlist.claimItem')}
-      </h2>
-      <button
-        type="submit"
-        disabled={claiming || !buyerName.trim()}
-        className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
-        {claiming ? (
+  <form onSubmit={onSubmit}>
+    <SheetDialogHeader
+      title={t('publicWishlist.claimItem')}
+      onClose={onClose}
+      submitDisabled={claiming || !buyerName.trim()}
+      loading={claiming}
+      closeIcon={<X className="w-5 h-5" />}
+      submitIcon={
+        claiming ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
           <Check className="w-5 h-5" />
-        )}
-      </button>
-    </div>
+        )
+      }
+    />
 
-    <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+    <SheetDialogBody>
       {/* Icon Placeholder */}
       <div className="flex flex-col items-center">
         <div className="w-48 h-48 relative">
@@ -67,7 +62,7 @@ const FormContent = ({
         </p>
       </div>
 
-      {/* Inputs */}
+      {/* Name Input */}
       <div className="space-y-6">
         <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
           <input
@@ -80,31 +75,25 @@ const FormContent = ({
           />
         </div>
       </div>
-    </div>
+    </SheetDialogBody>
   </form>
 );
 
 export const ClaimItemDialog = (props: ClaimItemDialogProps) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
 
-  if (isMobile) {
-    return (
-      <Drawer open={props.isOpen} onOpenChange={props.onClose}>
-        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
-          <FormContent {...props} t={t} />
-        </DrawerContent>
-      </Drawer>
-    );
-  }
+  // Handle the different prop naming (isOpen vs open)
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      props.onClose();
+    }
+  };
 
   return (
-    <Dialog open={props.isOpen} onOpenChange={props.onClose}>
-      <DialogContent
-        hideClose
-        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
+    <SheetDialog open={props.isOpen} onOpenChange={handleOpenChange}>
+      <SheetDialogContent>
         <FormContent {...props} t={t} />
-      </DialogContent>
-    </Dialog>
+      </SheetDialogContent>
+    </SheetDialog>
   );
 };

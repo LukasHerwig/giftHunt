@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
+import {
+  SheetDialog,
+  SheetDialogContent,
+  SheetDialogHeader,
+  SheetDialogBody,
+} from '@/components/ui/sheet-dialog';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -11,7 +15,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Loader2, X, Check, Gift, Trash2 } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
 import { WishlistItem, Wishlist } from '../types';
 
 interface EditLimitedDialogProps {
@@ -32,10 +35,11 @@ interface EditLimitedDialogProps {
   onSubmit: (e: React.FormEvent) => Promise<void>;
   onDelete?: () => void;
   updating: boolean;
+  hasActiveShareLink?: boolean;
 }
 
 interface FormContentProps extends EditLimitedDialogProps {
-  t: any;
+  t: ReturnType<typeof useTranslation>['t'];
 }
 
 const FormContent = ({
@@ -47,7 +51,6 @@ const FormContent = ({
   link,
   setLink,
   url,
-  setUrl,
   priceRange,
   setPriceRange,
   priority,
@@ -55,6 +58,7 @@ const FormContent = ({
   onSubmit,
   onDelete,
   updating,
+  hasActiveShareLink = false,
   t,
 }: FormContentProps) => {
   const [imageError, setImageError] = useState(false);
@@ -64,33 +68,23 @@ const FormContent = ({
   }, [url]);
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 h-16">
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => onOpenChange(false)}
-            className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <h2 className="text-[20px] font-bold text-foreground">
-          {t('editLimitedDialog.title')}
-        </h2>
-        <button
-          type="submit"
-          disabled={updating}
-          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
-          {updating ? (
+    <form onSubmit={onSubmit}>
+      <SheetDialogHeader
+        title={t('editLimitedDialog.title')}
+        onClose={() => onOpenChange(false)}
+        submitDisabled={updating}
+        loading={updating}
+        closeIcon={<X className="w-5 h-5" />}
+        submitIcon={
+          updating ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <Check className="w-5 h-5" />
-          )}
-        </button>
-      </div>
+          )
+        }
+      />
 
-      <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
+      <SheetDialogBody>
         {/* Icon Placeholder */}
         <div className="flex flex-col items-center">
           <div className="w-48 h-48 relative rounded-[24px] overflow-hidden">
@@ -120,7 +114,7 @@ const FormContent = ({
           </p>
         </div>
 
-        {/* Inputs */}
+        {/* Title (Read-only) */}
         <div className="space-y-6">
           <div className="space-y-2">
             <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
@@ -134,6 +128,7 @@ const FormContent = ({
             </div>
           </div>
 
+          {/* Description */}
           <div className="space-y-2">
             <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
               {t('editLimitedDialog.descriptionLabel')}
@@ -150,6 +145,7 @@ const FormContent = ({
             </div>
           </div>
 
+          {/* Link */}
           {wishlist?.enable_links && (
             <div className="space-y-2">
               <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
@@ -179,6 +175,7 @@ const FormContent = ({
             </div>
           )}
 
+          {/* Price & Priority */}
           <div className="grid grid-cols-2 gap-4">
             {wishlist?.enable_price && (
               <div className="space-y-2">
@@ -235,22 +232,17 @@ const FormContent = ({
                       value={priority?.toString() || 'none'}
                       onValueChange={(value) =>
                         setPriority(value === 'none' ? null : parseInt(value))
-                      }>
+                      }
+                    >
                       <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none text-foreground">
                         <SelectValue
-                          placeholder={t(
-                            'editLimitedDialog.priorityPlaceholder',
-                          )}
+                          placeholder={t('editLimitedDialog.priorityPlaceholder')}
                         />
                       </SelectTrigger>
                       <SelectContent className="rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
-                        <SelectItem value="none">
-                          {t('priority.none')}
-                        </SelectItem>
+                        <SelectItem value="none">{t('priority.none')}</SelectItem>
                         <SelectItem value="1">{t('priority.low')}</SelectItem>
-                        <SelectItem value="2">
-                          {t('priority.medium')}
-                        </SelectItem>
+                        <SelectItem value="2">{t('priority.medium')}</SelectItem>
                         <SelectItem value="3">{t('priority.high')}</SelectItem>
                       </SelectContent>
                     </Select>
@@ -263,10 +255,9 @@ const FormContent = ({
             )}
           </div>
 
-          {/* Gift Card Toggle (Read-only when share link active) */}
+          {/* Gift Card Toggle (Read-only) */}
           <div className="space-y-2">
-            <div
-              className={`w-full bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between opacity-60`}>
+            <div className="w-full bg-ios-tertiary/30 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between opacity-60">
               <div className="flex flex-col items-start">
                 <span className="text-[17px] font-medium text-ios-gray">
                   {t('editItemDialog.isGiftcard')}
@@ -278,12 +269,11 @@ const FormContent = ({
               <div
                 className={`w-[51px] h-[31px] rounded-full transition-colors ${
                   item?.is_giftcard ? 'bg-ios-green' : 'bg-ios-gray/30'
-                }`}>
+                }`}
+              >
                 <div
                   className={`w-[27px] h-[27px] bg-white rounded-full shadow-sm mt-[2px] transition-transform ${
-                    item?.is_giftcard
-                      ? 'translate-x-[22px]'
-                      : 'translate-x-[2px]'
+                    item?.is_giftcard ? 'translate-x-[22px]' : 'translate-x-[2px]'
                   }`}
                 />
               </div>
@@ -293,44 +283,41 @@ const FormContent = ({
             </p>
           </div>
 
+          {/* Delete Button */}
           {onDelete && (
-            <div className="pt-4">
+            <div className="pt-4 space-y-3">
               <button
                 type="button"
-                onClick={onDelete}
-                className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2">
+                onClick={hasActiveShareLink ? undefined : onDelete}
+                disabled={hasActiveShareLink}
+                className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:opacity-40 disabled:pointer-events-none"
+              >
                 <Trash2 className="w-5 h-5" />
                 {t('editLimitedDialog.removeItem')}
               </button>
+              {hasActiveShareLink && (
+                <div className="bg-muted/50 border border-border/40 p-4 rounded-[16px]">
+                  <p className="text-[13px] text-muted-foreground leading-relaxed text-center">
+                    {t('editItemDialog.contactAdminToDelete')}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
-      </div>
+      </SheetDialogBody>
     </form>
   );
 };
 
 export const EditLimitedDialog = (props: EditLimitedDialogProps) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
-
-  if (isMobile) {
-    return (
-      <Drawer open={props.open} onOpenChange={props.onOpenChange}>
-        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
-          <FormContent {...props} t={t} />
-        </DrawerContent>
-      </Drawer>
-    );
-  }
 
   return (
-    <Dialog open={props.open} onOpenChange={props.onOpenChange}>
-      <DialogContent
-        hideClose
-        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
+    <SheetDialog open={props.open} onOpenChange={props.onOpenChange}>
+      <SheetDialogContent>
         <FormContent {...props} t={t} />
-      </DialogContent>
-    </Dialog>
+      </SheetDialogContent>
+    </SheetDialog>
   );
 };

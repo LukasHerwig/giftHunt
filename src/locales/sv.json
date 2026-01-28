@@ -200,7 +200,8 @@
     "updating": "Uppdaterar...",
     "removeItem": "Ta bort föremål",
     "isGiftcard": "Presentkort / Gruppresent",
-    "isGiftcardDescription": "Flera personer kan reservera denna önskning"
+    "isGiftcardDescription": "Flera personer kan reservera denna önskning",
+    "contactAdminToDelete": "Kontakta din administratör för att ta bort önskningar efter att listan har delats. Endast administratörer kan se vilka önskningar som är reserverade."
   },
   "editLimitedDialog": {
     "title": "Redigera Önskning",

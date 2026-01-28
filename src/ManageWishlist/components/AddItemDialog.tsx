@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Drawer, DrawerContent } from '@/components/ui/drawer';
-import { Button } from '@/components/ui/button';
+import {
+  SheetDialog,
+  SheetDialogContent,
+  SheetDialogHeader,
+  SheetDialogBody,
+} from '@/components/ui/sheet-dialog';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -11,8 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Loader2, X, Check, Gift } from 'lucide-react';
-import { useIsMobile } from '@/hooks/use-mobile';
+import { Loader2, X, Check, Gift } from 'lucide-react';
 import { Wishlist, ItemFormData } from '../types';
 
 interface AddItemDialogProps {
@@ -32,7 +34,7 @@ interface FormContentProps {
   newItem: ItemFormData;
   setNewItem: (item: ItemFormData) => void;
   wishlist: Wishlist | null;
-  t: any;
+  t: ReturnType<typeof useTranslation>['t'];
 }
 
 const FormContent = ({
@@ -51,32 +53,24 @@ const FormContent = ({
   }, [newItem.url]);
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 h-16">
-        <button
-          type="button"
-          onClick={() => onOpenChange(false)}
-          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-foreground active:opacity-50 transition-opacity">
-          <X className="w-5 h-5" />
-        </button>
-        <h2 className="text-[20px] font-bold text-foreground">
-          {t('addItemDialog.title')}
-        </h2>
-        <button
-          type="submit"
-          disabled={adding || !newItem.title.trim()}
-          className="w-10 h-10 flex items-center justify-center bg-ios-background/50 rounded-full text-ios-blue disabled:text-ios-gray active:opacity-50 transition-opacity">
-          {adding ? (
+    <form onSubmit={onSubmit}>
+      <SheetDialogHeader
+        title={t('addItemDialog.title')}
+        onClose={() => onOpenChange(false)}
+        submitDisabled={adding || !newItem.title.trim()}
+        loading={adding}
+        closeIcon={<X className="w-5 h-5" />}
+        submitIcon={
+          adding ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : (
             <Check className="w-5 h-5" />
-          )}
-        </button>
-      </div>
+          )
+        }
+      />
 
-      <div className="flex-1 overflow-y-auto px-4 pb-10 pt-2 space-y-8">
-        {/* Icon Placeholder (No Image Upload) */}
+      <SheetDialogBody>
+        {/* Icon Placeholder */}
         <div className="flex flex-col items-center">
           <div className="w-48 h-48 relative rounded-[24px] overflow-hidden">
             {newItem.url && !imageError ? (
@@ -102,7 +96,7 @@ const FormContent = ({
           </div>
         </div>
 
-        {/* Inputs */}
+        {/* Title Input */}
         <div className="space-y-6">
           <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
             <input
@@ -117,6 +111,7 @@ const FormContent = ({
           </div>
         </div>
 
+        {/* Description */}
         <div className="space-y-2">
           <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
             {t('addItemDialog.descriptionLabel')}
@@ -135,6 +130,7 @@ const FormContent = ({
           </div>
         </div>
 
+        {/* Link */}
         {wishlist?.enable_links && (
           <div className="space-y-2">
             <Label className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
@@ -154,6 +150,7 @@ const FormContent = ({
           </div>
         )}
 
+        {/* Price & Priority */}
         <div className="grid grid-cols-2 gap-4">
           {wishlist?.enable_price && (
             <div className="space-y-2">
@@ -187,7 +184,8 @@ const FormContent = ({
                       ...newItem,
                       priority: value === 'none' ? null : parseInt(value),
                     })
-                  }>
+                  }
+                >
                   <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none text-foreground">
                     <SelectValue
                       placeholder={t('addItemDialog.priorityPlaceholder')}
@@ -215,7 +213,8 @@ const FormContent = ({
             disabled={adding}
             className={`w-full bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between ${
               adding ? 'opacity-50' : ''
-            }`}>
+            }`}
+          >
             <div className="flex flex-col items-start">
               <span className="text-[17px] font-medium text-foreground">
                 {t('addItemDialog.isGiftcard')}
@@ -227,7 +226,8 @@ const FormContent = ({
             <div
               className={`w-[51px] h-[31px] rounded-full transition-colors ${
                 newItem.isGiftcard ? 'bg-ios-green' : 'bg-ios-gray/30'
-              }`}>
+              }`}
+            >
               <div
                 className={`w-[27px] h-[27px] bg-white rounded-full shadow-sm mt-[2px] transition-transform ${
                   newItem.isGiftcard
@@ -238,7 +238,7 @@ const FormContent = ({
             </div>
           </button>
         </div>
-      </div>
+      </SheetDialogBody>
     </form>
   );
 };
@@ -253,35 +253,20 @@ export const AddItemDialog = ({
   adding,
 }: AddItemDialogProps) => {
   const { t } = useTranslation();
-  const isMobile = useIsMobile();
-
-  const formProps = {
-    onSubmit,
-    onOpenChange,
-    adding,
-    newItem,
-    setNewItem,
-    wishlist,
-    t,
-  };
-
-  if (isMobile) {
-    return (
-      <Drawer open={open} onOpenChange={onOpenChange}>
-        <DrawerContent className="h-[92vh] bg-ios-secondary border-none rounded-t-[20px]">
-          <FormContent {...formProps} />
-        </DrawerContent>
-      </Drawer>
-    );
-  }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        hideClose
-        className="sm:max-w-[425px] p-0 overflow-hidden bg-ios-secondary border-none rounded-[24px] shadow-2xl">
-        <FormContent {...formProps} />
-      </DialogContent>
-    </Dialog>
+    <SheetDialog open={open} onOpenChange={onOpenChange}>
+      <SheetDialogContent>
+        <FormContent
+          onSubmit={onSubmit}
+          onOpenChange={onOpenChange}
+          adding={adding}
+          newItem={newItem}
+          setNewItem={setNewItem}
+          wishlist={wishlist}
+          t={t}
+        />
+      </SheetDialogContent>
+    </SheetDialog>
   );
 };
