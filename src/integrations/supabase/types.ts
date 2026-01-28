@@ -7,30 +7,10 @@ export type Json =
   | Json[]
 
 export type Database = {
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
@@ -78,6 +58,38 @@ export type Database = {
             columns: ["wishlist_id"]
             isOneToOne: true
             referencedRelation: "wishlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_claims: {
+        Row: {
+          claimed_at: string
+          claimer_name: string
+          created_at: string
+          id: string
+          item_id: string
+        }
+        Insert: {
+          claimed_at?: string
+          claimer_name: string
+          created_at?: string
+          id?: string
+          item_id: string
+        }
+        Update: {
+          claimed_at?: string
+          claimer_name?: string
+          created_at?: string
+          id?: string
+          item_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_claims_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "wishlist_items"
             referencedColumns: ["id"]
           },
         ]
@@ -198,6 +210,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_giftcard: boolean | null
           is_taken: boolean
           link: string | null
           price_range: string | null
@@ -215,6 +228,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_giftcard?: boolean | null
           is_taken?: boolean
           link?: string | null
           price_range?: string | null
@@ -232,6 +246,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_giftcard?: boolean | null
           is_taken?: boolean
           link?: string | null
           price_range?: string | null
@@ -435,11 +450,7 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
 } as const
-

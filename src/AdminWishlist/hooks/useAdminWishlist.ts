@@ -13,7 +13,7 @@ import {
 } from '../types';
 
 export const useAdminWishlist = (
-  id: string | undefined
+  id: string | undefined,
 ): AdminWishlistState & AdminWishlistActions => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -37,6 +37,7 @@ export const useAdminWishlist = (
       url: '',
       priceRange: '',
       priority: null,
+      isGiftcard: false,
     },
     updating: false,
     deleteDialogOpen: false,
@@ -161,7 +162,7 @@ export const useAdminWishlist = (
         items: prev.items.map((item) =>
           item.id === state.selectedUntakeItem!.id
             ? { ...item, is_taken: false, taken_by_name: null, taken_at: null }
-            : item
+            : item,
         ),
         untakeDialogOpen: false,
         selectedUntakeItem: null,
@@ -203,6 +204,7 @@ export const useAdminWishlist = (
         url: item.url || '',
         priceRange: item.price_range || '',
         priority: item.priority || null,
+        isGiftcard: item.is_giftcard || false,
       },
       editDialogOpen: true,
     }));
@@ -223,6 +225,7 @@ export const useAdminWishlist = (
               url: '',
               priceRange: '',
               priority: null,
+              isGiftcard: false,
             },
           }),
     }));
@@ -249,6 +252,7 @@ export const useAdminWishlist = (
           url: state.editFormData.url,
           price_range: state.editFormData.priceRange,
           priority: state.editFormData.priority || 0,
+          is_giftcard: state.editFormData.isGiftcard,
         });
 
         // Update local state
@@ -264,8 +268,9 @@ export const useAdminWishlist = (
                   url: state.editFormData.url || null,
                   price_range: state.editFormData.priceRange || null,
                   priority: state.editFormData.priority || 0,
+                  is_giftcard: state.editFormData.isGiftcard,
                 }
-              : item
+              : item,
           ),
           editDialogOpen: false,
           selectedEditItem: null,
@@ -276,6 +281,7 @@ export const useAdminWishlist = (
             url: '',
             priceRange: '',
             priority: null,
+            isGiftcard: false,
           },
           updating: false,
         }));
@@ -287,7 +293,7 @@ export const useAdminWishlist = (
         setState((prev) => ({ ...prev, updating: false }));
       }
     },
-    [state.selectedEditItem, state.editFormData, t]
+    [state.selectedEditItem, state.editFormData, t],
   );
 
   const openDeleteDialog = useCallback((item: WishlistItem) => {
@@ -317,7 +323,7 @@ export const useAdminWishlist = (
       setState((prev) => ({
         ...prev,
         items: prev.items.filter(
-          (item) => item.id !== state.selectedDeleteItem!.id
+          (item) => item.id !== state.selectedDeleteItem!.id,
         ),
         deleteDialogOpen: false,
         selectedDeleteItem: null,

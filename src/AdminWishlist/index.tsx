@@ -61,8 +61,24 @@ const AdminWishlist = () => {
     return <AccessDeniedState />;
   }
 
-  const takenItems = items.filter((item) => item.is_taken);
-  const availableItems = items.filter((item) => !item.is_taken);
+  // Taken items: items that have been claimed/taken
+  // - Regular item with is_taken = true
+  // - Any item with claims (regardless of is_giftcard setting)
+  const takenItems = items.filter((item) => {
+    const hasClaims = item.claims && item.claims.length > 0;
+    return item.is_taken || hasClaims;
+  });
+
+  // Available items: items that can still be claimed
+  // - Gift card items are always available (even if they have claims)
+  // - Regular items that are not taken and have no claims
+  const availableItems = items.filter((item) => {
+    const hasClaims = item.claims && item.claims.length > 0;
+    // Gift card items are always available (can be claimed again)
+    if (item.is_giftcard) return true;
+    // Regular items: not taken and no leftover claims from when it was a gift card
+    return !item.is_taken && !hasClaims;
+  });
 
   return (
     <div className="min-h-screen bg-ios-background pb-32 pb-safe">

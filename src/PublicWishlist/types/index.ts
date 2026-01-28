@@ -7,6 +7,8 @@ export interface WishlistItem {
   price_range: string | null;
   priority: number;
   is_taken: boolean;
+  is_giftcard: boolean | null;
+  claim_count?: number; // For gift card items: how many people have claimed
 }
 
 export interface Wishlist {
@@ -37,4 +39,5 @@ export interface PublicWishlistState {
 export interface ClaimItemData {
   itemId: string;
   buyerName: string;
+  isGiftcard?: boolean;
 }

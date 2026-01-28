@@ -179,7 +179,9 @@
     "priorityLabel": "Prioritet",
     "priorityPlaceholder": "Välj prioritet (valfritt)",
     "addButton": "Lägg till Önskning",
-    "adding": "Lägger till..."
+    "adding": "Lägger till...",
+    "isGiftcard": "Presentkort / Gruppresent",
+    "isGiftcardDescription": "Flera personer kan reservera denna önskning"
   },
   "editItemDialog": {
     "title": "Redigera Önskning",
@@ -196,7 +198,9 @@
     "priorityPlaceholder": "Välj prioritet (valfritt)",
     "updateButton": "Uppdatera Önskning",
     "updating": "Uppdaterar...",
-    "removeItem": "Ta bort föremål"
+    "removeItem": "Ta bort föremål",
+    "isGiftcard": "Presentkort / Gruppresent",
+    "isGiftcardDescription": "Flera personer kan reservera denna önskning"
   },
   "editLimitedDialog": {
     "title": "Redigera Önskning",
@@ -217,6 +221,7 @@
     "priorityPlaceholder": "Välj prioritet (valfritt)",
     "priorityReadonlyNote": "Prioritet kan inte ändras när den är inställd medan önskelistan har en aktiv delningslänk",
     "priorityAddNote": "Du kan lägga till en prioritet nu, men när den är tillagd kan den inte ändras medan delningslänken är aktiv",
+    "giftcardReadonlyNote": "Presentkortsinställning kan inte ändras medan önskelistan har en aktiv delningslänk",
     "updateButton": "Uppdatera Önskning",
     "updating": "Uppdaterar...",
     "removeItem": "Ta bort föremål"
@@ -361,6 +366,7 @@
     "totalItems": "Totalt föremål",
     "available": "Tillgängliga",
     "taken": "Tagna",
+    "claimers": "reserverare",
     "untakeItem": "Ångra reservering",
     "untaking": "Ångrar reservering...",
     "createdBy": "Skapad av",
@@ -380,6 +386,8 @@
       "pricePlaceholder": "t.ex. 100-200 kr, Under 500 kr",
       "priorityLabel": "Prioritet",
       "priorityPlaceholder": "Välj prioritet",
+      "isGiftcard": "Presentkort / Gruppgåva",
+      "isGiftcardDescription": "Tillåt flera personer att reservera detta föremål",
       "cancel": "Avbryt",
       "updateButton": "Uppdatera föremål",
       "updating": "Uppdaterar...",
@@ -390,7 +398,14 @@
       "description": "Gör ändringar i detta föremål som har tagits av någon",
       "warning": "⚠️ Detta föremål har tagits. Vänligen meddela personen som har tagit det om eventuella ändringar.",
       "takenBy": "Tagen av",
+      "giftcardClaimers": "🎁 Detta presentkort har reserverats av {{count}} person(er):",
       "editButton": "Redigera"
+    },
+    "giftcardConfirm": {
+      "enableTitle": "Aktivera presentkortsläge?",
+      "enableDescription": "Detta gör att flera personer kan reservera detta föremål. Se till att detta är avsiktligt, eftersom det kan leda till att föremålet köps flera gånger.",
+      "disableTitle": "Inaktivera presentkortsläge?",
+      "disableDescription": "Detta förhindrar att fler personer reserverar detta föremål. De som redan har reserverat det kommer fortfarande att registreras."
     },
     "deleteItem": {
       "title": "Ta bort föremål",

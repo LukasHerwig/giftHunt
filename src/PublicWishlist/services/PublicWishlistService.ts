@@ -53,7 +53,7 @@ export class PublicWishlistService {
         profiles!creator_id (
           full_name
         )
-      `
+      `,
       )
       .eq('id', shareLinkData.wishlist_id)
       .single();
@@ -75,7 +75,7 @@ export class PublicWishlistService {
     const { data: itemsData, error: itemsError } = await supabase
       .from('wishlist_items')
       .select(
-        'id, title, description, link, url, price_range, priority, is_taken'
+        'id, title, description, link, url, price_range, priority, is_taken, is_giftcard',
       )
       .eq('wishlist_id', shareLinkData.wishlist_id)
       .order('priority', { ascending: false }) // Show high priority items first
@@ -83,23 +83,68 @@ export class PublicWishlistService {
 
     if (itemsError) throw itemsError;
 
+    // Get claim counts for ALL items (not just gift cards, in case gift card was toggled off)
+    const allItemIds = (itemsData || []).map((item) => item.id);
+
+    let claimCounts: Record<string, number> = {};
+    if (allItemIds.length > 0) {
+      const { data: claimsData, error: claimsError } = await supabase
+        .from('item_claims')
+        .select('item_id')
+        .in('item_id', allItemIds);
+
+      if (!claimsError && claimsData) {
+        claimsData.forEach((claim) => {
+          claimCounts[claim.item_id] = (claimCounts[claim.item_id] || 0) + 1;
+        });
+      }
+    }
+
+    // Add claim_count to all items (needed for items where gift card was toggled off)
+    const itemsWithClaimCount = (itemsData || []).map((item) => ({
+      ...item,
+      claim_count: claimCounts[item.id] || 0,
+    }));
+
     return {
       wishlist: wishlist,
-      items: itemsData || [],
+      items: itemsWithClaimCount,
       shareLink: shareLinkData,
     };
   }
 
-  static async claimItem({ itemId, buyerName }: ClaimItemData): Promise<void> {
-    const { error } = await supabase
-      .from('wishlist_items')
-      .update({
-        is_taken: true,
-        taken_by_name: buyerName.trim(),
-        taken_at: new Date().toISOString(),
-      })
-      .eq('id', itemId);
+  static async claimItem({
+    itemId,
+    buyerName,
+    isGiftcard,
+  }: ClaimItemData): Promise<void> {
+    if (isGiftcard) {
+      // For gift card items, insert into item_claims table
+      // Don't update is_taken on the item itself
+      const { error } = await supabase.from('item_claims').insert({
+        item_id: itemId,
+        claimer_name: buyerName.trim(),
+      });
 
-    if (error) throw error;
+      if (error) {
+        // Check if it's a unique constraint violation (user already claimed)
+        if (error.code === '23505') {
+          throw new Error('You have already claimed this item');
+        }
+        throw error;
+      }
+    } else {
+      // For regular items, use the existing behavior
+      const { error } = await supabase
+        .from('wishlist_items')
+        .update({
+          is_taken: true,
+          taken_by_name: buyerName.trim(),
+          taken_at: new Date().toISOString(),
+        })
+        .eq('id', itemId);
+
+      if (error) throw error;
+    }
   }
 }

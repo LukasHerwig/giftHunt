@@ -72,6 +72,7 @@ All colors MUST be HSL.
     --ios-tertiary-background: 240 5% 93%;
     --ios-blue: 211 100% 50%;
     --ios-green: 142 71% 49%;
+    --ios-purple: 280 87% 65%;
     --ios-gray: 240 1% 57%;
     --ios-separator: 240 2% 78%;
 
@@ -129,6 +130,7 @@ All colors MUST be HSL.
     --ios-quaternary-background: 240 2% 25%;
     --ios-blue: 211 100% 50%;
     --ios-green: 142 71% 49%;
+    --ios-purple: 280 87% 65%;
     --ios-gray: 240 1% 57%;
     --ios-separator: 240 2% 23%;
 
@@ -151,7 +153,11 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    font-family:
+      'Inter',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
       sans-serif;
   }
 

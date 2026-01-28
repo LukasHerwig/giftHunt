@@ -44,6 +44,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     url: '',
     priceRange: '',
     priority: null,
+    isGiftcard: false,
   });
 
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
@@ -54,6 +55,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     url: '',
     priceRange: '',
     priority: null,
+    isGiftcard: false,
   });
 
   // Fetch metadata when link changes for new item
@@ -103,7 +105,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
   const [editUrlLimited, setEditUrlLimited] = useState('');
   const [editPriceRangeLimited, setEditPriceRangeLimited] = useState('');
   const [editPriorityLimited, setEditPriorityLimited] = useState<number | null>(
-    null
+    null,
   );
 
   // Fetch metadata when link changes for limited editing item
@@ -189,6 +191,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         url: newItem.url || null,
         price_range: newItem.priceRange.trim() || null,
         priority: newItem.priority,
+        is_giftcard: newItem.isGiftcard,
       });
 
       setItems([data, ...items]);
@@ -199,6 +202,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         url: '',
         priceRange: '',
         priority: null,
+        isGiftcard: false,
       });
       setDialogOpen(false);
       toast.success(t('messages.itemAdded'));
@@ -218,6 +222,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
       url: item.url || '',
       priceRange: item.price_range || '',
       priority: item.priority || null,
+      isGiftcard: item.is_giftcard || false,
     });
     setEditDialogOpen(true);
   };
@@ -238,6 +243,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         url: editItem.url || null,
         price_range: editItem.priceRange.trim() || null,
         priority: editItem.priority,
+        is_giftcard: editItem.isGiftcard,
       });
 
       setItems(items.map((item) => (item.id === editingItem.id ? data : item)));
@@ -250,6 +256,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         url: '',
         priceRange: '',
         priority: null,
+        isGiftcard: false,
       });
       toast.success(t('messages.itemUpdated'));
     } catch (error: unknown) {
@@ -296,13 +303,13 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
           url: editUrlLimited.trim() || null, // Use the url from the form
           price_range: editPriceRangeLimited.trim() || null, // Use the price range from the form, allowing updates only if originally empty
           priority: editPriorityLimited, // Use the priority from the form, allowing updates only if originally empty
-        }
+        },
       );
 
       setItems(
         items.map((item) =>
-          item.id === editingDescriptionItem.id ? data : item
-        )
+          item.id === editingDescriptionItem.id ? data : item,
+        ),
       );
       setEditDescriptionDialogOpen(false);
       setEditingDescriptionItem(null);
@@ -328,7 +335,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     try {
       await ManageWishlistService.createAdminInvitation(
         wishlistId,
-        inviteEmail
+        inviteEmail,
       );
 
       toast.success(t('messages.invitationCreated'));
@@ -360,7 +367,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     try {
       const result = await ManageWishlistService.removeAdmin(
         adminId,
-        wishlistId
+        wishlistId,
       );
 
       setAdmins(admins.filter((admin) => admin.id !== adminId));
@@ -394,7 +401,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
           enable_links: settings.enableLinks,
           enable_price: settings.enablePrice,
           enable_priority: settings.enablePriority,
-        }
+        },
       );
 
       setWishlist(data);
