@@ -7,7 +7,7 @@ import {
 } from '@/components/ui/sheet-dialog';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Loader2, X, Check, Gift } from 'lucide-react';
+import { Loader2, X, Check, Gift, User, Users } from 'lucide-react';
 
 interface CreateWishlistDialogProps {
   open: boolean;
@@ -23,6 +23,8 @@ interface CreateWishlistDialogProps {
   onEnablePriceChange: (enable: boolean) => void;
   enablePriority: boolean;
   onEnablePriorityChange: (enable: boolean) => void;
+  isSelfManaged: boolean;
+  onIsSelfManagedChange: (value: boolean) => void;
   creating: boolean;
 }
 
@@ -62,8 +64,53 @@ const FormContent = (props: FormContentProps) => (
         </div>
       </div>
 
-      {/* Inputs */}
       <div className="space-y-6">
+        {/* Who is this list for? */}
+        <div className="space-y-2">
+          <h4 className="px-1 text-[13px] font-medium text-ios-gray uppercase tracking-wider">
+            {props.t('createWishlistDialog.whoIsThisFor')}
+          </h4>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => props.onIsSelfManagedChange(false)}
+              disabled={props.creating}
+              className={`flex flex-col items-center gap-2 p-4 rounded-[16px] border text-left transition-all active:scale-95 ${
+                !props.isSelfManaged
+                  ? 'bg-ios-blue/10 border-ios-blue text-ios-blue'
+                  : 'bg-ios-background/50 border-ios-separator/10 text-foreground'
+              }`}
+            >
+              <User className="w-7 h-7" />
+              <span className="text-[15px] font-semibold leading-tight text-center">
+                {props.t('createWishlistDialog.myOwnList')}
+              </span>
+              <span className="text-[12px] text-ios-gray text-center leading-tight">
+                {props.t('createWishlistDialog.myOwnListHint')}
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => props.onIsSelfManagedChange(true)}
+              disabled={props.creating}
+              className={`flex flex-col items-center gap-2 p-4 rounded-[16px] border text-left transition-all active:scale-95 ${
+                props.isSelfManaged
+                  ? 'bg-ios-blue/10 border-ios-blue text-ios-blue'
+                  : 'bg-ios-background/50 border-ios-separator/10 text-foreground'
+              }`}
+            >
+              <Users className="w-7 h-7" />
+              <span className="text-[15px] font-semibold leading-tight text-center">
+                {props.t('createWishlistDialog.managingForSomeone')}
+              </span>
+              <span className="text-[12px] text-ios-gray text-center leading-tight">
+                {props.t('createWishlistDialog.managingForSomeoneHint')}
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Inputs */}
         <div className="bg-ios-background/50 rounded-[16px] px-4 py-4 border border-ios-separator/5">
           <input
             placeholder={props.t('createWishlistDialog.titlePlaceholder')}

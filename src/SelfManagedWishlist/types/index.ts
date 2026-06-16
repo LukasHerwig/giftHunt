@@ -1,3 +1,7 @@
+import { Database } from '@/integrations/supabase/types';
+
+export type Wishlist = Database['public']['Tables']['wishlists']['Row'];
+
 export interface ItemClaim {
   id: string;
   item_id: string;
@@ -18,19 +22,7 @@ export interface WishlistItem {
   taken_by_name: string | null;
   taken_at: string | null;
   created_at: string;
-  // For gift card items: list of all claimers
   claims?: ItemClaim[];
-}
-
-export interface Wishlist {
-  id: string;
-  title: string;
-  description: string | null;
-  enable_links: boolean | null;
-  enable_price: boolean | null;
-  enable_priority: boolean | null;
-  creator_name: string | null;
-  is_self_managed: boolean;
 }
 
 export interface ItemFormData {
@@ -43,40 +35,48 @@ export interface ItemFormData {
   isGiftcard: boolean;
 }
 
-export interface AdminWishlistState {
+export interface SelfManagedWishlistState {
   wishlist: Wishlist | null;
   items: WishlistItem[];
   loading: boolean;
-  isAdmin: boolean;
   shareLink: string | null;
   generatingLink: boolean;
-  untakeDialogOpen: boolean;
-  selectedUntakeItem: WishlistItem | null;
-  untaking: boolean;
+  // Add dialog
+  addDialogOpen: boolean;
+  newItem: ItemFormData;
+  adding: boolean;
+  // Edit dialog
   editDialogOpen: boolean;
   selectedEditItem: WishlistItem | null;
   editFormData: ItemFormData;
   updating: boolean;
+  // Delete dialog
   deleteDialogOpen: boolean;
   selectedDeleteItem: WishlistItem | null;
   deleting: boolean;
+  // Untake dialog
+  untakeDialogOpen: boolean;
+  selectedUntakeItem: WishlistItem | null;
+  untaking: boolean;
 }
 
-export interface AdminWishlistActions {
-  checkAdminAccess: () => Promise<void>;
-  loadWishlist: () => Promise<void>;
-  loadItems: () => Promise<void>;
-  loadShareLink: () => Promise<void>;
-  generateShareLink: () => Promise<string | null>;
+export interface SelfManagedWishlistActions {
   handleCopyShareLink: () => Promise<void>;
-  handleUntakeItem: () => Promise<void>;
-  openUntakeDialog: (item: WishlistItem) => void;
-  setUntakeDialogOpen: (open: boolean) => void;
+  // Add
+  setAddDialogOpen: (open: boolean) => void;
+  setNewItem: (item: ItemFormData) => void;
+  handleAddItem: (e: React.FormEvent) => Promise<void>;
+  // Edit
   openEditDialog: (item: WishlistItem) => void;
   setEditDialogOpen: (open: boolean) => void;
   setEditFormData: (data: ItemFormData) => void;
   handleUpdateItem: (e: React.FormEvent) => Promise<void>;
+  // Delete
   openDeleteDialog: (item: WishlistItem) => void;
   setDeleteDialogOpen: (open: boolean) => void;
   handleDeleteItem: () => Promise<void>;
+  // Untake
+  openUntakeDialog: (item: WishlistItem) => void;
+  setUntakeDialogOpen: (open: boolean) => void;
+  handleUntakeItem: () => Promise<void>;
 }

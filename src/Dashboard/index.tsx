@@ -22,6 +22,7 @@ const Dashboard = () => {
     enableLinks,
     enablePrice,
     enablePriority,
+    isSelfManaged,
     creating,
     handleCreateWishlist,
     handleAcceptInvitation,
@@ -31,6 +32,7 @@ const Dashboard = () => {
     setEnableLinks,
     setEnablePrice,
     setEnablePriority,
+    setIsSelfManaged,
   } = useDashboard();
 
   if (loading) {
@@ -56,6 +58,8 @@ const Dashboard = () => {
         onEnablePriceChange={setEnablePrice}
         enablePriority={enablePriority}
         onEnablePriorityChange={setEnablePriority}
+        isSelfManaged={isSelfManaged}
+        onIsSelfManagedChange={setIsSelfManaged}
         creating={creating}
       />
 

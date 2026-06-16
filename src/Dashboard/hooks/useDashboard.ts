@@ -23,6 +23,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     enableLinks: true,
     enablePrice: false,
     enablePriority: false,
+    isSelfManaged: false,
     creating: false,
   });
 
@@ -73,6 +74,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
           enableLinks: state.enableLinks,
           enablePrice: state.enablePrice,
           enablePriority: state.enablePriority,
+          isSelfManaged: state.isSelfManaged,
         });
 
         setState((prev) => ({
@@ -83,6 +85,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
           enableLinks: true,
           enablePrice: false,
           enablePriority: false,
+          isSelfManaged: false,
           createDialogOpen: false,
           creating: false,
         }));
@@ -100,6 +103,7 @@ export const useDashboard = (): DashboardState & DashboardActions => {
       state.enableLinks,
       state.enablePrice,
       state.enablePriority,
+      state.isSelfManaged,
       user,
       t,
     ]
@@ -177,6 +181,10 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     setState((prev) => ({ ...prev, enablePriority: enable }));
   }, []);
 
+  const setIsSelfManaged = useCallback((value: boolean) => {
+    setState((prev) => ({ ...prev, isSelfManaged: value }));
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadAllData(user.id);
@@ -196,5 +204,6 @@ export const useDashboard = (): DashboardState & DashboardActions => {
     setEnableLinks,
     setEnablePrice,
     setEnablePriority,
+    setIsSelfManaged,
   };
 };

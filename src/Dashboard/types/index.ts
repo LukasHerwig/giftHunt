@@ -3,6 +3,7 @@ export interface Wishlist {
   title: string;
   description: string | null;
   created_at: string;
+  is_self_managed: boolean;
   item_count?: number;
 }
 
@@ -44,6 +45,7 @@ export interface DashboardState {
   enableLinks: boolean;
   enablePrice: boolean;
   enablePriority: boolean;
+  isSelfManaged: boolean;
   creating: boolean;
 }
 
@@ -59,6 +61,7 @@ export interface DashboardActions {
   setEnableLinks: (enable: boolean) => void;
   setEnablePrice: (enable: boolean) => void;
   setEnablePriority: (enable: boolean) => void;
+  setIsSelfManaged: (value: boolean) => void;
 }
 
 export interface CreateWishlistForm {
@@ -67,4 +70,5 @@ export interface CreateWishlistForm {
   enableLinks: boolean;
   enablePrice: boolean;
   enablePriority: boolean;
+  isSelfManaged: boolean;
 }

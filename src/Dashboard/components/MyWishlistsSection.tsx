@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Gift, ChevronRight } from 'lucide-react';
+import { Gift, Users } from 'lucide-react';
 import { Wishlist } from '../types';
 
 interface MyWishlistsSectionProps {
@@ -53,7 +53,13 @@ export const MyWishlistsSection = ({
             <button
               key={wishlist.id}
               className="w-full bg-ios-secondary rounded-[24px] overflow-hidden text-left flex flex-col active:scale-[0.98] transition-all shadow-lg border border-ios-separator/10 group"
-              onClick={() => navigate(`/wishlist/${wishlist.id}/manage`)}>
+              onClick={() =>
+                navigate(
+                  wishlist.is_self_managed
+                    ? `/wishlist/${wishlist.id}/self`
+                    : `/wishlist/${wishlist.id}/manage`
+                )
+              }>
               {/* Image Area */}
               <div className="relative h-48 w-full bg-gradient-to-br from-ios-blue/20 via-ios-blue/5 to-ios-secondary flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 opacity-30 bg-[url('https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center group-hover:scale-110 transition-transform duration-700" />
@@ -66,6 +72,14 @@ export const MyWishlistsSection = ({
                     count: wishlist.item_count || 0,
                   })}
                 </div>
+
+                {/* Self-managed badge */}
+                {wishlist.is_self_managed && (
+                  <div className="absolute top-4 left-4 bg-ios-secondary/80 backdrop-blur-sm text-foreground px-2 py-1 rounded-full text-[11px] font-semibold flex items-center gap-1 shadow">
+                    <Users className="w-3 h-3" />
+                    {t('dashboard.managing')}
+                  </div>
+                )}
               </div>
 
               <div className="p-5 pt-2">

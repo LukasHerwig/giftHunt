@@ -134,14 +134,16 @@ const ManageWishlist = () => {
       <main className="mx-auto max-w-4xl w-full px-4 -mt-10 relative z-10">
         {/* Action Buttons */}
         <div className="flex gap-4 mb-10">
-          <Button
-            onClick={() => setInviteDialogOpen(true)}
-            className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-foreground rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">
-            <Share2 className="w-6 h-6" />
-            <span className="text-[17px] font-semibold">
-              {t('manageWishlist.invite')}
-            </span>
-          </Button>
+          {!wishlist?.is_self_managed && (
+            <Button
+              onClick={() => setInviteDialogOpen(true)}
+              className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-foreground rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">
+              <Share2 className="w-6 h-6" />
+              <span className="text-[17px] font-semibold">
+                {t('manageWishlist.invite')}
+              </span>
+            </Button>
+          )}
           <Button
             onClick={() => setSettingsDialogOpen(true)}
             className="flex-1 bg-ios-secondary/80 backdrop-blur-xl hover:bg-ios-tertiary text-foreground rounded-[24px] py-8 flex items-center justify-center gap-3 border border-ios-separator/10 active:scale-95 transition-all">

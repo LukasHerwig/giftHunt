@@ -51,6 +51,7 @@
     "adminInvitation": "Admin Invitation",
     "invitedBy": "Invited by",
     "acceptInvitation": "Accept Invitation",
+    "managing": "Managing",
     "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase",
     "sharedWishlistsDescription": "Wishlists where you have administrative access",
     "noSharedWishlists": "No shared wishlists",
@@ -76,6 +77,11 @@
     "description": "Give your wishlist a name and description",
     "titlePlaceholder": "Wishlist title (e.g., Birthday 2025)",
     "descriptionPlaceholder": "Description (optional)",
+    "whoIsThisFor": "Who is this list for?",
+    "myOwnList": "My own wishlist",
+    "myOwnListHint": "Others will manage and share it for you",
+    "managingForSomeone": "Managing for someone",
+    "managingForSomeoneHint": "You add items and see who claims them",
     "itemFeatures": "Item Features",
     "enableLinks": "Enable links",
     "enablePrice": "Enable price ranges",
@@ -163,7 +169,8 @@
     "accepted": "Accepted",
     "activeAdmin": "Active Admin",
     "unknownUser": "Unknown User",
-    "viewLink": "View link"
+    "viewLink": "View link",
+    "items": "Items"
   },
   "addItemDialog": {
     "title": "Add Wishlist Item",
@@ -345,6 +352,7 @@
   "adminWishlist": {
     "copyShareLink": "Copy Share Link",
     "generateShareLink": "Generate Share Link",
+    "manageItems": "Manage Items",
     "generating": "Generating...",
     "activeShareLink": "Active Share Link",
     "takenItems": "Taken Items",

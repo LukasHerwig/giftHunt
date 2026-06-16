@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { fetchLinkMetadata } from '@/lib/metadataUtils';
-import { Wishlist, WishlistItem } from '../types';
+import { Wishlist, WishlistItem, ItemFormData } from '../types';
 
 interface WishlistWithProfile {
   id: string;
@@ -10,6 +10,7 @@ interface WishlistWithProfile {
   enable_links: boolean | null;
   enable_price: boolean | null;
   enable_priority: boolean | null;
+  is_self_managed: boolean;
   profiles: {
     full_name: string | null;
   } | null;
@@ -41,12 +42,13 @@ export class AdminWishlistService {
       .from('wishlists')
       .select(
         `
-        id, 
-        title, 
-        description, 
-        enable_links, 
-        enable_price, 
+        id,
+        title,
+        description,
+        enable_links,
+        enable_price,
         enable_priority,
+        is_self_managed,
         profiles!creator_id (
           full_name
         )
@@ -164,6 +166,39 @@ export class AdminWishlistService {
     if (error) throw error;
 
     return `${getBaseUrl()}/shared/${data.token}`;
+  }
+
+  static async addItem(wishlistId: string, form: ItemFormData): Promise<WishlistItem> {
+    let imageUrl = form.url;
+
+    if (form.link && !imageUrl) {
+      try {
+        const metadata = await fetchLinkMetadata(form.link);
+        if (metadata?.image) {
+          imageUrl = metadata.image;
+        }
+      } catch (e) {
+        console.error('Failed to fetch metadata in addItem:', e);
+      }
+    }
+
+    const { data, error } = await supabase
+      .from('wishlist_items')
+      .insert([{
+        wishlist_id: wishlistId,
+        title: form.title.trim(),
+        description: form.description.trim() || null,
+        link: form.link.trim() || null,
+        url: imageUrl || null,
+        price_range: form.priceRange.trim() || null,
+        priority: form.priority,
+        is_giftcard: form.isGiftcard,
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 
   static async untakeItem(itemId: string): Promise<void> {
