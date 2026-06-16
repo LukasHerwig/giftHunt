@@ -1,11 +1,12 @@
 import * as React from 'react';
+import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Sheet } from 'react-modal-sheet';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
-/**
- * SheetDialog - A unified bottom sheet component for both mobile and desktop
- * Uses react-modal-sheet with proper keyboard avoidance
- */
+const SheetDialogContext = React.createContext<{ isMobile: boolean }>({
+  isMobile: true,
+});
 
 interface SheetDialogProps {
   open: boolean;
@@ -13,27 +14,38 @@ interface SheetDialogProps {
   children: React.ReactNode;
 }
 
-/**
- * Main sheet wrapper component
- */
 export const SheetDialog = ({
   open,
   onOpenChange,
   children,
 }: SheetDialogProps) => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <SheetDialogContext.Provider value={{ isMobile: true }}>
+        <Sheet
+          isOpen={open}
+          onClose={() => onOpenChange(false)}
+          detent="content"
+          avoidKeyboard={true}
+          modalEffectRootId="app-root">
+          {children}
+          <Sheet.Backdrop
+            onTap={() => onOpenChange(false)}
+            className="!bg-black/60"
+          />
+        </Sheet>
+      </SheetDialogContext.Provider>
+    );
+  }
+
   return (
-    <Sheet
-      isOpen={open}
-      onClose={() => onOpenChange(false)}
-      detent="content"
-      avoidKeyboard={true}
-      modalEffectRootId="app-root">
-      {children}
-      <Sheet.Backdrop
-        onTap={() => onOpenChange(false)}
-        className="!bg-black/60"
-      />
-    </Sheet>
+    <SheetDialogContext.Provider value={{ isMobile: false }}>
+      <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
+        {children}
+      </DialogPrimitive.Root>
+    </SheetDialogContext.Provider>
   );
 };
 
@@ -42,28 +54,45 @@ interface SheetDialogContentProps {
   className?: string;
 }
 
-/**
- * Sheet container with header drag indicator
- */
 export const SheetDialogContent = React.forwardRef<
   HTMLDivElement,
   SheetDialogContentProps
 >(({ className, children }, ref) => {
+  const { isMobile } = React.useContext(SheetDialogContext);
+
+  if (isMobile) {
+    return (
+      <Sheet.Container
+        className={cn(
+          '!bg-ios-secondary rounded-t-[20px] shadow-2xl',
+          className,
+        )}>
+        <Sheet.Header className="pb-0">
+          <div className="mx-auto mt-3 mb-2 h-1.5 w-12 rounded-full bg-ios-separator/30" />
+        </Sheet.Header>
+        <Sheet.Content scrollClassName="pb-safe">
+          <div ref={ref} className="flex flex-col">
+            {children}
+          </div>
+        </Sheet.Content>
+      </Sheet.Container>
+    );
+  }
+
   return (
-    <Sheet.Container
-      className={cn(
-        '!bg-ios-secondary rounded-t-[20px] shadow-2xl',
-        className,
-      )}>
-      <Sheet.Header className="pb-0">
-        <div className="mx-auto mt-3 mb-2 h-1.5 w-12 rounded-full bg-ios-separator/30" />
-      </Sheet.Header>
-      <Sheet.Content scrollClassName="pb-safe">
-        <div ref={ref} className="flex flex-col">
-          {children}
-        </div>
-      </Sheet.Content>
-    </Sheet.Container>
+    <DialogPrimitive.Portal>
+      <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/60" />
+      <DialogPrimitive.Content
+        ref={ref}
+        className={cn(
+          'fixed left-[50%] top-[50%] z-50 w-full max-w-md translate-x-[-50%] translate-y-[-50%]',
+          'bg-ios-secondary rounded-[24px] shadow-2xl',
+          'overflow-y-auto max-h-[85vh]',
+          className,
+        )}>
+        <div className="flex flex-col">{children}</div>
+      </DialogPrimitive.Content>
+    </DialogPrimitive.Portal>
   );
 });
 SheetDialogContent.displayName = 'SheetDialogContent';
@@ -79,9 +108,6 @@ interface SheetDialogHeaderProps {
   closeIcon?: React.ReactNode;
 }
 
-/**
- * Standard iOS-style header with close/submit buttons
- */
 export const SheetDialogHeader = ({
   title,
   onClose,
@@ -121,9 +147,6 @@ interface SheetDialogBodyProps {
   className?: string;
 }
 
-/**
- * Scrollable body content area
- */
 export const SheetDialogBody = ({
   children,
   className,
