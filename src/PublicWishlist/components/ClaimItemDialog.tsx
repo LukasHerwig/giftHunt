@@ -5,7 +5,7 @@ import {
   SheetDialogHeader,
   SheetDialogBody,
 } from '@/components/ui/sheet-dialog';
-import { Loader2, X, Check, Gift, ExternalLink, Star } from 'lucide-react';
+import { Loader2, X, Gift, ExternalLink, Star } from 'lucide-react';
 import { WishlistItem, Wishlist } from '../types';
 
 interface ClaimItemDialogProps {
@@ -43,16 +43,8 @@ const FormContent = ({
     <SheetDialogHeader
       title={t('publicWishlist.claimItem')}
       onClose={onClose}
-      submitDisabled={claiming || !buyerName.trim()}
-      loading={claiming}
+      showSubmit={false}
       closeIcon={<X className="w-5 h-5" />}
-      submitIcon={
-        claiming ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
-        ) : (
-          <Check className="w-5 h-5" />
-        )
-      }
     />
 
     <SheetDialogBody>
@@ -128,8 +120,8 @@ const FormContent = ({
         </div>
       )}
 
-      {/* Name Input */}
-      <div className="space-y-6">
+      {/* Name Input + Claim Button */}
+      <div className="space-y-3">
         <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
           <input
             placeholder={t('publicWishlist.yourNameRequired')}
@@ -140,6 +132,19 @@ const FormContent = ({
             required
           />
         </div>
+        <button
+          type="submit"
+          disabled={claiming || !buyerName.trim()}
+          className="w-full bg-ios-blue rounded-[20px] px-5 py-4 text-[17px] font-semibold text-white disabled:opacity-40 active:opacity-80 transition-opacity flex items-center justify-center gap-2">
+          {claiming ? (
+            <>
+              <Loader2 className="w-5 h-5 animate-spin" />
+              {t('publicWishlist.claiming')}
+            </>
+          ) : (
+            t('publicWishlist.claimButton')
+          )}
+        </button>
       </div>
     </SheetDialogBody>
   </form>
