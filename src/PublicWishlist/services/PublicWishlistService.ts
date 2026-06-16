@@ -75,7 +75,7 @@ export class PublicWishlistService {
     const { data: itemsData, error: itemsError } = await supabase
       .from('wishlist_items')
       .select(
-        'id, title, description, link, url, price_range, priority, is_taken, is_giftcard',
+        'id, title, description, link, url, price_range, priority, is_taken, is_giftcard, claim_cap',
       )
       .eq('wishlist_id', shareLinkData.wishlist_id)
       .order('priority', { ascending: false }) // Show high priority items first

@@ -15,6 +15,7 @@ import AcceptInvitation from './AcceptInvitation';
 import PublicWishlist from './PublicWishlist';
 import Profile from './Profile';
 import SharedWishlists from './SharedWishlists';
+import SelfManagedWishlist from './SelfManagedWishlist';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const App = () => (
                   element={<ManageWishlist />}
                 />
                 <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
+                <Route path="/wishlist/:id/self" element={<SelfManagedWishlist />} />
                 <Route
                   path="/accept-invitation"
                   element={<AcceptInvitation />}

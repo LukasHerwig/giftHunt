@@ -3,57 +3,79 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
-import { AdminWishlistService } from '../services/AdminWishlistService';
 import { fetchLinkMetadata } from '@/lib/metadataUtils';
+import { SelfManagedWishlistService } from '../services/SelfManagedWishlistService';
 import {
-  AdminWishlistState,
-  AdminWishlistActions,
+  SelfManagedWishlistState,
+  SelfManagedWishlistActions,
   WishlistItem,
   ItemFormData,
 } from '../types';
 
-export const useAdminWishlist = (
+const EMPTY_FORM: ItemFormData = {
+  title: '',
+  description: '',
+  link: '',
+  url: '',
+  priceRange: '',
+  priority: null,
+  isGiftcard: false,
+  claimCap: null,
+};
+
+export const useSelfManagedWishlist = (
   id: string | undefined,
-): AdminWishlistState & AdminWishlistActions => {
+): SelfManagedWishlistState & SelfManagedWishlistActions => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const [state, setState] = useState<AdminWishlistState>({
+  const [state, setState] = useState<SelfManagedWishlistState>({
     wishlist: null,
     items: [],
     loading: true,
-    isAdmin: false,
     shareLink: null,
     generatingLink: false,
-    untakeDialogOpen: false,
-    selectedUntakeItem: null,
-    untaking: false,
+    addDialogOpen: false,
+    newItem: { ...EMPTY_FORM },
+    adding: false,
     editDialogOpen: false,
     selectedEditItem: null,
-    editFormData: {
-      title: '',
-      description: '',
-      link: '',
-      url: '',
-      priceRange: '',
-      priority: null,
-      isGiftcard: false,
-      claimCap: null,
-    },
+    editFormData: { ...EMPTY_FORM },
     updating: false,
     deleteDialogOpen: false,
     selectedDeleteItem: null,
     deleting: false,
+    untakeDialogOpen: false,
+    selectedUntakeItem: null,
+    untaking: false,
     deleteClaimDialogOpen: false,
     pendingDeleteClaim: null,
   });
 
-  // Fetch metadata when link changes
+  // Auto-fetch link metadata for new item
   useEffect(() => {
-    if (!state.editFormData.link || !state.editFormData.link.trim()) {
-      return;
-    }
+    if (!state.newItem.link?.trim()) return;
+    const timer = setTimeout(async () => {
+      const metadata = await fetchLinkMetadata(state.newItem.link);
+      if (metadata?.image) {
+        setState((prev) => ({
+          ...prev,
+          newItem: { ...prev.newItem, url: metadata.image },
+        }));
+      }
+      if (metadata?.title && !state.newItem.title) {
+        setState((prev) => ({
+          ...prev,
+          newItem: { ...prev.newItem, title: prev.newItem.title || metadata.title },
+        }));
+      }
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [state.newItem.link]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-fetch link metadata for edit form
+  useEffect(() => {
+    if (!state.editFormData.link?.trim()) return;
     const timer = setTimeout(async () => {
       const metadata = await fetchLinkMetadata(state.editFormData.link);
       if (metadata?.image) {
@@ -63,139 +85,90 @@ export const useAdminWishlist = (
         }));
       }
     }, 1000);
-
     return () => clearTimeout(timer);
-  }, [state.editFormData.link]);
+  }, [state.editFormData.link]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const checkAdminAccess = useCallback(async () => {
+  const load = useCallback(async () => {
     if (!id) return;
-
     try {
-      const isAdmin = await AdminWishlistService.checkAdminAccess(id);
+      const [wishlist, items, shareLink] = await Promise.all([
+        SelfManagedWishlistService.getWishlist(id),
+        SelfManagedWishlistService.getItems(id),
+        SelfManagedWishlistService.getShareLink(id),
+      ]);
 
-      if (isAdmin) {
-        setState((prev) => ({ ...prev, isAdmin: true }));
-      } else {
-        toast.error(t('messages.noAdminAccess'));
+      if (!wishlist.is_self_managed) {
         navigate('/');
+        return;
       }
+
+      setState((prev) => ({ ...prev, wishlist, items, shareLink, loading: false }));
     } catch (error) {
-      console.error('Admin access check error:', error);
-      toast.error(t('messages.failedToVerifyAccess'));
-      navigate('/');
+      console.error('Load error:', error);
+      toast.error(t('messages.failedToLoadWishlist'));
+      setState((prev) => ({ ...prev, loading: false }));
     }
   }, [id, navigate, t]);
 
-  const loadWishlist = useCallback(async () => {
+  // Share link
+  const handleCopyShareLink = useCallback(async () => {
     if (!id) return;
-
-    try {
-      const wishlist = await AdminWishlistService.getWishlist(id);
-      setState((prev) => ({ ...prev, wishlist }));
-    } catch (error) {
-      console.error('Load wishlist error:', error);
-      toast.error(t('messages.failedToLoadWishlist'));
-    }
-  }, [id, t]);
-
-  const loadItems = useCallback(async () => {
-    if (!id) return;
-
-    try {
-      const items = await AdminWishlistService.getWishlistItems(id);
-      setState((prev) => ({ ...prev, items, loading: false }));
-    } catch (error) {
-      console.error('Load items error:', error);
-      toast.error(t('messages.failedToLoadItems'));
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  }, [id, t]);
-
-  const loadShareLink = useCallback(async () => {
-    if (!id) return;
-
-    try {
-      const shareLink = await AdminWishlistService.getShareLink(id);
-      setState((prev) => ({ ...prev, shareLink }));
-    } catch (error) {
-      console.error('Load share link error:', error);
-    }
-  }, [id]);
-
-  const generateShareLink = useCallback(async () => {
-    if (!id) return null;
-
     setState((prev) => ({ ...prev, generatingLink: true }));
     try {
-      const url = await AdminWishlistService.createShareLink(id);
-      setState((prev) => ({ ...prev, shareLink: url }));
-      return url;
+      let link = state.shareLink;
+      if (!link) {
+        link = await SelfManagedWishlistService.createShareLink(id);
+        setState((prev) => ({ ...prev, shareLink: link }));
+      }
+      await navigator.clipboard.writeText(link!);
+      toast.success(t('messages.shareLinkCopied'));
     } catch (error) {
-      console.error('Generate share link error:', error);
+      console.error('Share link error:', error);
       toast.error(t('messages.failedToGenerateShareLink'));
-      return null;
     } finally {
       setState((prev) => ({ ...prev, generatingLink: false }));
     }
-  }, [id, t]);
+  }, [id, state.shareLink, t]);
 
-  const handleCopyShareLink = useCallback(async () => {
-    let linkToCopy = state.shareLink;
-
-    if (!linkToCopy) {
-      linkToCopy = await generateShareLink();
-    }
-
-    if (linkToCopy) {
-      await navigator.clipboard.writeText(linkToCopy);
-      toast.success(t('messages.shareLinkCopied'));
-    }
-  }, [state.shareLink, generateShareLink, t]);
-
-  const handleUntakeItem = useCallback(async () => {
-    if (!state.selectedUntakeItem) return;
-
-    setState((prev) => ({ ...prev, untaking: true }));
-    try {
-      await AdminWishlistService.untakeItem(state.selectedUntakeItem.id);
-
-      // Update local state
-      setState((prev) => ({
-        ...prev,
-        items: prev.items.map((item) =>
-          item.id === state.selectedUntakeItem!.id
-            ? { ...item, is_taken: false, taken_by_name: null, taken_at: null }
-            : item,
-        ),
-        untakeDialogOpen: false,
-        selectedUntakeItem: null,
-        untaking: false,
-      }));
-
-      toast.success(t('messages.itemUntaken'));
-    } catch (error) {
-      console.error('Untake item error:', error);
-      toast.error(t('messages.failedToUntakeItem'));
-      setState((prev) => ({ ...prev, untaking: false }));
-    }
-  }, [state.selectedUntakeItem, t]);
-
-  const openUntakeDialog = useCallback((item: WishlistItem) => {
+  // Add
+  const setAddDialogOpen = useCallback((open: boolean) => {
     setState((prev) => ({
       ...prev,
-      selectedUntakeItem: item,
-      untakeDialogOpen: true,
+      addDialogOpen: open,
+      ...(!open ? { newItem: { ...EMPTY_FORM } } : {}),
     }));
   }, []);
 
-  const setUntakeDialogOpen = useCallback((open: boolean) => {
-    setState((prev) => ({
-      ...prev,
-      untakeDialogOpen: open,
-      ...(open ? {} : { selectedUntakeItem: null }),
-    }));
+  const setNewItem = useCallback((item: ItemFormData) => {
+    setState((prev) => ({ ...prev, newItem: item }));
   }, []);
 
+  const handleAddItem = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!id || !state.newItem.title.trim()) return;
+
+      setState((prev) => ({ ...prev, adding: true }));
+      try {
+        const added = await SelfManagedWishlistService.addItem(id, state.newItem);
+        setState((prev) => ({
+          ...prev,
+          items: [added, ...prev.items],
+          newItem: { ...EMPTY_FORM },
+          addDialogOpen: false,
+          adding: false,
+        }));
+        toast.success(t('messages.itemAdded'));
+      } catch (error) {
+        console.error('Add item error:', error);
+        toast.error(t('messages.failedToAdd'));
+        setState((prev) => ({ ...prev, adding: false }));
+      }
+    },
+    [id, state.newItem, t],
+  );
+
+  // Edit
   const openEditDialog = useCallback((item: WishlistItem) => {
     setState((prev) => ({
       ...prev,
@@ -218,28 +191,12 @@ export const useAdminWishlist = (
     setState((prev) => ({
       ...prev,
       editDialogOpen: open,
-      ...(open
-        ? {}
-        : {
-            selectedEditItem: null,
-            editFormData: {
-              title: '',
-              description: '',
-              link: '',
-              url: '',
-              priceRange: '',
-              priority: null,
-              isGiftcard: false,
-            },
-          }),
+      ...(!open ? { selectedEditItem: null, editFormData: { ...EMPTY_FORM } } : {}),
     }));
   }, []);
 
   const setEditFormData = useCallback((data: ItemFormData) => {
-    setState((prev) => ({
-      ...prev,
-      editFormData: data,
-    }));
+    setState((prev) => ({ ...prev, editFormData: data }));
   }, []);
 
   const handleUpdateItem = useCallback(
@@ -249,18 +206,10 @@ export const useAdminWishlist = (
 
       setState((prev) => ({ ...prev, updating: true }));
       try {
-        await AdminWishlistService.updateItem(state.selectedEditItem.id, {
-          title: state.editFormData.title,
-          description: state.editFormData.description,
-          link: state.editFormData.link,
-          url: state.editFormData.url,
-          price_range: state.editFormData.priceRange,
-          priority: state.editFormData.priority || 0,
-          is_giftcard: state.editFormData.isGiftcard,
-          claim_cap: state.editFormData.isGiftcard ? state.editFormData.claimCap : null,
-        });
-
-        // Update local state
+        await SelfManagedWishlistService.updateItem(
+          state.selectedEditItem.id,
+          state.editFormData,
+        );
         setState((prev) => ({
           ...prev,
           items: prev.items.map((item) =>
@@ -272,7 +221,7 @@ export const useAdminWishlist = (
                   link: state.editFormData.link || null,
                   url: state.editFormData.url || null,
                   price_range: state.editFormData.priceRange || null,
-                  priority: state.editFormData.priority || 0,
+                  priority: state.editFormData.priority ?? 0,
                   is_giftcard: state.editFormData.isGiftcard,
                   claim_cap: state.editFormData.isGiftcard ? state.editFormData.claimCap : null,
                 }
@@ -280,19 +229,9 @@ export const useAdminWishlist = (
           ),
           editDialogOpen: false,
           selectedEditItem: null,
-          editFormData: {
-            title: '',
-            description: '',
-            link: '',
-            url: '',
-            priceRange: '',
-            priority: null,
-            isGiftcard: false,
-            claimCap: null,
-          },
+          editFormData: { ...EMPTY_FORM },
           updating: false,
         }));
-
         toast.success(t('messages.itemUpdated'));
       } catch (error) {
         console.error('Update item error:', error);
@@ -303,19 +242,16 @@ export const useAdminWishlist = (
     [state.selectedEditItem, state.editFormData, t],
   );
 
+  // Delete
   const openDeleteDialog = useCallback((item: WishlistItem) => {
-    setState((prev) => ({
-      ...prev,
-      selectedDeleteItem: item,
-      deleteDialogOpen: true,
-    }));
+    setState((prev) => ({ ...prev, selectedDeleteItem: item, deleteDialogOpen: true }));
   }, []);
 
   const setDeleteDialogOpen = useCallback((open: boolean) => {
     setState((prev) => ({
       ...prev,
       deleteDialogOpen: open,
-      ...(open ? {} : { selectedDeleteItem: null }),
+      ...(!open ? { selectedDeleteItem: null } : {}),
     }));
   }, []);
 
@@ -324,19 +260,14 @@ export const useAdminWishlist = (
 
     setState((prev) => ({ ...prev, deleting: true }));
     try {
-      await AdminWishlistService.deleteItem(state.selectedDeleteItem.id);
-
-      // Update local state
+      await SelfManagedWishlistService.deleteItem(state.selectedDeleteItem.id);
       setState((prev) => ({
         ...prev,
-        items: prev.items.filter(
-          (item) => item.id !== state.selectedDeleteItem!.id,
-        ),
+        items: prev.items.filter((item) => item.id !== state.selectedDeleteItem!.id),
         deleteDialogOpen: false,
         selectedDeleteItem: null,
         deleting: false,
       }));
-
       toast.success(t('messages.itemDeleted'));
     } catch (error) {
       console.error('Delete item error:', error);
@@ -344,6 +275,19 @@ export const useAdminWishlist = (
       setState((prev) => ({ ...prev, deleting: false }));
     }
   }, [state.selectedDeleteItem, t]);
+
+  // Untake
+  const openUntakeDialog = useCallback((item: WishlistItem) => {
+    setState((prev) => ({ ...prev, selectedUntakeItem: item, untakeDialogOpen: true }));
+  }, []);
+
+  const setUntakeDialogOpen = useCallback((open: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      untakeDialogOpen: open,
+      ...(!open ? { selectedUntakeItem: null } : {}),
+    }));
+  }, []);
 
   const openDeleteClaimDialog = useCallback(
     (claimId: string, itemId: string, name: string) => {
@@ -367,7 +311,7 @@ export const useAdminWishlist = (
   const handleDeleteClaim = useCallback(
     async (claimId: string, itemId: string) => {
       try {
-        await AdminWishlistService.deleteClaim(claimId);
+        await SelfManagedWishlistService.deleteClaim(claimId);
         setState((prev) => ({
           ...prev,
           items: prev.items.map((item) =>
@@ -394,30 +338,44 @@ export const useAdminWishlist = (
     [t],
   );
 
+  const handleUntakeItem = useCallback(async () => {
+    if (!state.selectedUntakeItem) return;
+
+    setState((prev) => ({ ...prev, untaking: true }));
+    try {
+      await SelfManagedWishlistService.untakeItem(state.selectedUntakeItem.id);
+      setState((prev) => ({
+        ...prev,
+        items: prev.items.map((item) =>
+          item.id === state.selectedUntakeItem!.id
+            ? { ...item, is_taken: false, taken_by_name: null, taken_at: null }
+            : item,
+        ),
+        untakeDialogOpen: false,
+        selectedUntakeItem: null,
+        untaking: false,
+      }));
+      toast.success(t('messages.itemUntaken'));
+    } catch (error) {
+      console.error('Untake error:', error);
+      toast.error(t('messages.failedToUntakeItem'));
+      setState((prev) => ({ ...prev, untaking: false }));
+    }
+  }, [state.selectedUntakeItem, t]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        navigate('/auth');
-      } else {
-        checkAdminAccess();
-        loadWishlist();
-        loadItems();
-        loadShareLink();
-      }
+      if (!session) navigate('/auth');
+      else load();
     });
-  }, [navigate, checkAdminAccess, loadWishlist, loadItems, loadShareLink]);
+  }, [navigate, load]);
 
   return {
     ...state,
-    checkAdminAccess,
-    loadWishlist,
-    loadItems,
-    loadShareLink,
-    generateShareLink,
     handleCopyShareLink,
-    handleUntakeItem,
-    openUntakeDialog,
-    setUntakeDialogOpen,
+    setAddDialogOpen,
+    setNewItem,
+    handleAddItem,
     openEditDialog,
     setEditDialogOpen,
     setEditFormData,
@@ -425,6 +383,9 @@ export const useAdminWishlist = (
     openDeleteDialog,
     setDeleteDialogOpen,
     handleDeleteItem,
+    openUntakeDialog,
+    setUntakeDialogOpen,
+    handleUntakeItem,
     handleDeleteClaim,
     openDeleteClaimDialog,
     setDeleteClaimDialogOpen,

@@ -10,6 +10,7 @@ interface WishlistWithProfile {
   enable_links: boolean | null;
   enable_price: boolean | null;
   enable_priority: boolean | null;
+  is_self_managed: boolean;
   profiles: {
     full_name: string | null;
   } | null;
@@ -41,12 +42,13 @@ export class AdminWishlistService {
       .from('wishlists')
       .select(
         `
-        id, 
-        title, 
-        description, 
-        enable_links, 
-        enable_price, 
+        id,
+        title,
+        description,
+        enable_links,
+        enable_price,
         enable_priority,
+        is_self_managed,
         profiles!creator_id (
           full_name
         )
@@ -213,6 +215,7 @@ export class AdminWishlistService {
       price_range?: string;
       priority?: number;
       is_giftcard?: boolean;
+      claim_cap?: number | null;
     },
   ): Promise<void> {
     let imageUrl = updates.url;
@@ -239,8 +242,18 @@ export class AdminWishlistService {
         price_range: updates.price_range || null,
         priority: updates.priority || 0,
         is_giftcard: updates.is_giftcard ?? false,
+        claim_cap: (updates.is_giftcard ?? false) ? (updates.claim_cap ?? null) : null,
       })
       .eq('id', itemId);
+
+    if (error) throw error;
+  }
+
+  static async deleteClaim(claimId: string): Promise<void> {
+    const { error } = await supabase
+      .from('item_claims')
+      .delete()
+      .eq('id', claimId);
 
     if (error) throw error;
   }

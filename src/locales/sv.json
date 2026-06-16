@@ -51,6 +51,7 @@
     "adminInvitation": "Admin Inbjudan",
     "invitedBy": "Inbjuden av",
     "acceptInvitation": "Acceptera Inbjudan",
+    "managing": "Hanterar",
     "localDevMode": "🚧 LOKAL UTVECKLINGSLÄGE - Använder Lokal Supabase",
     "sharedWishlistsDescription": "Önskelistor där du har administrativ åtkomst",
     "noSharedWishlists": "Inga delade önskelistor",
@@ -76,6 +77,11 @@
     "description": "Ge din önskelista ett namn och en beskrivning",
     "titlePlaceholder": "Önskelista titel (t.ex. Födelsedag 2025)",
     "descriptionPlaceholder": "Beskrivning (valfritt)",
+    "whoIsThisFor": "Vems lista är det?",
+    "myOwnList": "Min egen önskelista",
+    "myOwnListHint": "Någon annan hanterar och delar den åt dig",
+    "managingForSomeone": "Hanterar åt någon annan",
+    "managingForSomeoneHint": "Du lägger till önskningar och ser vem som tar dem",
     "itemFeatures": "Objektfunktioner",
     "enableLinks": "Aktivera länkar",
     "enablePrice": "Aktivera prisintervall",
@@ -163,7 +169,8 @@
     "accepted": "Accepterad",
     "activeAdmin": "Aktiv Admin",
     "unknownUser": "Okänd Användare",
-    "viewLink": "Visa länk"
+    "viewLink": "Visa länk",
+    "items": "Önskningar"
   },
   "addItemDialog": {
     "title": "Lägg till Önskning",
@@ -181,7 +188,8 @@
     "addButton": "Lägg till Önskning",
     "adding": "Lägger till...",
     "isGiftcard": "Presentkort / Gruppresent",
-    "isGiftcardDescription": "Flera personer kan reservera denna önskning"
+    "isGiftcardDescription": "Flera personer kan reservera denna önskning",
+    "claimCapPlaceholder": "Max antal (lämna tomt för obegränsat)"
   },
   "editItemDialog": {
     "title": "Redigera Önskning",
@@ -201,6 +209,7 @@
     "removeItem": "Ta bort föremål",
     "isGiftcard": "Presentkort / Gruppresent",
     "isGiftcardDescription": "Flera personer kan reservera denna önskning",
+    "claimCapPlaceholder": "Max antal (lämna tomt för obegränsat)",
     "contactAdminToDelete": "Kontakta din administratör för att ta bort önskningar efter att listan har delats. Endast administratörer kan se vilka önskningar som är reserverade."
   },
   "editLimitedDialog": {
@@ -321,7 +330,9 @@
     "editDescriptionOnlyTooltip": "Endast beskrivning kan redigeras medan önskelistan har en aktiv delningslänk",
     "deleteDisabledTooltip": "Borttagning är inaktiverat medan önskelistan har en aktiv delningslänk för att förhindra störningar av reserverade föremål",
     "itemUntaken": "Föremål är nu tillgängligt igen",
-    "failedToUntakeItem": "Misslyckades att ångra reservering"
+    "failedToUntakeItem": "Misslyckades att ångra reservering",
+    "claimRemoved": "Reservering borttagen",
+    "failedToRemoveClaim": "Misslyckades att ta bort reservering"
   },
   "notFound": {
     "message": "Hoppsan! Sidan hittades inte",
@@ -346,6 +357,7 @@
   "adminWishlist": {
     "copyShareLink": "Kopiera delningslänk",
     "generateShareLink": "Generera delningslänk",
+    "manageItems": "Hantera önskningar",
     "generating": "Genererar...",
     "activeShareLink": "Aktiv delningslänk",
     "takenItems": "Tagna föremål",
@@ -389,6 +401,7 @@
       "priorityPlaceholder": "Välj prioritet",
       "isGiftcard": "Presentkort / Gruppgåva",
       "isGiftcardDescription": "Tillåt flera personer att reservera detta föremål",
+      "claimCapPlaceholder": "Max antal (lämna tomt för obegränsat)",
       "cancel": "Avbryt",
       "updateButton": "Uppdatera föremål",
       "updating": "Uppdaterar...",
@@ -400,7 +413,10 @@
       "warning": "⚠️ Detta föremål har tagits. Vänligen meddela personen som har tagit det om eventuella ändringar.",
       "takenBy": "Tagen av",
       "giftcardClaimers": "🎁 Detta presentkort har reserverats av {{count}} person(er):",
-      "editButton": "Redigera"
+      "editButton": "Redigera",
+      "removeClaim": "Ta bort reservering",
+      "removeClaimTitle": "Ta bort denna reservering?",
+      "removeClaimDescription": "Detta tar bort {{name}}s reservering på detta föremål. De kommer inte längre listas som köpare."
     },
     "giftcardConfirm": {
       "enableTitle": "Aktivera presentkortsläge?",

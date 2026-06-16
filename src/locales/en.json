@@ -51,6 +51,7 @@
     "adminInvitation": "Admin Invitation",
     "invitedBy": "Invited by",
     "acceptInvitation": "Accept Invitation",
+    "managing": "Managing",
     "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase",
     "sharedWishlistsDescription": "Wishlists where you have administrative access",
     "noSharedWishlists": "No shared wishlists",
@@ -76,6 +77,11 @@
     "description": "Give your wishlist a name and description",
     "titlePlaceholder": "Wishlist title (e.g., Birthday 2025)",
     "descriptionPlaceholder": "Description (optional)",
+    "whoIsThisFor": "Who is this list for?",
+    "myOwnList": "My own wishlist",
+    "myOwnListHint": "Others will manage and share it for you",
+    "managingForSomeone": "Managing for someone",
+    "managingForSomeoneHint": "You add items and see who claims them",
     "itemFeatures": "Item Features",
     "enableLinks": "Enable links",
     "enablePrice": "Enable price ranges",
@@ -163,7 +169,8 @@
     "accepted": "Accepted",
     "activeAdmin": "Active Admin",
     "unknownUser": "Unknown User",
-    "viewLink": "View link"
+    "viewLink": "View link",
+    "items": "Items"
   },
   "addItemDialog": {
     "title": "Add Wishlist Item",
@@ -181,7 +188,8 @@
     "addButton": "Add Item",
     "adding": "Adding...",
     "isGiftcard": "Gift Card / Group Gift",
-    "isGiftcardDescription": "Multiple people can claim this item"
+    "isGiftcardDescription": "Multiple people can claim this item",
+    "claimCapPlaceholder": "Max claims (leave empty for unlimited)"
   },
   "editItemDialog": {
     "title": "Edit Item",
@@ -201,6 +209,7 @@
     "removeItem": "Remove Item",
     "isGiftcard": "Gift Card / Group Gift",
     "isGiftcardDescription": "Multiple people can claim this item",
+    "claimCapPlaceholder": "Max claims (leave empty for unlimited)",
     "contactAdminToDelete": "Contact your admin to remove items after sharing your list. Only admins can see which items are taken."
   },
   "editLimitedDialog": {
@@ -320,7 +329,9 @@
     "editDescriptionOnlyTooltip": "Only description can be edited while wishlist has an active share link",
     "deleteDisabledTooltip": "Deleting is disabled while wishlist has an active share link to prevent disrupting claimed items",
     "itemUntaken": "Item is now available again",
-    "failedToUntakeItem": "Failed to untake item"
+    "failedToUntakeItem": "Failed to untake item",
+    "claimRemoved": "Claim removed",
+    "failedToRemoveClaim": "Failed to remove claim"
   },
   "notFound": {
     "message": "Oops! Page not found",
@@ -345,6 +356,7 @@
   "adminWishlist": {
     "copyShareLink": "Copy Share Link",
     "generateShareLink": "Generate Share Link",
+    "manageItems": "Manage Items",
     "generating": "Generating...",
     "activeShareLink": "Active Share Link",
     "takenItems": "Taken Items",
@@ -388,6 +400,7 @@
       "priorityPlaceholder": "Select priority",
       "isGiftcard": "Gift Card / Group Gift",
       "isGiftcardDescription": "Allow multiple people to claim this item",
+      "claimCapPlaceholder": "Max claims (leave empty for unlimited)",
       "cancel": "Cancel",
       "updateButton": "Update Item",
       "updating": "Updating...",
@@ -399,7 +412,10 @@
       "warning": "⚠️ This item has been taken. Please notify the person who claimed it about any changes.",
       "takenBy": "Taken by",
       "giftcardClaimers": "🎁 This gift card has been claimed by {{count}} person(s):",
-      "editButton": "Edit"
+      "editButton": "Edit",
+      "removeClaim": "Remove claim",
+      "removeClaimTitle": "Remove this claim?",
+      "removeClaimDescription": "This will remove {{name}}'s claim on this item. They will no longer be listed as a buyer."
     },
     "giftcardConfirm": {
       "enableTitle": "Enable Gift Card Mode?",

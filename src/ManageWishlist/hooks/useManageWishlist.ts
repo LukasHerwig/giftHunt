@@ -45,6 +45,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     priceRange: '',
     priority: null,
     isGiftcard: false,
+    claimCap: null,
   });
 
   const [editingItem, setEditingItem] = useState<WishlistItem | null>(null);
@@ -56,6 +57,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
     priceRange: '',
     priority: null,
     isGiftcard: false,
+    claimCap: null,
   });
 
   // Fetch metadata when link changes for new item
@@ -192,6 +194,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         price_range: newItem.priceRange.trim() || null,
         priority: newItem.priority,
         is_giftcard: newItem.isGiftcard,
+        claim_cap: newItem.isGiftcard ? newItem.claimCap : null,
       });
 
       setItems([data, ...items]);
@@ -203,6 +206,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         priceRange: '',
         priority: null,
         isGiftcard: false,
+        claimCap: null,
       });
       setDialogOpen(false);
       toast.success(t('messages.itemAdded'));
@@ -223,6 +227,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
       priceRange: item.price_range || '',
       priority: item.priority || null,
       isGiftcard: item.is_giftcard || false,
+      claimCap: item.claim_cap ?? null,
     });
     setEditDialogOpen(true);
   };
@@ -244,6 +249,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         price_range: editItem.priceRange.trim() || null,
         priority: editItem.priority,
         is_giftcard: editItem.isGiftcard,
+        claim_cap: editItem.isGiftcard ? editItem.claimCap : null,
       });
 
       setItems(items.map((item) => (item.id === editingItem.id ? data : item)));
@@ -257,6 +263,7 @@ export const useManageWishlist = (wishlistId: string | undefined) => {
         priceRange: '',
         priority: null,
         isGiftcard: false,
+        claimCap: null,
       });
       toast.success(t('messages.itemUpdated'));
     } catch (error: unknown) {

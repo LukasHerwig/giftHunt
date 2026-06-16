@@ -39,7 +39,7 @@ export class ManageWishlistService {
     const { data: itemsData, error: itemsError } = await supabase
       .from('wishlist_items')
       .select(
-        'id, title, description, link, url, price_range, priority, is_giftcard, created_at',
+        'id, title, description, link, url, price_range, priority, is_giftcard, claim_cap, created_at',
       )
       .eq('wishlist_id', wishlistId)
       .order('created_at', { ascending: false });
@@ -103,6 +103,7 @@ export class ManageWishlistService {
       price_range: string | null;
       priority: number | null;
       is_giftcard?: boolean;
+      claim_cap?: number | null;
     },
   ): Promise<WishlistItem> {
     let imageUrl = itemData.url;
@@ -152,6 +153,7 @@ export class ManageWishlistService {
       price_range: string | null;
       priority: number | null;
       is_giftcard?: boolean;
+      claim_cap?: number | null;
     },
   ): Promise<WishlistItem> {
     let imageUrl = itemData.url;

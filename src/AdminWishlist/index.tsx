@@ -1,6 +1,7 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Share2, Loader2 } from 'lucide-react';
+import { RemoveClaimDialog } from './components/RemoveClaimDialog';
 import { useAdminWishlist } from './hooks/useAdminWishlist';
 import { BackButton } from '@/components/BackButton';
 import { LoadingState } from './components/LoadingState';
@@ -17,7 +18,6 @@ import { Button } from '@/components/ui/button';
 const AdminWishlist = () => {
   const { t } = useTranslation();
   const { id } = useParams();
-  const navigate = useNavigate();
   const {
     wishlist,
     items,
@@ -46,6 +46,11 @@ const AdminWishlist = () => {
     openDeleteDialog,
     setDeleteDialogOpen,
     handleDeleteItem,
+    handleDeleteClaim,
+    openDeleteClaimDialog,
+    deleteClaimDialogOpen,
+    pendingDeleteClaim,
+    setDeleteClaimDialogOpen,
   } = useAdminWishlist(id);
 
   if (loading) {
@@ -61,23 +66,17 @@ const AdminWishlist = () => {
     return <AccessDeniedState />;
   }
 
-  // Taken items: items that have been claimed/taken
-  // - Regular item with is_taken = true
-  // - Any item with claims (regardless of is_giftcard setting)
   const takenItems = items.filter((item) => {
-    const hasClaims = item.claims && item.claims.length > 0;
-    return item.is_taken || hasClaims;
+    const claimCount = item.claims?.length ?? 0;
+    const capReached = item.is_giftcard && item.claim_cap != null && claimCount >= item.claim_cap;
+    return item.is_taken || (!item.is_giftcard && claimCount > 0) || capReached;
   });
 
-  // Available items: items that can still be claimed
-  // - Gift card items are always available (even if they have claims)
-  // - Regular items that are not taken and have no claims
   const availableItems = items.filter((item) => {
-    const hasClaims = item.claims && item.claims.length > 0;
-    // Gift card items are always available (can be claimed again)
-    if (item.is_giftcard) return true;
-    // Regular items: not taken and no leftover claims from when it was a gift card
-    return !item.is_taken && !hasClaims;
+    const claimCount = item.claims?.length ?? 0;
+    const capReached = item.is_giftcard && item.claim_cap != null && claimCount >= item.claim_cap;
+    if (item.is_giftcard) return !capReached;
+    return !item.is_taken && claimCount === 0;
   });
 
   return (
@@ -181,6 +180,7 @@ const AdminWishlist = () => {
         selectedItem={selectedEditItem}
         onDelete={openDeleteDialog}
         onUntake={openUntakeDialog}
+        onRequestDeleteClaim={openDeleteClaimDialog}
       />
 
       {/* Delete Item Confirmation Dialog */}
@@ -190,6 +190,19 @@ const AdminWishlist = () => {
         selectedItem={selectedDeleteItem}
         deleting={deleting}
         onConfirm={handleDeleteItem}
+      />
+
+      {/* Remove Claim Confirmation Dialog */}
+      <RemoveClaimDialog
+        open={deleteClaimDialogOpen}
+        onOpenChange={setDeleteClaimDialogOpen}
+        claimerName={pendingDeleteClaim?.name ?? null}
+        onConfirm={() => {
+          if (pendingDeleteClaim) {
+            handleDeleteClaim(pendingDeleteClaim.id, pendingDeleteClaim.itemId);
+            setDeleteClaimDialogOpen(false);
+          }
+        }}
       />
     </div>
   );

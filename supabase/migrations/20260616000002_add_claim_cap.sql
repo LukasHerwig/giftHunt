@@ -1,0 +1,2 @@
+ALTER TABLE public.wishlist_items
+  ADD COLUMN IF NOT EXISTS claim_cap INTEGER DEFAULT NULL;

@@ -208,7 +208,7 @@ const FormContent = ({
           <button
             type="button"
             onClick={() =>
-              setNewItem({ ...newItem, isGiftcard: !newItem.isGiftcard })
+              setNewItem({ ...newItem, isGiftcard: !newItem.isGiftcard, claimCap: null })
             }
             disabled={adding}
             className={`w-full bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between ${
@@ -237,6 +237,25 @@ const FormContent = ({
               />
             </div>
           </button>
+
+          {newItem.isGiftcard && (
+            <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+              <input
+                type="number"
+                min="1"
+                placeholder={t('addItemDialog.claimCapPlaceholder')}
+                value={newItem.claimCap ?? ''}
+                onChange={(e) =>
+                  setNewItem({
+                    ...newItem,
+                    claimCap: e.target.value ? parseInt(e.target.value) : null,
+                  })
+                }
+                className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+                disabled={adding}
+              />
+            </div>
+          )}
         </div>
       </SheetDialogBody>
     </form>

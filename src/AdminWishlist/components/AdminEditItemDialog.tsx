@@ -41,7 +41,14 @@ interface AdminEditItemDialogProps {
   selectedItem?: WishlistItem | null;
   onDelete?: (item: WishlistItem) => void;
   onUntake?: (item: WishlistItem) => void;
+  onRequestDeleteClaim?: (
+    claimId: string,
+    itemId: string,
+    name: string,
+  ) => void;
 }
+
+type FormContentProps = Omit<AdminEditItemDialogProps, 'open'>;
 
 const FormContent = ({
   wishlist,
@@ -53,17 +60,18 @@ const FormContent = ({
   onOpenChange,
   onDelete,
   onUntake,
-}: Omit<AdminEditItemDialogProps, 'open'>) => {
+  onRequestDeleteClaim,
+}: FormContentProps) => {
   const { t } = useTranslation();
   const isTakenItem = selectedItem?.is_taken;
   const [showGiftcardConfirm, setShowGiftcardConfirm] = useState(false);
 
-  const handleGiftcardToggle = () => {
-    setShowGiftcardConfirm(true);
-  };
-
   const confirmGiftcardToggle = () => {
-    setEditItem({ ...editItem, isGiftcard: !editItem.isGiftcard });
+    setEditItem({
+      ...editItem,
+      isGiftcard: !editItem.isGiftcard,
+      claimCap: null,
+    });
     setShowGiftcardConfirm(false);
   };
 
@@ -71,8 +79,7 @@ const FormContent = ({
     <>
       <AlertDialog
         open={showGiftcardConfirm}
-        onOpenChange={setShowGiftcardConfirm}
-      >
+        onOpenChange={setShowGiftcardConfirm}>
         <AlertDialogContent className="bg-ios-secondary border-ios-separator/10 rounded-[20px]">
           <AlertDialogHeader>
             <AlertDialogTitle>
@@ -92,8 +99,7 @@ const FormContent = ({
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmGiftcardToggle}
-              className="bg-ios-blue hover:bg-ios-blue/90 rounded-full"
-            >
+              className="bg-ios-blue hover:bg-ios-blue/90 rounded-full">
               {t('common.confirm')}
             </AlertDialogAction>
           </AlertDialogFooter>
@@ -162,14 +168,32 @@ const FormContent = ({
                   count: selectedItem.claims.length,
                 })}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-2">
                 {selectedItem.claims.map((claim) => (
                   <li
                     key={claim.id}
-                    className="text-[15px] text-foreground font-semibold flex items-center gap-2"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-ios-purple" />
-                    {claim.claimer_name}
+                    className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-ios-purple flex-shrink-0" />
+                      <span className="text-[15px] text-foreground font-semibold">
+                        {claim.claimer_name}
+                      </span>
+                    </div>
+                    {onRequestDeleteClaim && selectedItem && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onRequestDeleteClaim(
+                            claim.id,
+                            selectedItem.id,
+                            claim.claimer_name,
+                          )
+                        }
+                        className="p-1.5 rounded-full hover:bg-ios-red/10 text-ios-gray hover:text-ios-red transition-colors active:scale-90"
+                        title={t('adminWishlist.editTakenItem.removeClaim')}>
+                        <Undo2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -180,8 +204,7 @@ const FormContent = ({
             <div className="space-y-2">
               <Label
                 htmlFor="admin-edit-title"
-                className="text-[13px] font-medium text-ios-gray ml-1"
-              >
+                className="text-[13px] font-medium text-ios-gray ml-1">
                 {t('adminWishlist.editItem.titleLabel')}
               </Label>
               <Input
@@ -200,8 +223,7 @@ const FormContent = ({
             <div className="space-y-2">
               <Label
                 htmlFor="admin-edit-description"
-                className="text-[13px] font-medium text-ios-gray ml-1"
-              >
+                className="text-[13px] font-medium text-ios-gray ml-1">
                 {t('adminWishlist.editItem.descriptionLabel')}
               </Label>
               <Textarea
@@ -220,8 +242,7 @@ const FormContent = ({
               <div className="space-y-2">
                 <Label
                   htmlFor="admin-edit-link"
-                  className="text-[13px] font-medium text-ios-gray ml-1"
-                >
+                  className="text-[13px] font-medium text-ios-gray ml-1">
                   {t('adminWishlist.editItem.linkLabel')}
                 </Label>
                 <Input
@@ -241,8 +262,7 @@ const FormContent = ({
               <div className="space-y-2">
                 <Label
                   htmlFor="admin-edit-price"
-                  className="text-[13px] font-medium text-ios-gray ml-1"
-                >
+                  className="text-[13px] font-medium text-ios-gray ml-1">
                   {t('adminWishlist.editItem.priceLabel')}
                 </Label>
                 <Input
@@ -262,8 +282,7 @@ const FormContent = ({
               <div className="space-y-2">
                 <Label
                   htmlFor="admin-edit-priority"
-                  className="text-[13px] font-medium text-ios-gray ml-1"
-                >
+                  className="text-[13px] font-medium text-ios-gray ml-1">
                   {t('adminWishlist.editItem.priorityLabel')}
                 </Label>
                 <Select
@@ -273,11 +292,12 @@ const FormContent = ({
                       ...editItem,
                       priority: value === 'none' ? null : parseInt(value),
                     })
-                  }
-                >
+                  }>
                   <SelectTrigger className="h-12 bg-ios-secondary border-none rounded-[12px] text-[17px] focus:ring-1 focus:ring-ios-blue">
                     <SelectValue
-                      placeholder={t('adminWishlist.editItem.priorityPlaceholder')}
+                      placeholder={t(
+                        'adminWishlist.editItem.priorityPlaceholder',
+                      )}
                     />
                   </SelectTrigger>
                   <SelectContent className="bg-ios-secondary border-ios-separator/10 rounded-[12px]">
@@ -294,12 +314,11 @@ const FormContent = ({
             <div className="space-y-2">
               <button
                 type="button"
-                onClick={handleGiftcardToggle}
+                onClick={() => setShowGiftcardConfirm(true)}
                 disabled={updating}
                 className={`w-full bg-ios-secondary rounded-[12px] px-4 py-3 flex items-center justify-between ${
                   updating ? 'opacity-50' : ''
-                }`}
-              >
+                }`}>
                 <div className="flex flex-col items-start">
                   <span className="text-[15px] font-medium text-foreground">
                     {t('adminWishlist.editItem.isGiftcard')}
@@ -311,8 +330,7 @@ const FormContent = ({
                 <div
                   className={`w-[51px] h-[31px] rounded-full transition-colors ${
                     editItem.isGiftcard ? 'bg-ios-green' : 'bg-ios-gray/30'
-                  }`}
-                >
+                  }`}>
                   <div
                     className={`w-[27px] h-[27px] bg-white rounded-full shadow-sm mt-[2px] transition-transform ${
                       editItem.isGiftcard
@@ -322,6 +340,25 @@ const FormContent = ({
                   />
                 </div>
               </button>
+
+              {editItem.isGiftcard && (
+                <Input
+                  type="number"
+                  min="1"
+                  placeholder={t('adminWishlist.editItem.claimCapPlaceholder')}
+                  value={editItem.claimCap ?? ''}
+                  onChange={(e) =>
+                    setEditItem({
+                      ...editItem,
+                      claimCap: e.target.value
+                        ? parseInt(e.target.value)
+                        : null,
+                    })
+                  }
+                  className="h-12 bg-ios-secondary border-none rounded-[12px] text-[17px] focus-visible:ring-1 focus-visible:ring-ios-blue"
+                  disabled={updating}
+                />
+              )}
             </div>
           </div>
 
@@ -332,8 +369,7 @@ const FormContent = ({
                 variant="outline"
                 onClick={() => onUntake(selectedItem)}
                 className="w-full h-12 rounded-[12px] border-ios-separator/10 text-ios-blue font-semibold"
-                disabled={updating}
-              >
+                disabled={updating}>
                 <Undo2 className="w-4 h-4 mr-2" />
                 {t('adminWishlist.untakeItem')}
               </Button>
@@ -345,8 +381,7 @@ const FormContent = ({
                 variant="ghost"
                 onClick={() => onDelete(selectedItem)}
                 className="w-full h-12 rounded-[12px] text-ios-red hover:text-ios-red hover:bg-ios-red/10 font-semibold"
-                disabled={updating}
-              >
+                disabled={updating}>
                 <Trash2 className="w-4 h-4 mr-2" />
                 {t('adminWishlist.deleteItem.title')}
               </Button>

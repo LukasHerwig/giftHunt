@@ -207,6 +207,7 @@ export type Database = {
         Row: {
           claimed_at: string | null
           claimed_by: string | null
+          claim_cap: number | null
           created_at: string
           description: string | null
           id: string
@@ -225,6 +226,7 @@ export type Database = {
         Insert: {
           claimed_at?: string | null
           claimed_by?: string | null
+          claim_cap?: number | null
           created_at?: string
           description?: string | null
           id?: string
@@ -243,6 +245,7 @@ export type Database = {
         Update: {
           claimed_at?: string | null
           claimed_by?: string | null
+          claim_cap?: number | null
           created_at?: string
           description?: string | null
           id?: string
@@ -284,6 +287,7 @@ export type Database = {
           enable_price: boolean | null
           enable_priority: boolean | null
           id: string
+          is_self_managed: boolean
           title: string
         }
         Insert: {
@@ -294,6 +298,7 @@ export type Database = {
           enable_price?: boolean | null
           enable_priority?: boolean | null
           id?: string
+          is_self_managed?: boolean
           title: string
         }
         Update: {
@@ -304,6 +309,7 @@ export type Database = {
           enable_price?: boolean | null
           enable_priority?: boolean | null
           id?: string
+          is_self_managed?: boolean
           title?: string
         }
         Relationships: [

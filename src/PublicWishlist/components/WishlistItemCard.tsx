@@ -22,13 +22,12 @@ export const WishlistItemCard = ({
 }: WishlistItemCardProps) => {
   const { t } = useTranslation();
 
-  // Gift card items can always be claimed (not disabled when others have claimed)
-  // Regular items are disabled when taken OR when they have claims (was gift card, now disabled)
   const claimCount = item.claim_count || 0;
   const hasClaims = claimCount > 0;
-  const isDisabled = item.is_giftcard ? false : item.is_taken || hasClaims;
-  const showTakenBadge = !item.is_giftcard && (item.is_taken || hasClaims);
-  const showGiftcardBadge = item.is_giftcard;
+  const capReached = item.is_giftcard && item.claim_cap != null && claimCount >= item.claim_cap;
+  const isDisabled = item.is_giftcard ? capReached : item.is_taken || hasClaims;
+  const showTakenBadge = (!item.is_giftcard && (item.is_taken || hasClaims)) || capReached;
+  const showGiftcardBadge = item.is_giftcard && !capReached;
 
   return (
     <div className="relative aspect-square">

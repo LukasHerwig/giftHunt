@@ -30,7 +30,7 @@ export class DashboardService {
         }
 
         return { ...wishlist, item_count: count || 0 };
-      })
+      }),
     );
 
     return ownedWishlistsWithCounts;
@@ -53,9 +53,13 @@ export class DashboardService {
     if (adminRelations && adminRelations.length > 0) {
       const wishlistIds = adminRelations.map((rel) => rel.wishlist_id);
 
-      // Get the wishlists separately
+      // Get the wishlists separately, excluding wishlists the user created themselves
       const { data: adminWishlistData, error: adminWishlistError } =
-        await supabase.from('wishlists').select('*').in('id', wishlistIds);
+        await supabase
+          .from('wishlists')
+          .select('*')
+          .in('id', wishlistIds)
+          .neq('creator_id', userId);
 
       if (adminWishlistError) {
         console.error('Admin wishlists error:', adminWishlistError);
@@ -102,7 +106,7 @@ export class DashboardService {
               email: 'Unknown',
             },
           };
-        })
+        }),
       );
 
       adminWishlistsFormatted = adminWishlistsWithCounts;
@@ -112,7 +116,7 @@ export class DashboardService {
   }
 
   static async getPendingInvitations(
-    userEmail: string
+    userEmail: string,
   ): Promise<PendingInvitation[]> {
     // Load pending invitations - simplified approach
     const { data: invitationData, error: invitationError } = await supabase
@@ -155,7 +159,7 @@ export class DashboardService {
 
       formattedInvitations = invitationData.map((invitation) => {
         const wishlist = invitationWishlists?.find(
-          (wl) => wl.id === invitation.wishlist_id
+          (wl) => wl.id === invitation.wishlist_id,
         );
         return {
           id: invitation.id,
@@ -180,7 +184,7 @@ export class DashboardService {
 
   static async createWishlist(
     userId: string,
-    form: CreateWishlistForm
+    form: CreateWishlistForm,
   ): Promise<Wishlist> {
     const { data, error } = await supabase
       .from('wishlists')
@@ -192,12 +196,26 @@ export class DashboardService {
           enable_links: form.enableLinks,
           enable_price: form.enablePrice,
           enable_priority: form.enablePriority,
+          is_self_managed: form.isSelfManaged,
         },
       ])
       .select()
       .single();
 
     if (error) throw error;
+
+    if (form.isSelfManaged) {
+      const { error: adminError } = await supabase
+        .from('wishlist_admins')
+        .insert([
+          { wishlist_id: data.id, admin_id: userId, invited_by: userId },
+        ]);
+      if (adminError) {
+        await supabase.from('wishlists').delete().eq('id', data.id);
+        throw adminError;
+      }
+    }
+
     return { ...data, item_count: 0 };
   }
 
@@ -205,7 +223,7 @@ export class DashboardService {
     invitationId: string,
     userId: string,
     wishlistId: string,
-    invitedBy: string
+    invitedBy: string,
   ): Promise<void> {
     // The database trigger automatically creates the admin record when accepted = true
     // So we only need to mark the invitation as accepted
