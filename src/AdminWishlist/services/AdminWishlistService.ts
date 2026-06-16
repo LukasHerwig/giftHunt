@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { fetchLinkMetadata } from '@/lib/metadataUtils';
-import { Wishlist, WishlistItem, ItemFormData } from '../types';
+import { Wishlist, WishlistItem } from '../types';
 
 interface WishlistWithProfile {
   id: string;
@@ -166,40 +166,6 @@ export class AdminWishlistService {
     if (error) throw error;
 
     return `${getBaseUrl()}/shared/${data.token}`;
-  }
-
-  static async addItem(wishlistId: string, form: ItemFormData): Promise<WishlistItem> {
-    let imageUrl = form.url;
-
-    if (form.link && !imageUrl) {
-      try {
-        const metadata = await fetchLinkMetadata(form.link);
-        if (metadata?.image) {
-          imageUrl = metadata.image;
-        }
-      } catch (e) {
-        console.error('Failed to fetch metadata in addItem:', e);
-      }
-    }
-
-    const { data, error } = await supabase
-      .from('wishlist_items')
-      .insert([{
-        wishlist_id: wishlistId,
-        title: form.title.trim(),
-        description: form.description.trim() || null,
-        link: form.link.trim() || null,
-        url: imageUrl || null,
-        price_range: form.priceRange.trim() || null,
-        priority: form.priority,
-        is_giftcard: form.isGiftcard,
-        claim_cap: form.isGiftcard ? form.claimCap : null,
-      }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
   }
 
   static async untakeItem(itemId: string): Promise<void> {

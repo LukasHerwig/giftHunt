@@ -210,7 +210,10 @@ export class DashboardService {
         .insert([
           { wishlist_id: data.id, admin_id: userId, invited_by: userId },
         ]);
-      if (adminError) throw adminError;
+      if (adminError) {
+        await supabase.from('wishlists').delete().eq('id', data.id);
+        throw adminError;
+      }
     }
 
     return { ...data, item_count: 0 };
