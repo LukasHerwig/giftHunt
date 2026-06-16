@@ -108,11 +108,14 @@ const FormContent = ({
           {/* Link */}
           {wishlist?.enable_links && item.link && (
             <a
-              href={item.link.startsWith('http') ? item.link : `https://${item.link}`}
+              href={
+                item.link.startsWith('http')
+                  ? item.link
+                  : `https://${item.link}`
+              }
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-2 text-ios-blue text-[15px] font-medium active:opacity-60 transition-opacity w-fit"
-            >
+              className="flex items-center gap-2 text-ios-blue text-[15px] font-medium active:opacity-60 transition-opacity w-fit">
               <ExternalLink className="w-4 h-4" />
               {t('publicWishlist.viewItem')}
             </a>
@@ -122,6 +125,9 @@ const FormContent = ({
 
       {/* Name Input + Claim Button */}
       <div className="space-y-3">
+        <p className="text-[13px] text-ios-gray px-1 opacity-50">
+          {t('publicWishlist.claimDescription')}
+        </p>
         <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
           <input
             placeholder={t('publicWishlist.yourNameRequired')}
