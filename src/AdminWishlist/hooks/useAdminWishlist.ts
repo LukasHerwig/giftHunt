@@ -38,11 +38,14 @@ export const useAdminWishlist = (
       priceRange: '',
       priority: null,
       isGiftcard: false,
+      claimCap: null,
     },
     updating: false,
     deleteDialogOpen: false,
     selectedDeleteItem: null,
     deleting: false,
+    deleteClaimDialogOpen: false,
+    pendingDeleteClaim: null,
   });
 
   // Fetch metadata when link changes
@@ -205,6 +208,7 @@ export const useAdminWishlist = (
         priceRange: item.price_range || '',
         priority: item.priority || null,
         isGiftcard: item.is_giftcard || false,
+        claimCap: item.claim_cap ?? null,
       },
       editDialogOpen: true,
     }));
@@ -253,6 +257,7 @@ export const useAdminWishlist = (
           price_range: state.editFormData.priceRange,
           priority: state.editFormData.priority || 0,
           is_giftcard: state.editFormData.isGiftcard,
+          claim_cap: state.editFormData.isGiftcard ? state.editFormData.claimCap : null,
         });
 
         // Update local state
@@ -269,6 +274,7 @@ export const useAdminWishlist = (
                   price_range: state.editFormData.priceRange || null,
                   priority: state.editFormData.priority || 0,
                   is_giftcard: state.editFormData.isGiftcard,
+                  claim_cap: state.editFormData.isGiftcard ? state.editFormData.claimCap : null,
                 }
               : item,
           ),
@@ -282,6 +288,7 @@ export const useAdminWishlist = (
             priceRange: '',
             priority: null,
             isGiftcard: false,
+            claimCap: null,
           },
           updating: false,
         }));
@@ -338,6 +345,55 @@ export const useAdminWishlist = (
     }
   }, [state.selectedDeleteItem, t]);
 
+  const openDeleteClaimDialog = useCallback(
+    (claimId: string, itemId: string, name: string) => {
+      setState((prev) => ({
+        ...prev,
+        pendingDeleteClaim: { id: claimId, itemId, name },
+        deleteClaimDialogOpen: true,
+      }));
+    },
+    [],
+  );
+
+  const setDeleteClaimDialogOpen = useCallback((open: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      deleteClaimDialogOpen: open,
+      ...(!open ? { pendingDeleteClaim: null } : {}),
+    }));
+  }, []);
+
+  const handleDeleteClaim = useCallback(
+    async (claimId: string, itemId: string) => {
+      try {
+        await AdminWishlistService.deleteClaim(claimId);
+        setState((prev) => ({
+          ...prev,
+          items: prev.items.map((item) =>
+            item.id === itemId
+              ? { ...item, claims: item.claims?.filter((c) => c.id !== claimId) }
+              : item,
+          ),
+          selectedEditItem:
+            prev.selectedEditItem?.id === itemId
+              ? {
+                  ...prev.selectedEditItem,
+                  claims: prev.selectedEditItem.claims?.filter(
+                    (c) => c.id !== claimId,
+                  ),
+                }
+              : prev.selectedEditItem,
+        }));
+        toast.success(t('messages.claimRemoved'));
+      } catch (error) {
+        console.error('Delete claim error:', error);
+        toast.error(t('messages.failedToRemoveClaim'));
+      }
+    },
+    [t],
+  );
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) {
@@ -369,5 +425,8 @@ export const useAdminWishlist = (
     openDeleteDialog,
     setDeleteDialogOpen,
     handleDeleteItem,
+    handleDeleteClaim,
+    openDeleteClaimDialog,
+    setDeleteClaimDialogOpen,
   };
 };

@@ -207,6 +207,7 @@ export type Database = {
         Row: {
           claimed_at: string | null
           claimed_by: string | null
+          claim_cap: number | null
           created_at: string
           description: string | null
           id: string
@@ -225,6 +226,7 @@ export type Database = {
         Insert: {
           claimed_at?: string | null
           claimed_by?: string | null
+          claim_cap?: number | null
           created_at?: string
           description?: string | null
           id?: string
@@ -243,6 +245,7 @@ export type Database = {
         Update: {
           claimed_at?: string | null
           claimed_by?: string | null
+          claim_cap?: number | null
           created_at?: string
           description?: string | null
           id?: string

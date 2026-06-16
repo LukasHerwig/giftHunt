@@ -20,6 +20,7 @@ const EMPTY_FORM: ItemFormData = {
   priceRange: '',
   priority: null,
   isGiftcard: false,
+  claimCap: null,
 };
 
 export const useSelfManagedWishlist = (
@@ -47,6 +48,8 @@ export const useSelfManagedWishlist = (
     untakeDialogOpen: false,
     selectedUntakeItem: null,
     untaking: false,
+    deleteClaimDialogOpen: false,
+    pendingDeleteClaim: null,
   });
 
   // Auto-fetch link metadata for new item
@@ -178,6 +181,7 @@ export const useSelfManagedWishlist = (
         priceRange: item.price_range || '',
         priority: item.priority || null,
         isGiftcard: item.is_giftcard || false,
+        claimCap: item.claim_cap ?? null,
       },
       editDialogOpen: true,
     }));
@@ -219,6 +223,7 @@ export const useSelfManagedWishlist = (
                   price_range: state.editFormData.priceRange || null,
                   priority: state.editFormData.priority ?? 0,
                   is_giftcard: state.editFormData.isGiftcard,
+                  claim_cap: state.editFormData.isGiftcard ? state.editFormData.claimCap : null,
                 }
               : item,
           ),
@@ -284,6 +289,55 @@ export const useSelfManagedWishlist = (
     }));
   }, []);
 
+  const openDeleteClaimDialog = useCallback(
+    (claimId: string, itemId: string, name: string) => {
+      setState((prev) => ({
+        ...prev,
+        pendingDeleteClaim: { id: claimId, itemId, name },
+        deleteClaimDialogOpen: true,
+      }));
+    },
+    [],
+  );
+
+  const setDeleteClaimDialogOpen = useCallback((open: boolean) => {
+    setState((prev) => ({
+      ...prev,
+      deleteClaimDialogOpen: open,
+      ...(!open ? { pendingDeleteClaim: null } : {}),
+    }));
+  }, []);
+
+  const handleDeleteClaim = useCallback(
+    async (claimId: string, itemId: string) => {
+      try {
+        await SelfManagedWishlistService.deleteClaim(claimId);
+        setState((prev) => ({
+          ...prev,
+          items: prev.items.map((item) =>
+            item.id === itemId
+              ? { ...item, claims: item.claims?.filter((c) => c.id !== claimId) }
+              : item,
+          ),
+          selectedEditItem:
+            prev.selectedEditItem?.id === itemId
+              ? {
+                  ...prev.selectedEditItem,
+                  claims: prev.selectedEditItem.claims?.filter(
+                    (c) => c.id !== claimId,
+                  ),
+                }
+              : prev.selectedEditItem,
+        }));
+        toast.success(t('messages.claimRemoved'));
+      } catch (error) {
+        console.error('Delete claim error:', error);
+        toast.error(t('messages.failedToRemoveClaim'));
+      }
+    },
+    [t],
+  );
+
   const handleUntakeItem = useCallback(async () => {
     if (!state.selectedUntakeItem) return;
 
@@ -332,5 +386,8 @@ export const useSelfManagedWishlist = (
     openUntakeDialog,
     setUntakeDialogOpen,
     handleUntakeItem,
+    handleDeleteClaim,
+    openDeleteClaimDialog,
+    setDeleteClaimDialogOpen,
   };
 };

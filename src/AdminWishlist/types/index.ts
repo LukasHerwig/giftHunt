@@ -15,6 +15,7 @@ export interface WishlistItem {
   priority: number;
   is_taken: boolean;
   is_giftcard: boolean | null;
+  claim_cap: number | null;
   taken_by_name: string | null;
   taken_at: string | null;
   created_at: string;
@@ -41,6 +42,7 @@ export interface ItemFormData {
   priceRange: string;
   priority: number | null;
   isGiftcard: boolean;
+  claimCap: number | null;
 }
 
 export interface AdminWishlistState {
@@ -60,6 +62,8 @@ export interface AdminWishlistState {
   deleteDialogOpen: boolean;
   selectedDeleteItem: WishlistItem | null;
   deleting: boolean;
+  deleteClaimDialogOpen: boolean;
+  pendingDeleteClaim: { id: string; itemId: string; name: string } | null;
 }
 
 export interface AdminWishlistActions {
@@ -79,4 +83,7 @@ export interface AdminWishlistActions {
   openDeleteDialog: (item: WishlistItem) => void;
   setDeleteDialogOpen: (open: boolean) => void;
   handleDeleteItem: () => Promise<void>;
+  handleDeleteClaim: (claimId: string, itemId: string) => Promise<void>;
+  openDeleteClaimDialog: (claimId: string, itemId: string, name: string) => void;
+  setDeleteClaimDialogOpen: (open: boolean) => void;
 }

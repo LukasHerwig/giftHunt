@@ -193,6 +193,7 @@ export class AdminWishlistService {
         price_range: form.priceRange.trim() || null,
         priority: form.priority,
         is_giftcard: form.isGiftcard,
+        claim_cap: form.isGiftcard ? form.claimCap : null,
       }])
       .select()
       .single();
@@ -248,6 +249,7 @@ export class AdminWishlistService {
       price_range?: string;
       priority?: number;
       is_giftcard?: boolean;
+      claim_cap?: number | null;
     },
   ): Promise<void> {
     let imageUrl = updates.url;
@@ -274,8 +276,18 @@ export class AdminWishlistService {
         price_range: updates.price_range || null,
         priority: updates.priority || 0,
         is_giftcard: updates.is_giftcard ?? false,
+        claim_cap: (updates.is_giftcard ?? false) ? (updates.claim_cap ?? null) : null,
       })
       .eq('id', itemId);
+
+    if (error) throw error;
+  }
+
+  static async deleteClaim(claimId: string): Promise<void> {
+    const { error } = await supabase
+      .from('item_claims')
+      .delete()
+      .eq('id', claimId);
 
     if (error) throw error;
   }

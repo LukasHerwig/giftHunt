@@ -8,7 +8,8 @@ export interface WishlistItem {
   priority: number;
   is_taken: boolean;
   is_giftcard: boolean | null;
-  claim_count?: number; // For gift card items: how many people have claimed
+  claim_cap: number | null;
+  claim_count?: number;
 }
 
 export interface Wishlist {

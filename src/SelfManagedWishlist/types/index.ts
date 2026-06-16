@@ -19,6 +19,7 @@ export interface WishlistItem {
   priority: number;
   is_taken: boolean;
   is_giftcard: boolean | null;
+  claim_cap: number | null;
   taken_by_name: string | null;
   taken_at: string | null;
   created_at: string;
@@ -33,6 +34,7 @@ export interface ItemFormData {
   priceRange: string;
   priority: number | null;
   isGiftcard: boolean;
+  claimCap: number | null;
 }
 
 export interface SelfManagedWishlistState {
@@ -58,6 +60,9 @@ export interface SelfManagedWishlistState {
   untakeDialogOpen: boolean;
   selectedUntakeItem: WishlistItem | null;
   untaking: boolean;
+  // Delete claim dialog
+  deleteClaimDialogOpen: boolean;
+  pendingDeleteClaim: { id: string; itemId: string; name: string } | null;
 }
 
 export interface SelfManagedWishlistActions {
@@ -79,4 +84,7 @@ export interface SelfManagedWishlistActions {
   openUntakeDialog: (item: WishlistItem) => void;
   setUntakeDialogOpen: (open: boolean) => void;
   handleUntakeItem: () => Promise<void>;
+  handleDeleteClaim: (claimId: string, itemId: string) => Promise<void>;
+  openDeleteClaimDialog: (claimId: string, itemId: string, name: string) => void;
+  setDeleteClaimDialogOpen: (open: boolean) => void;
 }

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Share2, Loader2, Plus } from 'lucide-react';
+import { RemoveClaimDialog } from '@/AdminWishlist/components/RemoveClaimDialog';
 import { Button } from '@/components/ui/button';
 import { BackButton } from '@/components/BackButton';
 import { useSelfManagedWishlist } from './hooks/useSelfManagedWishlist';
@@ -53,6 +54,11 @@ const SelfManagedWishlist = () => {
     openUntakeDialog,
     setUntakeDialogOpen,
     handleUntakeItem,
+    handleDeleteClaim,
+    openDeleteClaimDialog,
+    deleteClaimDialogOpen,
+    pendingDeleteClaim,
+    setDeleteClaimDialogOpen,
   } = useSelfManagedWishlist(id);
 
   if (loading) {
@@ -67,14 +73,16 @@ const SelfManagedWishlist = () => {
   if (!wishlist) return null;
 
   const takenItems = items.filter((item) => {
-    const hasClaims = item.claims && item.claims.length > 0;
-    return item.is_taken || hasClaims;
+    const claimCount = item.claims?.length ?? 0;
+    const capReached = item.is_giftcard && item.claim_cap != null && claimCount >= item.claim_cap;
+    return item.is_taken || (!item.is_giftcard && claimCount > 0) || capReached;
   });
 
   const availableItems = items.filter((item) => {
-    const hasClaims = item.claims && item.claims.length > 0;
-    if (item.is_giftcard) return true;
-    return !item.is_taken && !hasClaims;
+    const claimCount = item.claims?.length ?? 0;
+    const capReached = item.is_giftcard && item.claim_cap != null && claimCount >= item.claim_cap;
+    if (item.is_giftcard) return !capReached;
+    return !item.is_taken && claimCount === 0;
   });
 
   // AdminWishlist's item cards expect its own Wishlist type shape — cast since the fields used are the same
@@ -176,6 +184,7 @@ const SelfManagedWishlist = () => {
         selectedItem={selectedEditItem as Parameters<typeof AdminEditItemDialog>[0]['selectedItem']}
         onDelete={openDeleteDialog as Parameters<typeof AdminEditItemDialog>[0]['onDelete']}
         onUntake={openUntakeDialog as Parameters<typeof AdminEditItemDialog>[0]['onUntake']}
+        onRequestDeleteClaim={openDeleteClaimDialog}
       />
 
       <AdminDeleteItemDialog
@@ -192,6 +201,19 @@ const SelfManagedWishlist = () => {
         selectedItem={selectedUntakeItem as Parameters<typeof UntakeItemDialog>[0]['selectedItem']}
         untaking={untaking}
         onConfirm={handleUntakeItem}
+      />
+
+      {/* Remove Claim Confirmation Dialog */}
+      <RemoveClaimDialog
+        open={deleteClaimDialogOpen}
+        onOpenChange={setDeleteClaimDialogOpen}
+        claimerName={pendingDeleteClaim?.name ?? null}
+        onConfirm={() => {
+          if (pendingDeleteClaim) {
+            handleDeleteClaim(pendingDeleteClaim.id, pendingDeleteClaim.itemId);
+            setDeleteClaimDialogOpen(false);
+          }
+        }}
       />
     </div>
   );

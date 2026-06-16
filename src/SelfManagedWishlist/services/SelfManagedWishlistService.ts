@@ -53,7 +53,10 @@ export class SelfManagedWishlistService {
     }));
   }
 
-  static async addItem(wishlistId: string, form: ItemFormData): Promise<WishlistItem> {
+  static async addItem(
+    wishlistId: string,
+    form: ItemFormData,
+  ): Promise<WishlistItem> {
     let imageUrl = form.url;
 
     if (form.link && !imageUrl) {
@@ -67,21 +70,29 @@ export class SelfManagedWishlistService {
 
     const { data, error } = await supabase
       .from('wishlist_items')
-      .insert([{
-        wishlist_id: wishlistId,
-        title: form.title.trim(),
-        description: form.description.trim() || null,
-        link: form.link.trim() || null,
-        url: imageUrl || null,
-        price_range: form.priceRange.trim() || null,
-        priority: form.priority,
-        is_giftcard: form.isGiftcard,
-      }])
+      .insert([
+        {
+          wishlist_id: wishlistId,
+          title: form.title.trim(),
+          description: form.description.trim() || null,
+          link: form.link.trim() || null,
+          url: imageUrl || null,
+          price_range: form.priceRange.trim() || null,
+          priority: form.priority,
+          is_giftcard: form.isGiftcard,
+          claim_cap: form.isGiftcard ? form.claimCap : null,
+        },
+      ])
       .select()
       .single();
 
     if (error) throw error;
-    return { ...data, priority: data.priority ?? 0, is_taken: data.is_taken ?? false, claims: [] };
+    return {
+      ...data,
+      priority: data.priority ?? 0,
+      is_taken: data.is_taken ?? false,
+      claims: [],
+    };
   }
 
   static async updateItem(itemId: string, form: ItemFormData): Promise<void> {
@@ -106,6 +117,7 @@ export class SelfManagedWishlistService {
         price_range: form.priceRange.trim() || null,
         priority: form.priority ?? 0,
         is_giftcard: form.isGiftcard,
+        claim_cap: form.isGiftcard ? form.claimCap : null,
       })
       .eq('id', itemId);
 
@@ -117,6 +129,15 @@ export class SelfManagedWishlistService {
       .from('wishlist_items')
       .delete()
       .eq('id', itemId);
+
+    if (error) throw error;
+  }
+
+  static async deleteClaim(claimId: string): Promise<void> {
+    const { error } = await supabase
+      .from('item_claims')
+      .delete()
+      .eq('id', claimId);
 
     if (error) throw error;
   }
@@ -142,7 +163,9 @@ export class SelfManagedWishlistService {
   }
 
   static async createShareLink(wishlistId: string): Promise<string> {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     if (!user) throw new Error('Not authenticated');
 
     const { data: existing } = await supabase
@@ -156,7 +179,11 @@ export class SelfManagedWishlistService {
     const shareToken = crypto.randomUUID();
     const { data, error } = await supabase
       .from('share_links')
-      .insert({ wishlist_id: wishlistId, created_by: user.id, token: shareToken })
+      .insert({
+        wishlist_id: wishlistId,
+        created_by: user.id,
+        token: shareToken,
+      })
       .select('token')
       .single();
 

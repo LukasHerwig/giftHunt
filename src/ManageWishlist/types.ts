@@ -9,6 +9,7 @@ export interface WishlistItem {
   price_range: string | null;
   priority: number;
   is_giftcard: boolean | null;
+  claim_cap: number | null;
   created_at: string;
 }
 
@@ -66,6 +67,7 @@ export interface ItemFormData {
   priceRange: string;
   priority: number | null;
   isGiftcard: boolean;
+  claimCap: number | null;
 }
 
 export interface SettingsFormData {

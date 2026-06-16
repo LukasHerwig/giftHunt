@@ -6,45 +6,37 @@ import {
   SheetDialogBody,
 } from '@/components/ui/sheet-dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2, X, Undo2 } from 'lucide-react';
-import { WishlistItem } from '../types';
+import { X, Undo2 } from 'lucide-react';
 
-interface UntakeItemDialogProps {
+interface RemoveClaimDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  selectedItem: WishlistItem | null;
-  untaking: boolean;
-  onConfirm: () => Promise<void>;
+  claimerName: string | null;
+  onConfirm: () => void;
 }
 
 const Content = ({
-  selectedItem,
-  untaking,
+  claimerName,
   onConfirm,
   onOpenChange,
-}: Omit<UntakeItemDialogProps, 'open'>) => {
+}: Omit<RemoveClaimDialogProps, 'open'>) => {
   const { t } = useTranslation();
 
   return (
     <>
       <SheetDialogHeader
-        title={t('untakeItemDialog.title')}
+        title={t('adminWishlist.editTakenItem.removeClaimTitle')}
         onClose={() => onOpenChange(false)}
         showSubmit={false}
         closeIcon={<X className="w-5 h-5" />}
       />
 
       <SheetDialogBody>
-        {selectedItem && (
+        {claimerName && (
           <div className="bg-ios-secondary/50 border border-ios-separator/10 p-4 rounded-[20px]">
-            <p className="text-[17px] font-semibold text-foreground">
-              {selectedItem.title}
-            </p>
             <p className="text-[15px] text-foreground mt-2">
-              {t('untakeItemDialog.description', {
-                title: selectedItem.title,
-                takenBy:
-                  selectedItem.taken_by_name || t('adminWishlist.anonymous'),
+              {t('adminWishlist.editTakenItem.removeClaimDescription', {
+                name: claimerName,
               })}
             </p>
           </div>
@@ -56,22 +48,17 @@ const Content = ({
             variant="destructive"
             onClick={onConfirm}
             className="w-full h-12 rounded-[12px] bg-ios-red hover:bg-ios-red/90 text-white font-semibold"
-            disabled={untaking}
           >
-            {untaking ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              t('untakeItemDialog.untake')
-            )}
+            <Undo2 className="w-4 h-4 mr-2" />
+            {t('adminWishlist.editTakenItem.removeClaim')}
           </Button>
           <Button
             type="button"
             variant="ghost"
             onClick={() => onOpenChange(false)}
             className="w-full h-12 rounded-[12px] text-ios-blue font-semibold"
-            disabled={untaking}
           >
-            {t('untakeItemDialog.cancel')}
+            {t('common.cancel')}
           </Button>
         </div>
       </SheetDialogBody>
@@ -79,7 +66,7 @@ const Content = ({
   );
 };
 
-export const UntakeItemDialog = (props: UntakeItemDialogProps) => {
+export const RemoveClaimDialog = (props: RemoveClaimDialogProps) => {
   const { open, onOpenChange } = props;
 
   return (

@@ -191,8 +191,7 @@ const FormContent = ({
                       ...editItem,
                       priority: value === 'none' ? null : parseInt(value),
                     })
-                  }
-                >
+                  }>
                   <SelectTrigger className="border-none bg-transparent p-0 h-auto text-[17px] focus:ring-0 shadow-none text-foreground">
                     <SelectValue
                       placeholder={t('editItemDialog.priorityPlaceholder')}
@@ -215,13 +214,16 @@ const FormContent = ({
           <button
             type="button"
             onClick={() =>
-              setEditItem({ ...editItem, isGiftcard: !editItem.isGiftcard })
+              setEditItem({
+                ...editItem,
+                isGiftcard: !editItem.isGiftcard,
+                claimCap: null,
+              })
             }
             disabled={updating}
             className={`w-full bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5 flex items-center justify-between ${
               updating ? 'opacity-50' : ''
-            }`}
-          >
+            }`}>
             <div className="flex flex-col items-start">
               <span className="text-[17px] font-medium text-foreground">
                 {t('editItemDialog.isGiftcard')}
@@ -233,8 +235,7 @@ const FormContent = ({
             <div
               className={`w-[51px] h-[31px] rounded-full transition-colors ${
                 editItem.isGiftcard ? 'bg-ios-green' : 'bg-ios-gray/30'
-              }`}
-            >
+              }`}>
               <div
                 className={`w-[27px] h-[27px] bg-white rounded-full shadow-sm mt-[2px] transition-transform ${
                   editItem.isGiftcard
@@ -244,6 +245,25 @@ const FormContent = ({
               />
             </div>
           </button>
+
+          {editItem.isGiftcard && (
+            <div className="bg-ios-background/50 rounded-[20px] px-5 py-4 border border-ios-separator/5">
+              <input
+                type="number"
+                min="1"
+                placeholder={t('editItemDialog.claimCapPlaceholder')}
+                value={editItem.claimCap ?? ''}
+                onChange={(e) =>
+                  setEditItem({
+                    ...editItem,
+                    claimCap: e.target.value ? parseInt(e.target.value) : null,
+                  })
+                }
+                className="w-full bg-transparent text-[17px] outline-none placeholder-ios-gray text-foreground"
+                disabled={updating}
+              />
+            </div>
+          )}
         </div>
 
         {/* Delete Button */}
@@ -253,8 +273,7 @@ const FormContent = ({
               type="button"
               onClick={hasActiveShareLink ? undefined : onDelete}
               disabled={hasActiveShareLink}
-              className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:opacity-40 disabled:pointer-events-none"
-            >
+              className="w-full bg-ios-background/50 rounded-[20px] py-4 text-[17px] font-semibold text-destructive active:opacity-50 transition-opacity border border-ios-separator/5 flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:opacity-40 disabled:pointer-events-none">
               <Trash2 className="w-5 h-5" />
               {t('editItemDialog.removeItem')}
             </button>
