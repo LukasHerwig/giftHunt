@@ -22,6 +22,7 @@ const PublicWishlist = () => {
     items,
     loading,
     shareLink,
+    selectedItem,
     dialogOpen,
     buyerName,
     claiming,
@@ -31,6 +32,8 @@ const PublicWishlist = () => {
     closeClaimDialog,
     setBuyerName,
   } = usePublicWishlist(token);
+
+  const selectedItemData = items.find((i) => i.id === selectedItem) ?? null;
 
   useEffect(() => {
     loadWishlistByToken();
@@ -129,6 +132,8 @@ const PublicWishlist = () => {
           onBuyerNameChange={setBuyerName}
           onSubmit={handleClaimSubmit}
           claiming={claiming}
+          item={selectedItemData}
+          wishlist={wishlist}
         />
       </main>
     </div>
