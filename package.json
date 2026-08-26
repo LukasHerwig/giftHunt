@@ -12,7 +12,8 @@
     "build:dev": "vite build --mode development",
     "build:pages": "vite build --mode production",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "keepalive": "node scripts/keepalive.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
