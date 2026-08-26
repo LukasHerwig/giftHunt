@@ -2,8 +2,11 @@ name: Supabase Keep-Alive
 
 on:
   schedule:
-    # Mondays at 06:00 UTC — keeps the Supabase project from being paused for inactivity.
-    - cron: '0 6 * * 1'
+    # Daily at 06:00 UTC. Supabase pauses free projects with low activity over a
+    # rolling 7-day window, and wants "a few requests each day" rather than one
+    # burst — so this runs daily, which also absorbs the occasional run that
+    # GitHub delays or drops under load.
+    - cron: '0 6 * * *'
   workflow_dispatch:
 
 jobs:
