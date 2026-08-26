@@ -16,6 +16,7 @@ dist-ssr
 .env.prod
 .env.production
 .env
+.env.local.backup
 
 # Supabase local environment
 supabase/.env
