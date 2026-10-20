@@ -123,7 +123,8 @@ export class DashboardService {
       .from('admin_invitations')
       .select('id, wishlist_id, invitation_token, created_at, invited_by')
       .ilike('email', userEmail)
-      .eq('accepted', false);
+      .eq('accepted', false)
+      .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`);
 
     if (invitationError) throw invitationError;
 
