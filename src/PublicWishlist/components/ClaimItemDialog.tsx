@@ -141,7 +141,7 @@ const FormContent = ({
         <button
           type="submit"
           disabled={claiming || !buyerName.trim()}
-          className="w-full bg-ios-blue rounded-[20px] px-5 py-4 text-[17px] font-semibold text-white disabled:opacity-40 active:opacity-80 transition-opacity flex items-center justify-center gap-2">
+          className="w-full bg-ios-blue rounded-[20px] px-5 py-4 text-[17px] font-semibold text-ios-on-blue disabled:opacity-40 active:opacity-80 transition-opacity flex items-center justify-center gap-2">
           {claiming ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />

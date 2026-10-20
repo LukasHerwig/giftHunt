@@ -26,7 +26,7 @@ export const AccessDeniedState = ({ token }: AccessDeniedStateProps) => {
 
         <Link
           to="/"
-          className="inline-flex items-center gap-2 bg-ios-blue text-white px-8 py-4 rounded-full font-semibold text-[17px] active:scale-95 transition-all shadow-lg shadow-ios-blue/20">
+          className="inline-flex items-center gap-2 bg-ios-blue text-ios-on-blue px-8 py-4 rounded-full font-semibold text-[17px] active:scale-95 transition-all shadow-lg shadow-ios-blue/20">
           <Home className="w-5 h-5" />
           {t('common.goHome')}
         </Link>

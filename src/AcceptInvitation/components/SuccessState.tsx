@@ -40,9 +40,9 @@ export const SuccessState = ({
         </div>
 
         <div className="space-y-6">
-          <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
+          <div className="bg-ios-secondary rounded-[12px] border border-gh-line overflow-hidden">
             <WishlistInfo invitationData={invitationData} />
-            <div className="ml-16 border-b border-ios-separator" />
+            <div className="ml-16 border-b border-gh-line" />
             <InviterInfo invitationData={invitationData} />
           </div>
 

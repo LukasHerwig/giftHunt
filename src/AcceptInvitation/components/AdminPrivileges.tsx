@@ -9,7 +9,7 @@ export const AdminPrivileges = () => {
       <h4 className="text-[13px] font-normal text-ios-label-secondary uppercase tracking-wider ml-4">
         {t('acceptInvitation.asAdminYouCan')}
       </h4>
-      <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
+      <div className="bg-ios-secondary rounded-[12px] border border-gh-line overflow-hidden">
         {[
           t('acceptInvitation.seeItemsTaken'),
           t('acceptInvitation.shareWishlistLink'),
@@ -24,7 +24,7 @@ export const AdminPrivileges = () => {
               </span>
             </div>
             {index < array.length - 1 && (
-              <div className="ml-12 border-b border-ios-separator" />
+              <div className="ml-12 border-b border-gh-line" />
             )}
           </div>
         ))}

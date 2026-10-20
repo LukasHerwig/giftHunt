@@ -95,7 +95,7 @@ export const WishlistItems = ({
 
         <Button
           onClick={onAddItem}
-          className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-8 py-6 text-[17px] font-semibold shadow-lg active:scale-95 transition-all">
+          className="bg-ios-blue hover:bg-ios-blue/90 text-ios-on-blue rounded-full px-8 py-6 text-[17px] font-semibold shadow-lg active:scale-95 transition-all">
           {t('manageWishlist.addItem')}
         </Button>
       </div>

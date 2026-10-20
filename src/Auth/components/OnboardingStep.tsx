@@ -36,7 +36,7 @@ export const OnboardingStep = ({
       <div className="w-full max-w-[400px] space-y-8">
         <div className="text-center space-y-4">
           <div className="mx-auto w-20 h-20 bg-ios-blue rounded-full flex items-center justify-center shadow-sm">
-            <User className="w-10 h-10 text-white" />
+            <User className="w-10 h-10 text-ios-on-blue" />
           </div>
           <div className="space-y-2">
             <h1 className="text-3xl font-bold tracking-tight text-foreground">
@@ -71,7 +71,7 @@ export const OnboardingStep = ({
 
           <button
             type="submit"
-            className="w-full h-12 rounded-[12px] bg-ios-blue text-white text-[17px] font-semibold transition-all active:opacity-70 flex items-center justify-center disabled:opacity-50"
+            className="w-full h-12 rounded-[12px] bg-ios-blue text-ios-on-blue text-[17px] font-semibold transition-all active:opacity-70 flex items-center justify-center disabled:opacity-50"
             disabled={loading || !name.trim()}>
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />

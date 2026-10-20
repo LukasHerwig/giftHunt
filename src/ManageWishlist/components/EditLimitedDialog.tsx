@@ -239,7 +239,7 @@ const FormContent = ({
                           placeholder={t('editLimitedDialog.priorityPlaceholder')}
                         />
                       </SelectTrigger>
-                      <SelectContent className="rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator">
+                      <SelectContent className="rounded-[20px] bg-ios-secondary/95 backdrop-blur-xl border-gh-line">
                         <SelectItem value="none">{t('priority.none')}</SelectItem>
                         <SelectItem value="1">{t('priority.low')}</SelectItem>
                         <SelectItem value="2">{t('priority.medium')}</SelectItem>

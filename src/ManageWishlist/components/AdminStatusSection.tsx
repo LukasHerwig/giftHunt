@@ -56,7 +56,7 @@ export const AdminStatusSection = ({
         {t('manageWishlist.adminStatus')}
       </h2>
 
-      <div className="bg-ios-secondary rounded-[12px] border border-ios-separator overflow-hidden">
+      <div className="bg-ios-secondary rounded-[12px] border border-gh-line overflow-hidden">
         {/* Show pending invitations */}
         {pendingInvitations.map((invitation, index) => (
           <div key={invitation.id}>
@@ -107,10 +107,10 @@ export const AdminStatusSection = ({
                         })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-ios-separator mt-4">
+                    <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-gh-line mt-4">
                       <AlertDialogAction
                         onClick={() => onRemoveInvitation(invitation.id)}
-                        className="bg-transparent text-ios-red hover:bg-transparent active:bg-ios-tertiary font-semibold py-3 h-auto rounded-none border-b border-ios-separator">
+                        className="bg-transparent text-ios-red hover:bg-transparent active:bg-ios-tertiary font-semibold py-3 h-auto rounded-none border-b border-gh-line">
                         {t('removeInvitationDialog.remove')}
                       </AlertDialogAction>
                       <AlertDialogCancel className="bg-transparent text-ios-blue hover:bg-transparent active:bg-ios-tertiary py-3 h-auto rounded-none border-none">
@@ -122,7 +122,7 @@ export const AdminStatusSection = ({
               </div>
             </div>
             {(index < pendingInvitations.length - 1 || admins.length > 0) && (
-              <div className="ml-16 border-b border-ios-separator" />
+              <div className="ml-16 border-b border-gh-line" />
             )}
           </div>
         ))}
@@ -177,10 +177,10 @@ export const AdminStatusSection = ({
                       )}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-ios-separator mt-4">
+                  <AlertDialogFooter className="flex-col sm:flex-col gap-0 border-t border-gh-line mt-4">
                     <AlertDialogAction
                       onClick={() => onRemoveAdmin(admin.id)}
-                      className="bg-transparent text-ios-red hover:bg-transparent active:bg-ios-tertiary font-semibold py-3 h-auto rounded-none border-b border-ios-separator">
+                      className="bg-transparent text-ios-red hover:bg-transparent active:bg-ios-tertiary font-semibold py-3 h-auto rounded-none border-b border-gh-line">
                       {t('removeAdminDialog.remove')}
                     </AlertDialogAction>
                     <AlertDialogCancel className="bg-transparent text-ios-blue hover:bg-transparent active:bg-ios-tertiary py-3 h-auto rounded-none border-none">
@@ -191,7 +191,7 @@ export const AdminStatusSection = ({
               </AlertDialog>
             </div>
             {index < admins.length - 1 && (
-              <div className="ml-16 border-b border-ios-separator" />
+              <div className="ml-16 border-b border-gh-line" />
             )}
           </div>
         ))}

@@ -14,7 +14,7 @@ export const CreateWishlistButton = ({
   return (
     <button
       onClick={onClick}
-      className="w-14 h-14 bg-ios-blue text-white rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-all hover:bg-ios-blue/90"
+      className="w-14 h-14 bg-ios-blue text-ios-on-blue rounded-full flex items-center justify-center shadow-2xl active:scale-90 transition-all hover:bg-ios-blue/90"
       aria-label={t('dashboard.createNewWishlist')}>
       <Plus className="w-8 h-8" />
     </button>

@@ -21,7 +21,7 @@ npx supabase db push             # Apply migrations to production
 npx supabase db pull             # Sync production schema to local
 ```
 
-There is no test suite.
+There is no frontend test suite. Database RLS and RPC tests (pgTAP) live in `supabase/tests/`: `npm run test:db` (needs the local stack: `npx supabase start`, then `npx supabase db reset`).
 
 ## Architecture
 
@@ -79,14 +79,15 @@ All UI strings go through `react-i18next`. Translation files: `src/locales/en.js
 
 **Always use `getBaseUrl()` from `src/lib/urlUtils.ts`** for any link the app generates (invitations, share links, etc.). The app is deployed to GitHub Pages under `/giftHunt/`, so hardcoded `window.location.origin` links will be wrong in production. The `VITE_APP_BASE_URL` env var sets the base in production builds.
 
-### UI / iOS design system
+### UI / GiftHunt design system
 
-The app follows an iOS-inspired design system:
+The look comes from the **GiftHunt design system** (claude.ai artifact: https://claude.ai/artifact/UWZ3km7B9v3y6vSDg8uWhu — tokens, brand book, components). Read its README before building UI.
 
-- **Backgrounds**: `#000000` (main), `#1C1C1E` (secondary surfaces)
-- **Accent colors**: iOS Blue `#007AFF` (primary actions), iOS Green `#34C759` (success)
-- **Corner radii**: `rounded-[24px]` for cards and dialogs
-- **Typography**: Bold tracking-tight headers; 17px body, 13px labels
+- **Tokens** live in `src/styles/tokens.css` as `--gh-*` CSS variables (colours as RGB channels) and in Tailwind as `gh-*` colours (`bg-gh-surface-200`, `text-gh-muted`, `border-gh-line`), `rounded-gh-*` radii and `shadow-gh-*` shadows. Never hardcode a colour. Light is `:root`, dark is `.dark` (set by `src/lib/theme.ts`, which also sets `data-theme`).
+- **Accent:** `gh-primary` (pastel Smultron) fills only the one primary action, with `text-gh-on-primary` (never white). Links, focus and active markers use `gh-primary-strong`.
+- **Type:** IBM Plex Sans (`font-sans`) for UI; Fredoka (`font-brand`) only for the GiftHunt wordmark. Body 16px, captions 13px, nothing under 12px.
+- **Status:** item status is a word plus a pill (`gh-available`/`gh-available-bg` "Ledig", `gh-taken`/`gh-taken-bg` "Tagen"); destructive is `gh-danger` (rust), never the accent.
+- **Legacy:** older screens still use shadcn variables and an `ios-*` palette; both point at the GiftHunt tokens (`src/index.css`). Text on `bg-ios-blue` / `bg-ios-red` uses `text-ios-on-blue` / `text-ios-on-red`. New code uses the `gh-*` names only.
 
 **Responsive overlays** — use `useIsMobile()` to switch:
 

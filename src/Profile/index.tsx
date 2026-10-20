@@ -40,7 +40,7 @@ const Profile = () => {
             <Button
               onClick={handleSave}
               disabled={saving || !fullName.trim()}
-              className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-6 h-10 font-semibold shadow-lg active:scale-95 transition-all animate-in fade-in zoom-in duration-200">
+              className="bg-ios-blue hover:bg-ios-blue/90 text-ios-on-blue rounded-full px-6 h-10 font-semibold shadow-lg active:scale-95 transition-all animate-in fade-in zoom-in duration-200">
               {saving ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (

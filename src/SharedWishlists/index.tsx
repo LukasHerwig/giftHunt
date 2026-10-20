@@ -95,7 +95,7 @@ const SharedWishlists = () => {
                       {t('dashboard.owner')}: {wishlist.owner_profile?.email}
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-ios-separator group-active:text-ios-gray transition-colors" />
+                  <ChevronRight className="w-5 h-5 text-gh-line-strong group-active:text-ios-gray transition-colors" />
                 </button>
               ))}
             </div>

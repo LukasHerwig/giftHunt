@@ -124,7 +124,7 @@ export const AuthPage = () => {
                   disabled={loading}
                 />
               </div>
-              <div className="h-[0.5px] bg-ios-separator ml-4"></div>
+              <div className="h-[0.5px] bg-gh-line ml-4"></div>
               <div className="px-4">
                 <input
                   type="password"
@@ -146,7 +146,7 @@ export const AuthPage = () => {
             <button
               type="submit"
               className={`w-full h-12 rounded-[12px] text-[17px] font-semibold transition-all active:opacity-70 flex items-center justify-center ${
-                isLogin ? 'bg-ios-blue text-white' : 'bg-ios-green text-white'
+                isLogin ? 'bg-ios-blue text-ios-on-blue' : 'bg-ios-green text-ios-on-blue'
               } disabled:opacity-50`}
               disabled={loading}>
               {loading ? (

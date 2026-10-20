@@ -81,29 +81,11 @@ export const applyTheme = (colorScheme: ColorScheme, isDark: boolean) => {
   }
 };
 
-const applyThemeColors = (colors: ThemeColors, isDark: boolean) => {
+const applyThemeColors = (_colors: ThemeColors, isDark: boolean) => {
   const root = document.documentElement;
-
-  // Apply color scheme
-  root.style.setProperty('--primary', colors.primary);
-  root.style.setProperty('--accent', colors.accent);
-
-  // Apply dark/light mode
-  if (isDark) {
-    root.classList.add('dark');
-  } else {
-    root.classList.remove('dark');
-  }
-
-  // Update gradients based on current theme - using primary and accent for harmonious gradients
-  root.style.setProperty(
-    '--gradient-primary',
-    `linear-gradient(135deg, hsl(${colors.primary}), hsl(${colors.accent}))`
-  );
-  root.style.setProperty(
-    '--gradient-accent',
-    `linear-gradient(135deg, hsl(${colors.accent}), hsl(${colors.primary}))`
-  );
+  // GiftHunt has one accent (Smultron, in src/styles/tokens.css); only light/dark is applied here.
+  root.classList.toggle('dark', isDark);
+  root.setAttribute('data-theme', isDark ? 'dark' : 'light');
 };
 
 export const getSystemTheme = (): boolean => {

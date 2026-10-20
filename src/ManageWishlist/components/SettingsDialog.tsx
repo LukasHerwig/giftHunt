@@ -213,7 +213,7 @@ const FormContent = ({
                 {t('manageWishlist.deleteWishlist')}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="rounded-[24px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator max-w-[90vw] sm:max-w-[400px]">
+            <AlertDialogContent className="rounded-[24px] bg-ios-secondary/95 backdrop-blur-xl border-gh-line max-w-[90vw] sm:max-w-[400px]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-center text-[17px] font-semibold">
                   {t('deleteWishlistDialog.title')}
@@ -227,7 +227,7 @@ const FormContent = ({
               <AlertDialogFooter className="flex-col sm:flex-col gap-2 mt-4">
                 <AlertDialogAction
                   onClick={onDeleteWishlist}
-                  className="bg-destructive hover:bg-destructive/90 text-white rounded-[14px] py-6 font-semibold text-[17px] w-full"
+                  className="bg-destructive hover:bg-destructive/90 text-ios-on-red rounded-[14px] py-6 font-semibold text-[17px] w-full"
                 >
                   {t('common.delete')}
                 </AlertDialogAction>

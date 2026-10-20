@@ -43,7 +43,7 @@ export const MyWishlistsSection = ({
           </p>
           <button
             onClick={onCreateClick}
-            className="bg-ios-blue hover:opacity-90 text-white px-8 py-3 rounded-full text-[17px] font-bold shadow-lg active:scale-95 transition-all">
+            className="bg-ios-blue hover:opacity-90 text-ios-on-blue px-8 py-3 rounded-full text-[17px] font-bold shadow-lg active:scale-95 transition-all">
             {t('dashboard.createNewWishlist')}
           </button>
         </div>
@@ -67,7 +67,7 @@ export const MyWishlistsSection = ({
                 <Gift className="w-12 h-12 text-ios-blue relative z-10 opacity-50" />
 
                 {/* Item Count Badge */}
-                <div className="absolute top-4 right-4 bg-ios-blue text-white px-3 py-1 rounded-full text-[13px] font-bold shadow-lg">
+                <div className="absolute top-4 right-4 bg-ios-blue text-ios-on-blue px-3 py-1 rounded-full text-[13px] font-bold shadow-lg">
                   {t('dashboard.itemCount_other', {
                     count: wishlist.item_count || 0,
                   })}
