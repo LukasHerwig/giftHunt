@@ -27,14 +27,8 @@ export interface InvitationQueryResult {
   expires_at: string;
   invited_by: string;
   wishlist_id: string;
-}
-
-export interface InviterProfile {
-  email: string | null;
-  full_name: string | null;
-}
-
-export interface WishlistInfo {
-  title: string | null;
-  description: string | null;
+  wishlist_title: string | null;
+  wishlist_description: string | null;
+  inviter_email: string | null;
+  inviter_full_name: string | null;
 }

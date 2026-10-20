@@ -36,19 +36,9 @@ export const useAcceptInvitation = (token: string | null) => {
         // Validate the invitation
         AcceptInvitationService.validateInvitation(invitation);
 
-        // Get additional data in parallel
-        const [inviterProfile, wishlistInfo, currentUser] = await Promise.all([
-          AcceptInvitationService.getInviterProfile(invitation.invited_by),
-          AcceptInvitationService.getWishlistInfo(invitation.wishlist_id),
-          AcceptInvitationService.getCurrentUser(),
-        ]);
-
-        // Build complete invitation data
-        const invitationData = AcceptInvitationService.buildInvitationData(
-          invitation,
-          inviterProfile,
-          wishlistInfo
-        );
+        const currentUser = await AcceptInvitationService.getCurrentUser();
+        const invitationData =
+          AcceptInvitationService.buildInvitationData(invitation);
 
         setState((prev) => ({
           ...prev,

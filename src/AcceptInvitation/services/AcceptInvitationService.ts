@@ -1,57 +1,22 @@
-import { supabase } from '@/integrations/supabase/client';
-import {
-  InvitationQueryResult,
-  InviterProfile,
-  WishlistInfo,
-  InvitationData,
-  CurrentUser,
-} from '../types';
+import { InvitationQueryResult, InvitationData, CurrentUser } from '../types';
 
 export class AcceptInvitationService {
   /**
-   * Get invitation data by token
+   * Get invitation, wishlist and inviter data by token
    */
   static async getInvitationByToken(
     token: string
   ): Promise<InvitationQueryResult> {
-    const { data: inviteData, error: inviteError } = await supabase
-      .from('admin_invitations')
-      .select('id, email, accepted, expires_at, invited_by, wishlist_id')
-      .eq('invitation_token', token)
-      .single();
+    const { data, error } = await supabase.rpc('get_invitation_by_token', {
+      p_token: token,
+    });
 
-    if (inviteError || !inviteData) {
-      console.error('Invitation error:', inviteError);
+    if (error || !data) {
+      console.error('Invitation error:', error);
       throw new Error('Invalid or expired invitation');
     }
 
-    return inviteData;
-  }
-
-  /**
-   * Get inviter profile information
-   */
-  static async getInviterProfile(invitedBy: string): Promise<InviterProfile> {
-    const { data: inviterProfile, error: inviterError } = await supabase
-      .from('profiles')
-      .select('email, full_name')
-      .eq('id', invitedBy)
-      .single();
-
-    return inviterProfile || { email: null, full_name: null };
-  }
-
-  /**
-   * Get wishlist information
-   */
-  static async getWishlistInfo(wishlistId: string): Promise<WishlistInfo> {
-    const { data: wishlistData, error: wishlistError } = await supabase
-      .from('wishlists')
-      .select('title, description')
-      .eq('id', wishlistId)
-      .single();
-
-    return wishlistData || { title: null, description: null };
+    return data as unknown as InvitationQueryResult;
   }
 
   /**
@@ -80,14 +45,10 @@ export class AcceptInvitationService {
   /**
    * Build complete invitation data from separate queries
    */
-  static buildInvitationData(
-    invitation: InvitationQueryResult,
-    inviterProfile: InviterProfile,
-    wishlistInfo: WishlistInfo
-  ): InvitationData {
-    const inviterEmail = inviterProfile?.email || 'Someone';
-    const wishlistTitle = wishlistInfo?.title || 'Untitled Wishlist';
-    const wishlistDescription = wishlistInfo?.description || '';
+  static buildInvitationData(invitation: InvitationQueryResult): InvitationData {
+    const inviterEmail = invitation.inviter_email || 'Someone';
+    const wishlistTitle = invitation.wishlist_title || 'Untitled Wishlist';
+    const wishlistDescription = invitation.wishlist_description || '';
 
     const invitationData = {
       email: invitation.email,

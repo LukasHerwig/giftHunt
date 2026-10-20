@@ -67,8 +67,6 @@ The main custom hook that:
 ### `AcceptInvitationService`
 Static class containing all Supabase operations:
 - `getInvitationByToken()`: Fetch invitation by token
-- `getInviterProfile()`: Get inviter user information
-- `getWishlistInfo()`: Fetch wishlist details
 - `getCurrentUser()`: Check authentication status
 - `validateInvitation()`: Validate invitation status
 - `buildInvitationData()`: Combine data from multiple sources
@@ -81,8 +79,6 @@ All TypeScript interfaces and types used throughout the feature:
 - `CurrentUser`: Authenticated user data
 - `AcceptInvitationState`: Component state structure
 - `InvitationQueryResult`: Raw invitation query data
-- `InviterProfile`: Inviter user information
-- `WishlistInfo`: Wishlist basic information
 
 ## 🔄 Data Flow
 
