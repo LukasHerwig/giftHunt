@@ -13,7 +13,8 @@
     "build:pages": "vite build --mode production",
     "lint": "eslint .",
     "preview": "vite preview",
-    "keepalive": "node scripts/keepalive.mjs"
+    "keepalive": "node scripts/keepalive.mjs",
+    "test:db": "supabase test db"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

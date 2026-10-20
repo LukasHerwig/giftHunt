@@ -45,7 +45,7 @@ export const usePublicWishlist = (token?: string) => {
   }, [token, t]);
 
   const claimItem = useCallback(async () => {
-    if (!state.selectedItem || !state.shareLink) return;
+    if (!token || !state.selectedItem || !state.shareLink) return;
 
     if (!state.buyerName.trim()) {
       toast.error(t('publicWishlist.nameRequired'));
@@ -61,9 +61,9 @@ export const usePublicWishlist = (token?: string) => {
     setState((prev) => ({ ...prev, claiming: true }));
     try {
       await PublicWishlistService.claimItem({
+        token,
         itemId: state.selectedItem,
         buyerName: state.buyerName,
-        isGiftcard,
       });
 
       // Update local state
@@ -91,14 +91,23 @@ export const usePublicWishlist = (token?: string) => {
       toast.success(t('publicWishlist.itemClaimed'));
     } catch (error) {
       console.error('Claim item error:', error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : t('publicWishlist.failedToClaim');
-      toast.error(errorMessage);
+      const code = error instanceof Error ? error.message : '';
+      const knownCodes = [
+        'already_taken',
+        'claim_cap_reached',
+        'already_claimed',
+        'invalid_link',
+        'invalid_name',
+        'item_not_found',
+      ];
+      toast.error(
+        knownCodes.includes(code)
+          ? t(`publicWishlist.claimErrors.${code}`)
+          : t('publicWishlist.failedToClaim'),
+      );
       setState((prev) => ({ ...prev, claiming: false }));
     }
-  }, [state.selectedItem, state.shareLink, state.buyerName, state.items, t]);
+  }, [token, state.selectedItem, state.shareLink, state.buyerName, state.items, t]);
 
   const openClaimDialog = useCallback((itemId: string) => {
     setState((prev) => ({

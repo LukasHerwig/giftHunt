@@ -24,15 +24,14 @@ export class ManageWishlistService {
 
     if (wishlistError) throw wishlistError;
 
-    // Load active share links for this wishlist
-    const { data: shareLinksData, error: shareLinksError } = await supabase
-      .from('share_links')
-      .select('*')
-      .eq('wishlist_id', wishlistId)
-      .or('expires_at.is.null,expires_at.gt.now()'); // Active links (no expiry or not expired)
+    // The owner may know the list is shared, but never the token itself
+    const { data: hasActiveShareLink, error: shareLinkError } =
+      await supabase.rpc('wishlist_has_share_link', {
+        p_wishlist_id: wishlistId,
+      });
 
-    if (shareLinksError) {
-      console.error('Error loading share links:', shareLinksError);
+    if (shareLinkError) {
+      console.error('Error checking share link:', shareLinkError);
     }
 
     // Load all items for the owner (but don't show taken status to maintain surprise)
@@ -49,8 +48,8 @@ export class ManageWishlistService {
     return {
       wishlist: wishlistData,
       items: itemsData || [],
-      shareLinks: shareLinksData || [],
-      hasActiveShareLink: (shareLinksData || []).length > 0,
+      shareLinks: [],
+      hasActiveShareLink: hasActiveShareLink === true,
     };
   }
 
@@ -283,63 +282,22 @@ export class ManageWishlistService {
     adminEmail?: string;
     hadShareLinks: boolean;
   }> {
-    // First, find the admin to get their email for invitation cleanup
-    const { data: adminData } = await supabase
-      .from('wishlist_admins')
-      .select('profiles!admin_id(email)')
-      .eq('id', adminId)
-      .single();
+    // Deletes share links, untakes items, removes the admin and their
+    // invitation in one transaction
+    const { data, error } = await supabase.rpc('remove_wishlist_admin', {
+      p_wishlist_id: wishlistId,
+    });
 
-    const adminEmail = adminData?.profiles?.email;
+    if (error) throw error;
 
-    // Remove any active share links for this wishlist
-    const { data: deletedLinks, error: shareLinkError } = await supabase
-      .from('share_links')
-      .delete()
-      .eq('wishlist_id', wishlistId)
-      .select();
-
-    if (shareLinkError) {
-      console.error('Error removing share links:', shareLinkError);
-    }
-
-    // Untake all items in this wishlist and clear taken_by_name and taken_at
-    const { error: untakeError } = await supabase
-      .from('wishlist_items')
-      .update({ is_taken: false, taken_by_name: null, taken_at: null })
-      .eq('wishlist_id', wishlistId)
-      .eq('is_taken', true);
-    if (untakeError) {
-      console.error('Error untaking items after admin removal:', untakeError);
-    }
-
-    // Remove the admin record
-    const { error: adminError } = await supabase
-      .from('wishlist_admins')
-      .delete()
-      .eq('id', adminId);
-
-    if (adminError) throw adminError;
-
-    // Also remove their invitation record to allow re-inviting
-    if (adminEmail) {
-      const { error: inviteError } = await supabase
-        .from('admin_invitations')
-        .delete()
-        .eq('email', adminEmail)
-        .eq('wishlist_id', wishlistId);
-
-      if (inviteError) {
-        console.log(
-          'Note: Could not find invitation record to clean up:',
-          inviteError,
-        );
-      }
-    }
+    const result = data as unknown as {
+      admin_email: string | null;
+      had_share_links: boolean;
+    };
 
     return {
-      adminEmail,
-      hadShareLinks: (deletedLinks || []).length > 0,
+      adminEmail: result.admin_email ?? undefined,
+      hadShareLinks: result.had_share_links,
     };
   }
 

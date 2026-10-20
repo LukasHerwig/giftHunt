@@ -1,0 +1,69 @@
+-- Shared fixture for every RLS test. Included with \ir from each *_test.sql
+-- inside that test's transaction, so everything is rolled back afterwards.
+-- Not a test itself: pg_prove only runs *.sql files.
+
+\set u_owner    '11111111-0000-0000-0000-000000000001'
+\set u_admin    '11111111-0000-0000-0000-000000000002'
+\set u_stranger '11111111-0000-0000-0000-000000000003'
+\set u_invitee  '11111111-0000-0000-0000-000000000004'
+\set u_self     '11111111-0000-0000-0000-000000000005'
+
+\set w1 'aaaaaaaa-0000-0000-0000-000000000001'
+\set w2 'aaaaaaaa-0000-0000-0000-000000000002'
+\set w3 'aaaaaaaa-0000-0000-0000-000000000003'
+\set w4 'aaaaaaaa-0000-0000-0000-000000000004'
+
+\set i1 'bbbbbbbb-0000-0000-0000-000000000001'
+\set i2 'bbbbbbbb-0000-0000-0000-000000000002'
+\set i3 'bbbbbbbb-0000-0000-0000-000000000003'
+\set i4 'bbbbbbbb-0000-0000-0000-000000000004'
+
+\set inv_w2 'cccccccc-0000-0000-0000-000000000002'
+\set inv_w4 'cccccccc-0000-0000-0000-000000000004'
+
+-- Users (the on_auth_user_created trigger creates the profiles)
+insert into auth.users (instance_id, id, aud, role, email, encrypted_password, raw_app_meta_data, raw_user_meta_data, email_confirmed_at, created_at, updated_at)
+values
+  ('00000000-0000-0000-0000-000000000000', :'u_owner',    'authenticated', 'authenticated', 'owner@test.se',    '', '{}', '{"full_name":"Olle Owner"}',    now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_admin',    'authenticated', 'authenticated', 'admin@test.se',    '', '{}', '{"full_name":"Ada Admin"}',     now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_stranger', 'authenticated', 'authenticated', 'stranger@test.se', '', '{}', '{"full_name":"Sam Stranger"}',  now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_invitee',  'authenticated', 'authenticated', 'invitee@test.se',  '', '{}', '{"full_name":"Ivy Invitee"}',   now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_self',     'authenticated', 'authenticated', 'self@test.se',     '', '{}', '{"full_name":"Siri Self"}',     now(), now(), now());
+
+-- W1: owner's list, organized by admin, shared with token tok-w1
+-- W2: owner's list, pending invitation to Invitee@test.se (mixed case on purpose)
+-- W3: self-managed list of u_self
+-- W4: owner's list with an expired share link and an expired invitation
+insert into public.wishlists (id, title, creator_id, is_self_managed) values
+  (:'w1', 'Födelsedag', :'u_owner', false),
+  (:'w2', 'Jul',        :'u_owner', false),
+  (:'w3', 'Babyshower', :'u_self',  true),
+  (:'w4', 'Gammal',     :'u_owner', false);
+
+insert into public.wishlist_admins (wishlist_id, admin_id, invited_by) values
+  (:'w1', :'u_admin', :'u_owner'),
+  (:'w3', :'u_self',  :'u_self');
+
+insert into public.wishlist_items (id, wishlist_id, title, is_giftcard, claim_cap, is_taken, taken_by_name, priority) values
+  (:'i1', :'w1', 'Bok',         false, null, false, null, 2),
+  (:'i2', :'w1', 'Presentkort', true,  2,    false, null, 3),
+  (:'i3', :'w1', 'Lampa',       false, null, true,  'Lo', 1),
+  (:'i4', :'w3', 'Napp',        false, null, false, null, 2);
+
+insert into public.item_claims (item_id, claimer_name) values (:'i2', 'Kim');
+
+insert into public.share_links (wishlist_id, token, created_by, expires_at) values
+  (:'w1', 'tok-w1',      :'u_admin', null),
+  (:'w4', 'tok-expired', :'u_owner', now() - interval '1 day');
+
+insert into public.admin_invitations (id, wishlist_id, email, invitation_token, invited_by, expires_at) values
+  (:'inv_w2', :'w2', 'Invitee@test.se', 'inv-w2',      :'u_owner', now() + interval '7 days'),
+  (:'inv_w4', :'w4', 'invitee@test.se', 'inv-expired', :'u_owner', now() - interval '1 day');
+
+-- Login snippets: expand with :as_owner etc. Run `reset role;` before switching.
+\set as_owner    'set local request.jwt.claims = ''{"sub":"11111111-0000-0000-0000-000000000001","email":"owner@test.se","role":"authenticated"}''; set local role authenticated;'
+\set as_admin    'set local request.jwt.claims = ''{"sub":"11111111-0000-0000-0000-000000000002","email":"admin@test.se","role":"authenticated"}''; set local role authenticated;'
+\set as_stranger 'set local request.jwt.claims = ''{"sub":"11111111-0000-0000-0000-000000000003","email":"stranger@test.se","role":"authenticated"}''; set local role authenticated;'
+\set as_invitee  'set local request.jwt.claims = ''{"sub":"11111111-0000-0000-0000-000000000004","email":"invitee@test.se","role":"authenticated"}''; set local role authenticated;'
+\set as_self     'set local request.jwt.claims = ''{"sub":"11111111-0000-0000-0000-000000000005","email":"self@test.se","role":"authenticated"}''; set local role authenticated;'
+\set as_anon     'set local request.jwt.claims = ''{"role":"anon"}''; set local role anon;'

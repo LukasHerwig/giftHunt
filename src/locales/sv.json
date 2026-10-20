@@ -130,6 +130,14 @@
     "claiming": "Reserverar...",
     "itemClaimed": "Önskning reserverad! Tack!",
     "failedToClaim": "Misslyckades att reservera önskning",
+    "claimErrors": {
+      "already_taken": "Någon hann före – den här önskningen är redan tagen.",
+      "claim_cap_reached": "Den här önskningen har redan tillräckligt många givare.",
+      "already_claimed": "Du har redan reserverat den här önskningen.",
+      "invalid_link": "Länken är ogiltig eller har gått ut.",
+      "invalid_name": "Skriv ditt namn (högst 100 tecken).",
+      "item_not_found": "Den här önskningen finns inte längre på listan."
+    },
     "invalidOrExpiredLink": "Ogiltig eller utgången delningslänk",
     "linkExpired": "Denna delningslänk har gått ut",
     "failedToLoad": "Misslyckades att ladda önskelista",
