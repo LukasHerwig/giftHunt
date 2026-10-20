@@ -1,3 +1,20 @@
+-- Production policies may have drifted from the migration history (policies added
+-- by hand with names the older migrations never dropped). Drop every policy on
+-- these tables so only the ones created by this branch remain.
+do $$
+declare
+  r record;
+begin
+  for r in
+    select policyname, tablename from pg_policies
+    where schemaname = 'public'
+      and tablename in ('wishlists','wishlist_items','item_claims','share_links',
+                        'wishlist_admins','admin_invitations','profiles')
+  loop
+    execute format('drop policy %I on public.%I', r.policyname, r.tablename);
+  end loop;
+end $$;
+
 -- wishlists: owner manages, admin and invitee read. Public access goes through
 -- get_shared_wishlist() instead of table policies.
 drop policy if exists "creators_can_manage_wishlists"        on public.wishlists;
