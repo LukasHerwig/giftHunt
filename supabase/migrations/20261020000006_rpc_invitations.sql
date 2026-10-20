@@ -37,8 +37,8 @@ begin
     raise exception 'invitation_expired' using errcode = 'P0001';
   end if;
 
-  -- Insert the admin row for the caller directly: the existing trigger looks the
-  -- user up by exact email and would miss a differently-cased invitation.
+  -- Insert the admin row for the caller directly (the old acceptance trigger is
+  -- dropped below: it matched email case-sensitively).
   insert into wishlist_admins (wishlist_id, admin_id, invited_by)
   values (v_inv.wishlist_id, auth.uid(), v_inv.invited_by)
   on conflict (wishlist_id) do nothing;
@@ -53,7 +53,10 @@ begin
 end;
 $$;
 
-alter function public.create_admin_on_invitation_acceptance() security definer set search_path = public;
+-- The acceptance trigger must not exist: running as definer it would add anyone
+-- as admin when an owner edits an invitation. accept_invitation() does the insert.
+drop trigger if exists auto_create_admin_on_accept on public.admin_invitations;
+drop function if exists public.create_admin_on_invitation_acceptance();
 
 revoke execute on function public.get_invitation_by_token(text) from public;
 revoke execute on function public.accept_invitation(uuid)       from public, anon;

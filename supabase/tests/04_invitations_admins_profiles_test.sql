@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(12);
+select plan(14);
 \ir _seed.psql
 
 -- Stranger
@@ -24,11 +24,14 @@ select ok(not (select accepted from admin_invitations where id = :'inv_w2'), 'in
 :as_owner
 select is((select count(*)::int from admin_invitations), 2, 'owner sees invitations for their lists');
 select is((select email from profiles where id = :'u_admin'), 'admin@test.se', 'owner sees the admin''s profile');
+update admin_invitations set email = 'stranger@test.se', accepted = true where id = :'inv_w2';
 select is((select count(*)::int from profiles where id = :'u_stranger'), 0, 'owner cannot see a stranger''s profile');
 select throws_ok(
   $$ insert into wishlist_admins (wishlist_id, admin_id, invited_by) values ('aaaaaaaa-0000-0000-0000-000000000002', '11111111-0000-0000-0000-000000000001', '11111111-0000-0000-0000-000000000001') $$,
   '42501', null, 'owner cannot make themselves admin of a normal list');
 reset role;
+select is((select accepted::text || ',' || email from admin_invitations where id = :'inv_w2'), 'false,Invitee@test.se', 'owner cannot update an invitation');
+select is((select count(*)::int from wishlist_admins where wishlist_id = :'w2'), 0, 'owner cannot make a stranger admin via invitation update');
 
 -- Admin: sees the owner's profile
 :as_admin

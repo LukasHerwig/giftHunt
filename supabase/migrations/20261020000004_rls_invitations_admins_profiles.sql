@@ -3,10 +3,17 @@
 drop policy if exists "admin_invitations_policy"       on public.admin_invitations;
 drop policy if exists "allow_invitation_read_by_token" on public.admin_invitations;
 
-create policy "invitations_owner_all" on public.admin_invitations
-  for all to authenticated
-  using (public.is_wishlist_owner(wishlist_id))
+create policy "invitations_owner_read" on public.admin_invitations
+  for select to authenticated
+  using (public.is_wishlist_owner(wishlist_id));
+
+create policy "invitations_owner_insert" on public.admin_invitations
+  for insert to authenticated
   with check (public.is_wishlist_owner(wishlist_id) and invited_by = auth.uid());
+
+create policy "invitations_owner_delete" on public.admin_invitations
+  for delete to authenticated
+  using (public.is_wishlist_owner(wishlist_id));
 
 create policy "invitations_invitee_read" on public.admin_invitations
   for select to authenticated
