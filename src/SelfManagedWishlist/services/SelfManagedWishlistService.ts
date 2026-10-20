@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { ITEM_COLUMNS } from '@/lib/itemColumns';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { fetchLinkMetadata } from '@/lib/metadataUtils';
 import { Wishlist, WishlistItem, ItemFormData } from '../types';
@@ -17,7 +18,7 @@ export class SelfManagedWishlistService {
 
   static async getItems(wishlistId: string): Promise<WishlistItem[]> {
     const { data, error } = await supabase
-      .from('wishlist_items')
+      .from('wishlist_items_admin')
       .select('*')
       .eq('wishlist_id', wishlistId)
       .order('created_at', { ascending: false });
@@ -83,14 +84,17 @@ export class SelfManagedWishlistService {
           claim_cap: form.isGiftcard ? form.claimCap : null,
         },
       ])
-      .select()
+      .select(ITEM_COLUMNS)
       .single();
 
     if (error) throw error;
     return {
       ...data,
       priority: data.priority ?? 0,
-      is_taken: data.is_taken ?? false,
+      // A new item has no claims, and the claim columns are not readable from the table
+      is_taken: false,
+      taken_by_name: null,
+      taken_at: null,
       claims: [],
     };
   }

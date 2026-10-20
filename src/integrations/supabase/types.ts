@@ -190,7 +190,12 @@ isOneToOne: false
                 }
           }
           Views: {
-            [_ in never]: never
+            "wishlist_items_admin": {
+              Row: {
+                "claim_cap": number | null,"created_at": string,"description": string | null,"id": string,"is_giftcard": boolean | null,"is_taken": boolean,"link": string | null,"price_range": string | null,"priority": number | null,"taken_at": string | null,"taken_by_name": string | null,"title": string,"updated_at": string,"url": string | null,"wishlist_id": string
+              }
+              Relationships: []
+            }
           }
           Functions: {
             "accept_invitation":
