@@ -122,7 +122,7 @@ export class DashboardService {
     const { data: invitationData, error: invitationError } = await supabase
       .from('admin_invitations')
       .select('id, wishlist_id, invitation_token, created_at, invited_by')
-      .eq('email', userEmail)
+      .ilike('email', userEmail)
       .eq('accepted', false);
 
     if (invitationError) throw invitationError;
@@ -225,12 +225,11 @@ export class DashboardService {
     wishlistId: string,
     invitedBy: string,
   ): Promise<void> {
-    // The database trigger automatically creates the admin record when accepted = true
-    // So we only need to mark the invitation as accepted
-    const { error } = await supabase
-      .from('admin_invitations')
-      .update({ accepted: true })
-      .eq('id', invitationId);
+    // Checks the invitation is addressed to the signed-in user, creates the
+    // admin record and marks the invitation accepted
+    const { error } = await supabase.rpc('accept_invitation', {
+      p_invitation_id: invitationId,
+    });
 
     if (error) throw error;
   }
