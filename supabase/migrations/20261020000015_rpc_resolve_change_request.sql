@@ -12,6 +12,9 @@ begin
   if not found or not public.is_wishlist_admin(v_req.wishlist_id) then
     raise exception 'request_not_found' using errcode = 'P0002';
   end if;
+  if p_approve is null then
+    raise exception 'invalid_decision' using errcode = '22023';
+  end if;
   if v_req.status <> 'pending' then
     raise exception 'not_pending' using errcode = 'P0001';
   end if;

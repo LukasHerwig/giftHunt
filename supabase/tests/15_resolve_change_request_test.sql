@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(18);
+select plan(20);
 \ir _seed.psql
 
 \set r_edit   'dddddddd-0000-0000-0000-000000000001'
@@ -54,11 +54,17 @@ select throws_ok(
 select throws_ok(
   format('select public.resolve_change_request(%L, true)', :'r_move'),
   'P0002', 'item_not_found', 'an item moved to another list cannot be changed through this list''s request');
+select throws_ok(
+  format('select public.resolve_change_request(%L, null)', :'r_msg'),
+  '22023', 'invalid_decision', 'a missing decision is refused');
 reset role;
 
 select is(
   (select wishlist_id::text from wishlist_items where id = :'i_move'), :'w2',
   'the moved item is untouched on its new list');
+select is(
+  (select status from item_change_requests where id = :'r_msg'), 'pending',
+  'a request with a missing decision stays pending');
 
 select results_eq(
   $$ select title, description, priority from wishlist_items where id = 'bbbbbbbb-0000-0000-0000-000000000001' $$,
