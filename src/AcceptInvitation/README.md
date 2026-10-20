@@ -84,7 +84,7 @@ All TypeScript interfaces and types used throughout the feature:
 
 1. **URL parsing**: Extract token from search parameters
 2. **Hook initialization**: `useAcceptInvitation` starts validation
-3. **Service calls**: Multiple parallel Supabase queries
+3. **Service calls**: Single `get_invitation_by_token` RPC call (invitation, wishlist and inviter data)
 4. **Data validation**: Check invitation status and expiration
 5. **State updates**: Update component state based on results
 6. **Component rendering**: Display appropriate UI state

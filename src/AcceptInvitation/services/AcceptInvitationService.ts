@@ -1,3 +1,4 @@
+import { supabase } from '@/integrations/supabase/client';
 import { InvitationQueryResult, InvitationData, CurrentUser } from '../types';
 
 export class AcceptInvitationService {
@@ -43,7 +44,7 @@ export class AcceptInvitationService {
   }
 
   /**
-   * Build complete invitation data from separate queries
+   * Build complete invitation data from the RPC result
    */
   static buildInvitationData(invitation: InvitationQueryResult): InvitationData {
     const inviterEmail = invitation.inviter_email || 'Someone';
