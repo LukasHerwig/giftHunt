@@ -30,6 +30,11 @@ begin
   if not found or lower(v_inv.email) is distinct from lower(auth.jwt() ->> 'email') then
     raise exception 'invitation_not_found' using errcode = 'P0002';
   end if;
+  -- The email claim is only trustworthy once the address is confirmed.
+  if not exists (select 1 from auth.users
+                 where id = auth.uid() and email_confirmed_at is not null) then
+    raise exception 'email_not_confirmed' using errcode = 'P0001';
+  end if;
   if v_inv.accepted then
     raise exception 'already_accepted' using errcode = 'P0001';
   end if;

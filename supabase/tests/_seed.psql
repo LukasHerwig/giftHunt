@@ -22,13 +22,13 @@
 \set inv_w4 'cccccccc-0000-0000-0000-000000000004'
 
 -- Users (the on_auth_user_created trigger creates the profiles)
-insert into auth.users (instance_id, id, aud, role, email, encrypted_password, raw_app_meta_data, raw_user_meta_data, created_at, updated_at)
+insert into auth.users (instance_id, id, aud, role, email, encrypted_password, raw_app_meta_data, raw_user_meta_data, email_confirmed_at, created_at, updated_at)
 values
-  ('00000000-0000-0000-0000-000000000000', :'u_owner',    'authenticated', 'authenticated', 'owner@test.se',    '', '{}', '{"full_name":"Olle Owner"}',    now(), now()),
-  ('00000000-0000-0000-0000-000000000000', :'u_admin',    'authenticated', 'authenticated', 'admin@test.se',    '', '{}', '{"full_name":"Ada Admin"}',     now(), now()),
-  ('00000000-0000-0000-0000-000000000000', :'u_stranger', 'authenticated', 'authenticated', 'stranger@test.se', '', '{}', '{"full_name":"Sam Stranger"}',  now(), now()),
-  ('00000000-0000-0000-0000-000000000000', :'u_invitee',  'authenticated', 'authenticated', 'invitee@test.se',  '', '{}', '{"full_name":"Ivy Invitee"}',   now(), now()),
-  ('00000000-0000-0000-0000-000000000000', :'u_self',     'authenticated', 'authenticated', 'self@test.se',     '', '{}', '{"full_name":"Siri Self"}',     now(), now());
+  ('00000000-0000-0000-0000-000000000000', :'u_owner',    'authenticated', 'authenticated', 'owner@test.se',    '', '{}', '{"full_name":"Olle Owner"}',    now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_admin',    'authenticated', 'authenticated', 'admin@test.se',    '', '{}', '{"full_name":"Ada Admin"}',     now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_stranger', 'authenticated', 'authenticated', 'stranger@test.se', '', '{}', '{"full_name":"Sam Stranger"}',  now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_invitee',  'authenticated', 'authenticated', 'invitee@test.se',  '', '{}', '{"full_name":"Ivy Invitee"}',   now(), now(), now()),
+  ('00000000-0000-0000-0000-000000000000', :'u_self',     'authenticated', 'authenticated', 'self@test.se',     '', '{}', '{"full_name":"Siri Self"}',     now(), now(), now());
 
 -- W1: owner's list, organized by admin, shared with token tok-w1
 -- W2: owner's list, pending invitation to Invitee@test.se (mixed case on purpose)

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(14);
 \ir _seed.psql
 
 -- W1 already has an admin (u_admin); the invitee is invited to it anyway.
@@ -28,6 +28,15 @@ select throws_ok(
   $$ select public.accept_invitation('cccccccc-0000-0000-0000-000000000002') $$,
   'P0002', 'invitation_not_found', 'a caller without an email claim cannot accept');
 reset role;
+
+-- An unconfirmed email proves nothing about the address
+update auth.users set email_confirmed_at = null where id = :'u_invitee';
+:as_invitee
+select throws_ok(
+  $$ select public.accept_invitation('cccccccc-0000-0000-0000-000000000002') $$,
+  'P0001', 'email_not_confirmed', 'an unconfirmed email cannot accept');
+reset role;
+update auth.users set email_confirmed_at = now() where id = :'u_invitee';
 
 :as_invitee
 select throws_ok(
