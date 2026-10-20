@@ -28,6 +28,11 @@ begin
 
   delete from admin_invitations where wishlist_id = p_wishlist_id;
 
+  -- Proposals made to the removed organizer must not be approved by a later one.
+  update item_change_requests
+  set status = 'withdrawn', resolved_by = auth.uid(), resolved_at = now()
+  where wishlist_id = p_wishlist_id and status = 'pending';
+
   return json_build_object('admin_email', v_email, 'had_share_links', v_had_links);
 end;
 $$;
