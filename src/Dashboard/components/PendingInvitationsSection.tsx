@@ -58,7 +58,7 @@ export const PendingInvitationsSection = ({
             </div>
             <button
               onClick={() => onAcceptInvitation(invitation.id)}
-              className="w-full h-12 bg-ios-blue text-white rounded-[12px] text-[17px] font-semibold flex items-center justify-center gap-2 active:opacity-70 transition-all">
+              className="w-full h-12 bg-ios-blue text-ios-on-blue rounded-[12px] text-[17px] font-semibold flex items-center justify-center gap-2 active:opacity-70 transition-all">
               <Check className="w-4 h-4" />
               {t('dashboard.acceptInvitation')}
             </button>

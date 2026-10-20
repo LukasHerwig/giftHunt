@@ -47,7 +47,7 @@ const Content = ({
             type="button"
             variant="destructive"
             onClick={onConfirm}
-            className="w-full h-12 rounded-[12px] bg-ios-red hover:bg-ios-red/90 text-white font-semibold"
+            className="w-full h-12 rounded-[12px] bg-ios-red hover:bg-ios-red/90 text-ios-on-red font-semibold"
           >
             <Undo2 className="w-4 h-4 mr-2" />
             {t('adminWishlist.editTakenItem.removeClaim')}

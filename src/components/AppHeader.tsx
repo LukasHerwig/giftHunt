@@ -76,13 +76,13 @@ const AppHeader = () => {
               className="w-56 rounded-[12px] p-1 bg-ios-secondary/95 backdrop-blur-lg border-ios-separator shadow-2xl">
               <DropdownMenuItem
                 onClick={() => navigate('/profile')}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-ios-on-blue">
                 <User className="w-5 h-5" />
                 {t('common.profile')}
               </DropdownMenuItem>
 
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white data-[state=open]:bg-ios-blue data-[state=open]:text-white">
+                <DropdownMenuSubTrigger className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-ios-on-blue data-[state=open]:bg-ios-blue data-[state=open]:text-ios-on-blue">
                   {getCurrentThemeIcon()}
                   <span>{t('theme.appearance')}</span>
                 </DropdownMenuSubTrigger>
@@ -90,19 +90,19 @@ const AppHeader = () => {
                   <DropdownMenuSubContent className="w-40 rounded-[12px] p-1 bg-ios-secondary/95 backdrop-blur-lg border-ios-separator shadow-2xl">
                     <DropdownMenuItem
                       onClick={() => setMode('light')}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-ios-on-blue">
                       <Sun className="w-5 h-5" />
                       {t('theme.light')}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setMode('dark')}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-ios-on-blue">
                       <Moon className="w-5 h-5" />
                       {t('theme.dark')}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setMode('system')}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-ios-on-blue">
                       <Monitor className="w-5 h-5" />
                       {t('theme.system')}
                     </DropdownMenuItem>
@@ -112,14 +112,14 @@ const AppHeader = () => {
 
               <DropdownMenuItem
                 onClick={toggleLanguage}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-white">
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] focus:bg-ios-blue focus:text-ios-on-blue">
                 <Languages className="w-5 h-5" />
                 {i18n.language === 'en' ? 'Svenska' : 'English'}
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-ios-separator mx-1 my-1" />
               <DropdownMenuItem
                 onClick={handleSignOut}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] text-destructive focus:bg-destructive focus:text-white">
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[8px] text-[17px] text-destructive focus:bg-destructive focus:text-ios-on-red">
                 <LogOut className="w-5 h-5" />
                 {t('common.signOut')}
               </DropdownMenuItem>

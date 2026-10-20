@@ -26,7 +26,7 @@ export const ProfileNotFoundState = () => {
         </p>
         <Button
           onClick={() => navigate('/')}
-          className="bg-ios-blue hover:bg-ios-blue/90 text-white rounded-full px-8 h-12 font-semibold text-[17px]">
+          className="bg-ios-blue hover:bg-ios-blue/90 text-ios-on-blue rounded-full px-8 h-12 font-semibold text-[17px]">
           {t('common.backToDashboard') || 'Back to Dashboard'}
         </Button>
       </div>

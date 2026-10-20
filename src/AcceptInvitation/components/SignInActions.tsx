@@ -16,7 +16,7 @@ export const SignInActions = ({ onSignIn }: SignInActionsProps) => {
 
       <Button
         onClick={onSignIn}
-        className="w-full h-12 rounded-[12px] bg-ios-blue hover:bg-ios-blue/90 text-white font-semibold text-[17px]">
+        className="w-full h-12 rounded-[12px] bg-ios-blue hover:bg-ios-blue/90 text-ios-on-blue font-semibold text-[17px]">
         {t('acceptInvitation.signInCreateAccount')}
       </Button>
 
