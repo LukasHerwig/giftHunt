@@ -26,7 +26,8 @@ declare
   v_inv admin_invitations%rowtype;
 begin
   select * into v_inv from admin_invitations where id = p_invitation_id for update;
-  if not found or lower(v_inv.email) <> lower(auth.jwt() ->> 'email') then
+  -- is distinct from: a JWT without an email claim must not pass the check.
+  if not found or lower(v_inv.email) is distinct from lower(auth.jwt() ->> 'email') then
     raise exception 'invitation_not_found' using errcode = 'P0002';
   end if;
   if v_inv.accepted then
@@ -41,6 +42,12 @@ begin
   insert into wishlist_admins (wishlist_id, admin_id, invited_by)
   values (v_inv.wishlist_id, auth.uid(), v_inv.invited_by)
   on conflict (wishlist_id) do nothing;
+
+  -- The wishlist may already have a different admin; do not report success then.
+  if not exists (select 1 from wishlist_admins
+                 where wishlist_id = v_inv.wishlist_id and admin_id = auth.uid()) then
+    raise exception 'admin_already_exists' using errcode = 'P0001';
+  end if;
 
   update admin_invitations set accepted = true where id = p_invitation_id;
 end;
