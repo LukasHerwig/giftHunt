@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useRef, type ReactNode } from 'react';
 import { X } from 'lucide-react';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Sheet } from 'react-modal-sheet';
@@ -28,6 +28,9 @@ export const ResponsiveSheet = ({
   children,
 }: ResponsiveSheetProps) => {
   const isMobile = useIsMobile();
+  // The panel is opened from code, not from a Radix trigger, so remember what had
+  // focus (the item row) and give it back when the panel closes.
+  const returnFocusTo = useRef<HTMLElement | null>(null);
 
   if (isMobile) {
     return (
@@ -56,6 +59,15 @@ export const ResponsiveSheet = ({
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-gh-scrim data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 motion-reduce:animate-none" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
+          onOpenAutoFocus={() => {
+            returnFocusTo.current = document.activeElement as HTMLElement | null;
+          }}
+          onCloseAutoFocus={(event) => {
+            if (returnFocusTo.current?.isConnected) {
+              event.preventDefault();
+              returnFocusTo.current.focus();
+            }
+          }}
           className="fixed inset-y-0 right-0 z-50 flex w-full max-w-[440px] flex-col bg-gh-surface-100 shadow-gh-panel duration-300 data-[state=closed]:animate-out data-[state=open]:animate-in data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right motion-reduce:animate-none">
           <div className="flex min-h-[64px] shrink-0 items-center gap-2 border-b border-gh-line px-3">
             <DialogPrimitive.Close
