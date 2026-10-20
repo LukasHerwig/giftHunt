@@ -1,0 +1,78 @@
+/* GiftHunt design system tokens — values from the GiftHunt design system
+   (https://claude.ai/artifact/UWZ3km7B9v3y6vSDg8uWhu, tokens.json).
+   Colours are RGB channels so Tailwind opacity modifiers work: rgb(var(--gh-ink) / 0.5). */
+:root {
+  --gh-bg: 243 241 242;
+  --gh-scrim: rgba(28,23,25,0.45);
+  --gh-surface-100: 250 249 249;
+  --gh-surface-200: 255 255 255;
+  --gh-surface-300: 241 238 239;
+  --gh-surface-400: 232 227 229;
+  --gh-line: 230 225 227;
+  --gh-line-strong: 142 131 135;
+  --gh-ink: 28 23 25;
+  --gh-ink-2: 67 59 62;
+  --gh-muted: 101 91 95;
+  --gh-subtle: 125 115 119;
+  --gh-primary: 245 158 160;
+  --gh-on-primary: 42 18 21;
+  --gh-primary-pressed: 236 142 145;
+  --gh-primary-strong: 176 48 60;
+  --gh-primary-tint: 253 228 228;
+  --gh-focus-ring: var(--gh-primary-strong);
+  --gh-available: 31 111 74;
+  --gh-available-bg: 221 240 229;
+  --gh-taken: 101 91 95;
+  --gh-taken-bg: 238 234 236;
+  --gh-warning: 133 86 10;
+  --gh-warning-bg: 250 234 204;
+  --gh-danger: 160 64 15;
+  --gh-danger-bg: 251 227 214;
+
+  --gh-shadow-sheet: 0 -2px 12px rgba(28,23,25,0.10);
+  --gh-shadow-panel: -4px 0 12px rgba(28,23,25,0.10);
+  --gh-shadow-menu: 0 1px 3px rgba(28,23,25,0.10), 0 4px 12px rgba(28,23,25,0.10);
+
+  --gh-radius-sm: 8px;
+  --gh-radius-md: 12px;
+  --gh-radius-lg: 16px;
+  --gh-radius-xl: 20px;
+  --gh-radius-sheet: 28px;
+  --gh-radius-pill: 999px;
+
+  color-scheme: light;
+}
+
+.dark {
+  --gh-bg: 21 19 21;
+  --gh-scrim: rgba(8,6,8,0.72);
+  --gh-surface-100: 27 24 27;
+  --gh-surface-200: 33 29 33;
+  --gh-surface-300: 40 35 40;
+  --gh-surface-400: 48 42 48;
+  --gh-line: 46 41 46;
+  --gh-line-strong: 119 109 114;
+  --gh-ink: 242 238 240;
+  --gh-ink-2: 207 199 203;
+  --gh-muted: 168 158 163;
+  --gh-subtle: 133 123 128;
+  --gh-primary: 245 158 160;
+  --gh-on-primary: 42 18 21;
+  --gh-primary-pressed: 249 177 179;
+  --gh-primary-strong: 245 158 160;
+  --gh-primary-tint: 61 33 36;
+  --gh-available: 143 211 172;
+  --gh-available-bg: 35 59 48;
+  --gh-taken: 168 158 163;
+  --gh-taken-bg: 44 39 44;
+  --gh-warning: 240 194 126;
+  --gh-warning-bg: 72 56 34;
+  --gh-danger: 255 154 102;
+  --gh-danger-bg: 74 42 28;
+
+  --gh-shadow-sheet: 0 -2px 12px rgba(0,0,0,0.40);
+  --gh-shadow-panel: -4px 0 12px rgba(0,0,0,0.36);
+  --gh-shadow-menu: 0 1px 3px rgba(0,0,0,0.30), 0 4px 12px rgba(0,0,0,0.28);
+
+  color-scheme: dark;
+}
