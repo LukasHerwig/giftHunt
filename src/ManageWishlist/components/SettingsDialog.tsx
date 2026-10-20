@@ -213,7 +213,7 @@ const FormContent = ({
                 {t('manageWishlist.deleteWishlist')}
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="rounded-[24px] bg-ios-secondary/95 backdrop-blur-xl border-ios-separator max-w-[90vw] sm:max-w-[400px]">
+            <AlertDialogContent className="rounded-[24px] bg-ios-secondary/95 backdrop-blur-xl border-gh-line max-w-[90vw] sm:max-w-[400px]">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-center text-[17px] font-semibold">
                   {t('deleteWishlistDialog.title')}

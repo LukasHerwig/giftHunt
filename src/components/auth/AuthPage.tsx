@@ -124,7 +124,7 @@ export const AuthPage = () => {
                   disabled={loading}
                 />
               </div>
-              <div className="h-[0.5px] bg-ios-separator ml-4"></div>
+              <div className="h-[0.5px] bg-gh-line ml-4"></div>
               <div className="px-4">
                 <input
                   type="password"

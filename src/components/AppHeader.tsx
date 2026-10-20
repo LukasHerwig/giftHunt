@@ -70,7 +70,7 @@ const AppHeader = () => {
             <button
               type="button"
               aria-label={t('common.openMenu')}
-              className="h-10 w-10 rounded-gh-pill bg-gh-primary-tint text-gh-primary-strong text-[15px] font-semibold flex items-center justify-center active:scale-[0.97] transition-transform">
+              className="h-11 w-11 rounded-gh-pill bg-gh-primary-tint text-gh-primary-strong text-[15px] font-semibold flex items-center justify-center active:scale-[0.97] transition-transform">
               {initials || <User className="w-5 h-5" aria-hidden="true" />}
             </button>
           </DropdownMenuTrigger>

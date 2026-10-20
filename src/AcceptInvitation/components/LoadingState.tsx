@@ -7,7 +7,7 @@ export const LoadingState = () => {
       <div className="absolute top-[calc(1rem+env(safe-area-inset-top))] right-4">
         <LanguageSwitcher />
       </div>
-      <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <Loader2 className="w-8 h-8 animate-spin text-gh-primary-strong" />
     </div>
   );
 };
