@@ -130,6 +130,14 @@
     "claiming": "Claiming...",
     "itemClaimed": "Item claimed! Thank you!",
     "failedToClaim": "Failed to claim item",
+    "claimErrors": {
+      "already_taken": "Someone got there first – this item is already taken.",
+      "claim_cap_reached": "This item already has enough givers.",
+      "already_claimed": "You have already claimed this item.",
+      "invalid_link": "This link is invalid or has expired.",
+      "invalid_name": "Enter your name (at most 100 characters).",
+      "item_not_found": "This item is no longer on the list."
+    },
     "invalidOrExpiredLink": "Invalid or expired share link",
     "linkExpired": "This share link has expired",
     "failedToLoad": "Failed to load wishlist",

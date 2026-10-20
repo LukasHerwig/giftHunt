@@ -38,7 +38,7 @@ export interface PublicWishlistState {
 }
 
 export interface ClaimItemData {
+  token: string;
   itemId: string;
   buyerName: string;
-  isGiftcard?: boolean;
 }
