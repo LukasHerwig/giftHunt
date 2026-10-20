@@ -27,7 +27,7 @@ select lives_ok(
 update wishlist_items set title = 'Bok 2' where id = :'i1';
 select is((select count(*)::int from wishlist_items where wishlist_id = :'w3'), 0, 'owner cannot see someone else''s list items');
 reset role;
-select is((select title from wishlist_items where id = :'i1'), 'Bok 2', 'owner update applied');
+select is((select title from wishlist_items where id = :'i1'), 'Bok', 'owner update is refused on a shared list (see 18)');
 
 -- Admin: reads the list, full access to its items
 :as_admin
