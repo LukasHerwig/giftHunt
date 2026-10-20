@@ -25,7 +25,10 @@ begin
     end if;
 
     if v_req.kind = 'remove' then
-      delete from wishlist_items where id = v_req.item_id;
+      delete from wishlist_items where id = v_req.item_id and wishlist_id = v_req.wishlist_id;
+      if not found then
+        raise exception 'item_not_found' using errcode = 'P0002';
+      end if;
     else
       update wishlist_items set
         title       = case when v_req.proposed ? 'title'       then v_req.proposed ->> 'title'                  else title end,
@@ -36,11 +39,15 @@ begin
         priority    = case when v_req.proposed ? 'priority'    then (v_req.proposed ->> 'priority')::numeric::int  else priority end,
         is_giftcard = case when v_req.proposed ? 'is_giftcard' then (v_req.proposed ->> 'is_giftcard')::boolean else is_giftcard end,
         claim_cap   = case when v_req.proposed ? 'claim_cap'   then (v_req.proposed ->> 'claim_cap')::numeric::int else claim_cap end
-      where id = v_req.item_id;
+      where id = v_req.item_id and wishlist_id = v_req.wishlist_id;
+      if not found then
+        raise exception 'item_not_found' using errcode = 'P0002';
+      end if;
 
       -- A normal item never has a claim cap
       update wishlist_items set claim_cap = null
-      where id = v_req.item_id and not coalesce(is_giftcard, false) and claim_cap is not null;
+      where id = v_req.item_id and wishlist_id = v_req.wishlist_id
+        and not coalesce(is_giftcard, false) and claim_cap is not null;
     end if;
   end if;
 
