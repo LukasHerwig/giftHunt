@@ -11,6 +11,7 @@ npm run dev:local    # Explicitly switch to local Supabase + start
 npm run dev:prod     # Explicitly switch to production Supabase + start
 npm run build        # Production build
 npm run lint         # ESLint
+npm run test:unit    # Unit tests for pure logic (node:test, needs Node 22.18+)
 
 # Supabase
 npx supabase start   # Start local Docker-based Supabase

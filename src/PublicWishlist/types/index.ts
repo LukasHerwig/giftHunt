@@ -19,6 +19,7 @@ export interface Wishlist {
   enable_price: boolean | null;
   enable_priority: boolean | null;
   creator_name: string | null;
+  organizer_name: string | null;
 }
 
 export interface ShareLink {
@@ -26,15 +27,25 @@ export interface ShareLink {
   expires_at: string | null;
 }
 
+export interface Receipt {
+  name: string;
+  title: string;
+  price: string | null;
+  link: string | null;
+}
+
 export interface PublicWishlistState {
   wishlist: Wishlist | null;
   items: WishlistItem[];
   loading: boolean;
   shareLink: ShareLink | null;
-  selectedItem: string | null;
+  selectedItemId: string | null;
+  receipt: Receipt | null;
   buyerName: string;
+  nameError: boolean;
   claiming: boolean;
-  dialogOpen: boolean;
+  /** Item ids this device claimed on this list (from localStorage). */
+  claimedIds: string[];
 }
 
 export interface ClaimItemData {

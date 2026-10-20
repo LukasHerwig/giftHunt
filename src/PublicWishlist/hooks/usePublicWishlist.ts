@@ -2,20 +2,32 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { PublicWishlistService } from '../services/PublicWishlistService';
-import { PublicWishlistState, WishlistItem } from '../types';
+import {
+  loadClaimedItemIds,
+  loadGiverName,
+  rememberClaimedItem,
+  saveGiverName,
+} from '../lib/giverMemory';
+import { PublicWishlistState } from '../types';
+
+/** Errors after which the list on screen may be out of date. */
+const CONFLICT_CODES = ['already_taken', 'claim_cap_reached', 'item_not_found', 'invalid_link'];
+const KNOWN_CODES = [...CONFLICT_CODES, 'already_claimed', 'invalid_name'];
 
 export const usePublicWishlist = (token?: string) => {
   const { t } = useTranslation();
-  const [state, setState] = useState<PublicWishlistState>({
+  const [state, setState] = useState<PublicWishlistState>(() => ({
     wishlist: null,
     items: [],
     loading: true,
     shareLink: null,
-    selectedItem: null,
+    selectedItemId: null,
+    receipt: null,
     buyerName: '',
+    nameError: false,
     claiming: false,
-    dialogOpen: false,
-  });
+    claimedIds: token ? loadClaimedItemIds(token) : [],
+  }));
 
   const loadWishlistByToken = useCallback(async () => {
     if (!token) {
@@ -26,116 +38,95 @@ export const usePublicWishlist = (token?: string) => {
     try {
       const { wishlist, items, shareLink } =
         await PublicWishlistService.loadWishlistByToken(token);
-      setState((prev) => ({
-        ...prev,
-        wishlist,
-        items,
-        shareLink,
-        loading: false,
-      }));
+      setState((prev) => ({ ...prev, wishlist, items, shareLink, loading: false }));
     } catch (error) {
       console.error('Load wishlist error:', error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : t('publicWishlist.failedToLoad'),
-      );
       setState((prev) => ({ ...prev, loading: false }));
     }
-  }, [token, t]);
+  }, [token]);
+
+  /** Reload the items quietly, e.g. after someone else took the one on screen. */
+  const refreshItems = useCallback(async () => {
+    if (!token) return;
+    try {
+      const { items } = await PublicWishlistService.loadWishlistByToken(token);
+      setState((prev) => ({ ...prev, items }));
+    } catch (error) {
+      console.error('Refresh wishlist error:', error);
+    }
+  }, [token]);
+
+  const openItem = useCallback((itemId: string) => {
+    setState((prev) => ({
+      ...prev,
+      selectedItemId: itemId,
+      receipt: null,
+      buyerName: loadGiverName(),
+      nameError: false,
+    }));
+  }, []);
+
+  const closeSheet = useCallback(() => {
+    setState((prev) => ({ ...prev, selectedItemId: null, receipt: null, nameError: false }));
+  }, []);
+
+  const setBuyerName = useCallback((name: string) => {
+    setState((prev) => ({ ...prev, buyerName: name, nameError: false }));
+  }, []);
 
   const claimItem = useCallback(async () => {
-    if (!token || !state.selectedItem || !state.shareLink) return;
+    const item = state.items.find((i) => i.id === state.selectedItemId);
+    if (!token || !item || state.claiming) return;
 
-    if (!state.buyerName.trim()) {
-      toast.error(t('publicWishlist.nameRequired'));
+    const name = state.buyerName.trim();
+    if (name === '' || name.length > 100) {
+      setState((prev) => ({ ...prev, nameError: true }));
       return;
     }
 
-    // Find the item to check if it's a gift card
-    const selectedItemData = state.items.find(
-      (item) => item.id === state.selectedItem,
-    );
-    const isGiftcard = selectedItemData?.is_giftcard || false;
-
     setState((prev) => ({ ...prev, claiming: true }));
     try {
-      await PublicWishlistService.claimItem({
-        token,
-        itemId: state.selectedItem,
-        buyerName: state.buyerName,
-      });
-
-      // Update local state
+      await PublicWishlistService.claimItem({ token, itemId: item.id, buyerName: name });
+      saveGiverName(name);
+      rememberClaimedItem(token, item.id);
       setState((prev) => ({
         ...prev,
-        items: prev.items.map((item) =>
-          item.id === state.selectedItem
-            ? {
-                ...item,
-                // For regular items, mark as taken
-                // For gift card items, increment claim count but don't mark as taken
-                is_taken: isGiftcard ? item.is_taken : true,
-                claim_count: isGiftcard
-                  ? (item.claim_count || 0) + 1
-                  : item.claim_count,
-              }
-            : item,
-        ),
-        buyerName: '',
-        dialogOpen: false,
-        selectedItem: null,
+        items: prev.items.map((i) => {
+          if (i.id !== item.id) return i;
+          return i.is_giftcard
+            ? { ...i, claim_count: (i.claim_count ?? 0) + 1 }
+            : { ...i, is_taken: true };
+        }),
+        claimedIds: prev.claimedIds.includes(item.id)
+          ? prev.claimedIds
+          : [...prev.claimedIds, item.id],
+        receipt: {
+          name,
+          title: item.title,
+          price: prev.wishlist?.enable_price ? item.price_range : null,
+          link: prev.wishlist?.enable_links ? item.link : null,
+        },
         claiming: false,
       }));
-
-      toast.success(t('publicWishlist.itemClaimed'));
     } catch (error) {
       console.error('Claim item error:', error);
       const code = error instanceof Error ? error.message : '';
-      const knownCodes = [
-        'already_taken',
-        'claim_cap_reached',
-        'already_claimed',
-        'invalid_link',
-        'invalid_name',
-        'item_not_found',
-      ];
       toast.error(
-        knownCodes.includes(code)
+        KNOWN_CODES.includes(code)
           ? t(`publicWishlist.claimErrors.${code}`)
           : t('publicWishlist.failedToClaim'),
       );
       setState((prev) => ({ ...prev, claiming: false }));
+      if (CONFLICT_CODES.includes(code)) void refreshItems();
     }
-  }, [token, state.selectedItem, state.shareLink, state.buyerName, state.items, t]);
-
-  const openClaimDialog = useCallback((itemId: string) => {
-    setState((prev) => ({
-      ...prev,
-      selectedItem: itemId,
-      dialogOpen: true,
-    }));
-  }, []);
-
-  const closeClaimDialog = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      dialogOpen: false,
-      selectedItem: null,
-      buyerName: '',
-    }));
-  }, []);
-
-  const setBuyerName = useCallback((name: string) => {
-    setState((prev) => ({ ...prev, buyerName: name }));
-  }, []);
+  }, [token, state.items, state.selectedItemId, state.buyerName, state.claiming, t, refreshItems]);
 
   return {
     ...state,
     loadWishlistByToken,
-    claimItem,
-    openClaimDialog,
-    closeClaimDialog,
+    openItem,
+    closeSheet,
     setBuyerName,
+    claimItem,
   };
 };
