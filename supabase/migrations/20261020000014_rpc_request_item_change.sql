@@ -25,7 +25,8 @@ begin
       end if;
     elsif v_key = 'priority' then
       if jsonb_typeof(v_value) = 'number' then
-        if (v_value #>> '{}')::numeric <> trunc((v_value #>> '{}')::numeric) then
+        if (v_value #>> '{}')::numeric <> trunc((v_value #>> '{}')::numeric)
+           or (v_value #>> '{}')::numeric not between -2147483648 and 2147483647 then
           raise exception 'invalid_proposal' using errcode = '22023';
         end if;
       elsif jsonb_typeof(v_value) <> 'null' then
@@ -38,7 +39,8 @@ begin
     elsif v_key = 'claim_cap' then
       if jsonb_typeof(v_value) = 'number' then
         if (v_value #>> '{}')::numeric < 1
-           or (v_value #>> '{}')::numeric <> trunc((v_value #>> '{}')::numeric) then
+           or (v_value #>> '{}')::numeric <> trunc((v_value #>> '{}')::numeric)
+           or (v_value #>> '{}')::numeric > 2147483647 then
           raise exception 'invalid_proposal' using errcode = '22023';
         end if;
       elsif jsonb_typeof(v_value) <> 'null' then

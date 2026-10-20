@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(20);
+select plan(23);
 \ir _seed.psql
 
 -- An item on W4, which has only an expired link
@@ -29,6 +29,15 @@ select throws_ok(
 select throws_ok(
   $$ select public.request_item_change('bbbbbbbb-0000-0000-0000-000000000003', 'edit', '{"priority":"high"}') $$,
   '22023', 'invalid_proposal', 'priority must be a number');
+select throws_ok(
+  $$ select public.request_item_change('bbbbbbbb-0000-0000-0000-000000000003', 'edit', '{"priority":1e20}') $$,
+  '22023', 'invalid_proposal', 'priority must fit in an integer');
+select throws_ok(
+  $$ select public.request_item_change('bbbbbbbb-0000-0000-0000-000000000003', 'edit', '{"claim_cap":2147483648}') $$,
+  '22023', 'invalid_proposal', 'the claim cap must fit in an integer');
+select throws_ok(
+  $$ select public.validate_change_proposal('{"title":"x"}') $$,
+  '42501', null, 'the validation helper is not callable by clients');
 select throws_ok(
   $$ select public.request_item_change('bbbbbbbb-0000-0000-0000-000000000003', 'edit', '{}') $$,
   '22023', 'invalid_proposal', 'an empty edit is refused');
