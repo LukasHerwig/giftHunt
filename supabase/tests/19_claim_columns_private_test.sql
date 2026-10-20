@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(15);
+select plan(19);
 \ir _seed.psql
 
 -- The owner of a shared list cannot read any claim column
@@ -54,6 +54,27 @@ select is(
   'exactly the claim columns are unreadable for authenticated');
 
 select ok(has_table_privilege('service_role', 'public.wishlist_items', 'select'), 'service_role can still read the table');
+
+-- The view is read-only for everyone: a write through it would run as its owner and skip RLS
+select is(
+  (select array_agg(p order by p)
+   from unnest(array['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) p
+   where has_table_privilege('authenticated', 'public.wishlist_items_admin', p)),
+  array['SELECT'], 'authenticated may only SELECT from the admin view');
+select is(
+  (select array_agg(p order by p)
+   from unnest(array['SELECT','INSERT','UPDATE','DELETE','TRUNCATE','REFERENCES','TRIGGER']) p
+   where has_table_privilege('service_role', 'public.wishlist_items_admin', p)),
+  array['SELECT'], 'service_role may only SELECT from the admin view');
+:as_stranger
+select throws_ok(
+  $$ insert into wishlist_items_admin (wishlist_id, title) values ('aaaaaaaa-0000-0000-0000-000000000001', 'spam') $$,
+  '42501', null, 'a signed-in stranger cannot insert through the admin view');
+reset role;
+-- security_barrier: a filter on a claim column must not run before the admin check
+select ok(
+  (select coalesce(reloptions, '{}') @> array['security_barrier=true'] from pg_class where oid = 'public.wishlist_items_admin'::regclass),
+  'the admin view is a security barrier');
 
 select * from finish();
 rollback;
