@@ -1,5 +1,6 @@
 {
   "common": {
+    "openMenu": "Open menu",
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",

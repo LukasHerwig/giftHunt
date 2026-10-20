@@ -1,5 +1,6 @@
 {
   "common": {
+    "openMenu": "Öppna menyn",
     "loading": "Laddar...",
     "error": "Fel",
     "success": "Lyckades",
