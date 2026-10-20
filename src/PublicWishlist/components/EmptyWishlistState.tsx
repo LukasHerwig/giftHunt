@@ -1,13 +1,19 @@
 import { useTranslation } from 'react-i18next';
+import { Gift } from 'lucide-react';
+import { EmptyState } from '@/components/gh/EmptyState';
 
-export const EmptyWishlistState = () => {
+export const EmptyWishlistState = ({ creatorName }: { creatorName: string | null }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="text-center py-12 px-4">
-      <p className="text-[17px] text-ios-label-secondary">
-        {t('publicWishlist.noItemsYet')}
-      </p>
-    </div>
+    <EmptyState
+      icon={Gift}
+      title={t('publicWishlist.emptyTitle')}
+      text={
+        creatorName
+          ? t('publicWishlist.emptyText', { name: creatorName })
+          : t('publicWishlist.emptyTextNoName')
+      }
+    />
   );
 };
