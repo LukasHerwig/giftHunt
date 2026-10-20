@@ -12,6 +12,9 @@ on:
 jobs:
   keepalive:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,3 +35,11 @@ jobs:
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           KEEPALIVE_EMAIL: ${{ secrets.KEEPALIVE_EMAIL }}
           KEEPALIVE_PASSWORD: ${{ secrets.KEEPALIVE_PASSWORD }}
+
+      # GitHub disables scheduled workflows after 60 days without repo activity.
+      # Re-enabling on every run resets that timer.
+      - name: Prevent auto-disable
+        if: always()
+        run: gh api -X PUT repos/${{ github.repository }}/actions/workflows/keepalive.yml/enable
+        env:
+          GH_TOKEN: ${{ github.token }}
