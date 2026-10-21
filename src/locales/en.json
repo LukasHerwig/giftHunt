@@ -1,7 +1,8 @@
 {
   "common": {
     "back": "Back",
-    "profile": "Profile"
+    "profile": "Profile",
+    "loading": "Loading"
   },
   "dashboard": {
     "localDevMode": "🚧 LOCAL DEVELOPMENT MODE - Using Local Supabase"

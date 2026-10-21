@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
-import { Gift, Plus, Settings, Share2, Users } from 'lucide-react';
+import { Plus, Settings, Share2, Users } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/gh/EmptyState';
@@ -29,7 +29,7 @@ export const OwnerWishlist = ({ wishlistId }: OwnerWishlistProps) => {
     return (
       <div className="min-h-screen bg-gh-bg text-gh-ink">
         <AppHeader />
-        <EmptyState icon={Gift} size="screen" title={t('wishlist.toast.loadFailed')} />
+        <EmptyState pose="sad" size="screen" title={t('wishlist.toast.loadFailed')} />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export const OwnerWishlist = ({ wishlistId }: OwnerWishlistProps) => {
           <SectionHeader title={t('wishlist.sectionItems')} count={items.length} />
           {items.length === 0 ? (
             <EmptyState
-              icon={Gift}
+              pose="sleep"
               title={t('wishlist.emptyTitle')}
               text={t('wishlist.emptyText')}
               action={addButton('')}

@@ -32,7 +32,7 @@ const Home = () => {
         <HomeLoading />
       ) : home.failed ? (
         <EmptyState
-          icon={Gift}
+          pose="sad"
           size="screen"
           title={t('home.toast.loadFailed')}
           action={
@@ -68,7 +68,7 @@ const Home = () => {
 
           {noLists ? (
             <EmptyState
-              icon={Gift}
+              pose="hello"
               size="screen"
               title={t('home.empty.title')}
               text={t('home.empty.text')}

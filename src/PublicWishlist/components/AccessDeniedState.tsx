@@ -1,6 +1,5 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Link2Off } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/gh/EmptyState';
 
@@ -13,7 +12,7 @@ export const AccessDeniedState = () => {
       <EmptyState
         size="screen"
         headingAs="h1"
-        icon={Link2Off}
+        pose="locked"
         title={t('publicWishlist.inactiveTitle')}
         text={t('publicWishlist.inactiveText')}
         action={

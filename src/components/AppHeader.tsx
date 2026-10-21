@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, User } from 'lucide-react';
 import { useAuth } from '@/components/auth/useAuth';
+import { RosettMark } from '@/components/brand';
 import { useProfileName } from '@/components/useProfileName';
 import { initials } from '@/lib/personName';
 import { cn } from '@/lib/utils';
@@ -47,7 +48,8 @@ const AppHeader = ({ title, hideAvatar = false }: AppHeaderProps) => {
         ) : (
           <Link
             to="/"
-            className="rounded-gh-sm font-brand text-[22px] font-semibold leading-none tracking-[-0.3px] text-gh-ink">
+            className="flex items-center gap-2 rounded-gh-sm font-brand text-[22px] font-semibold leading-none tracking-[-0.3px] text-gh-ink">
+            <RosettMark size={28} />
             GiftHunt
           </Link>
         )}

@@ -1,7 +1,8 @@
 {
   "common": {
     "back": "Tillbaka",
-    "profile": "Profil"
+    "profile": "Profil",
+    "loading": "Laddar"
   },
   "dashboard": {
     "localDevMode": "🚧 LOKAL UTVECKLINGSLÄGE - Använder Lokal Supabase"

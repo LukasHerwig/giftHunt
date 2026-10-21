@@ -141,3 +141,17 @@
     }
   }
 }
+
+@keyframes rs-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes rs-wiggle {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+.rs-float { animation: rs-float 2s ease-in-out infinite; }
+.rs-wiggle { transform-box: fill-box; transform-origin: 50% 100%; animation: rs-wiggle 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .rs-float, .rs-wiggle { animation: none; }
+}

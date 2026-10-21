@@ -1,10 +1,14 @@
 import type { ReactNode } from 'react';
+import { RosettMark } from '@/components/brand';
 
 /** The frame for screens before sign-in: the wordmark and one centred column. */
 export const AccountShell = ({ children }: { children: ReactNode }) => (
   <div className="min-h-screen bg-gh-bg pb-safe text-gh-ink">
     <div className="mx-auto flex w-full max-w-[440px] flex-col gap-8 px-4 pb-10 pt-12 md:pt-24">
-      <div className="font-brand text-[32px] font-semibold leading-9">GiftHunt</div>
+      <div className="flex items-center gap-2 font-brand text-[32px] font-semibold leading-9">
+        <RosettMark size={36} />
+        GiftHunt
+      </div>
       {children}
     </div>
   </div>

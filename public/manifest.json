@@ -4,15 +4,15 @@
   "description": "A modern wishlist app for sharing gift ideas with friends and family.",
   "start_url": "/giftHunt/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#F3F1F2",
+  "theme_color": "#FAF9F9",
   "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon.ico",
