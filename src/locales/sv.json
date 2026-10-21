@@ -763,5 +763,65 @@
         "copyFailed": "Det gick inte att kopiera länken. Kopiera den för hand från rutan."
       }
     }
+  },
+  "home": {
+    "loading": "Laddar dina listor",
+    "greeting": "Hej {{name}}",
+    "greetingNoName": "Hej",
+    "sectionInvitations": "Inbjudningar",
+    "sectionMine": "Mina önskelistor",
+    "sectionOrganize": "Listor jag arrangerar",
+    "newList": "Ny önskelista",
+    "items_one": "{{count}} önskning",
+    "items_other": "{{count}} önskningar",
+    "organizerLine": "{{name}} delar listan",
+    "youOrganize": "Du delar listan",
+    "requests_one": "{{count}} förfrågan",
+    "requests_other": "{{count}} förfrågningar",
+    "invitation": {
+      "text": "{{name}} vill att du delar listan och håller koll på vem som köper vad.",
+      "textNoName": "Du är inbjuden att dela den här listan och hålla koll på vem som köper vad.",
+      "accept": "Bli arrangör",
+      "decline": "Nej tack",
+      "declineQuestion": "Avvisa inbjudan till {{title}}?",
+      "declineContext": "Inbjudan tas bort. Du kan bjudas in igen om det var ett misstag.",
+      "declineAction": "Avvisa",
+      "cancel": "Avbryt"
+    },
+    "empty": {
+      "title": "Du har inga önskelistor än",
+      "text": "Gör en lista med det du önskar dig. Sedan kan du be någon dela den åt dig, så att överraskningen finns kvar.",
+      "action": "Skapa din första önskelista"
+    },
+    "new": {
+      "title": "Ny önskelista",
+      "kindLabel": "Vems lista är det?",
+      "own": "Min egen lista",
+      "other": "Åt någon annan",
+      "ownHint": "Du önskar dig något. Du kan be en arrangör dela listan åt dig, så att överraskningen finns kvar.",
+      "otherHint": "Du samlar önskningar åt någon annan och delar listan själv. Den du gör listan åt ser den inte.",
+      "name": "Namn på listan",
+      "namePlaceholder": "Till exempel Eriks födelsedag",
+      "description": "Beskrivning",
+      "optional": "(valfritt)",
+      "create": "Skapa önskelista",
+      "close": "Stäng",
+      "errors": {
+        "title_required": "Ge listan ett namn.",
+        "title_too_long": "Namnet får vara högst 120 tecken."
+      }
+    },
+    "toast": {
+      "loadFailed": "Det gick inte att ladda dina listor. Försök igen.",
+      "created": "Önskelistan är skapad",
+      "createFailed": "Det gick inte att skapa önskelistan. Försök igen.",
+      "accepted": "Du är nu arrangör",
+      "acceptFailed": "Det gick inte att godta inbjudan. Försök igen.",
+      "declined": "Inbjudan är avvisad",
+      "declineFailed": "Det gick inte att avvisa inbjudan. Försök igen.",
+      "invitationGone": "Den inbjudan gäller inte längre.",
+      "organizerExists": "Den här listan har redan en arrangör.",
+      "emailNotConfirmed": "Bekräfta din e-postadress först och försök sedan igen."
+    }
   }
 }

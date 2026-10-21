@@ -762,5 +762,65 @@
         "copyFailed": "Could not copy the link. Copy it by hand from the box."
       }
     }
+  },
+  "home": {
+    "loading": "Loading your lists",
+    "greeting": "Hi {{name}}",
+    "greetingNoName": "Hi",
+    "sectionInvitations": "Invitations",
+    "sectionMine": "My wishlists",
+    "sectionOrganize": "Lists I organize",
+    "newList": "New wishlist",
+    "items_one": "{{count}} wish",
+    "items_other": "{{count}} wishes",
+    "organizerLine": "{{name}} shares the list",
+    "youOrganize": "You share the list",
+    "requests_one": "{{count}} request",
+    "requests_other": "{{count}} requests",
+    "invitation": {
+      "text": "{{name}} wants you to share the list and keep track of who buys what.",
+      "textNoName": "You are invited to share this list and keep track of who buys what.",
+      "accept": "Become organizer",
+      "decline": "No thanks",
+      "declineQuestion": "Turn down the invitation to {{title}}?",
+      "declineContext": "The invitation is removed. They can invite you again if it was a mistake.",
+      "declineAction": "Turn it down",
+      "cancel": "Cancel"
+    },
+    "empty": {
+      "title": "You have no wishlists yet",
+      "text": "Make a list of what you wish for. Then you can ask someone to share it for you, so the surprise stays.",
+      "action": "Create your first wishlist"
+    },
+    "new": {
+      "title": "New wishlist",
+      "kindLabel": "Whose list is it?",
+      "own": "My own list",
+      "other": "For someone else",
+      "ownHint": "You wish for something. You can ask an organizer to share the list for you, so the surprise stays.",
+      "otherHint": "You collect wishes for someone else and share the list yourself. They never see it.",
+      "name": "Name of the list",
+      "namePlaceholder": "For example Erik's birthday",
+      "description": "Description",
+      "optional": "(optional)",
+      "create": "Create wishlist",
+      "close": "Close",
+      "errors": {
+        "title_required": "Give the list a name.",
+        "title_too_long": "The name can be at most 120 characters."
+      }
+    },
+    "toast": {
+      "loadFailed": "Could not load your lists. Try again.",
+      "created": "The wishlist is created",
+      "createFailed": "Could not create the wishlist. Try again.",
+      "accepted": "You are now an organizer",
+      "acceptFailed": "Could not accept the invitation. Try again.",
+      "declined": "The invitation is turned down",
+      "declineFailed": "Could not turn down the invitation. Try again.",
+      "invitationGone": "That invitation is no longer valid.",
+      "organizerExists": "This list already has an organizer.",
+      "emailNotConfirmed": "Confirm your e-mail address first, then try again."
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { useDashboard } from './hooks/useDashboard';
 import { DashboardLoadingState } from './components/DashboardLoadingState';
-import { EnvironmentIndicator } from './components/EnvironmentIndicator';
+import { EnvironmentIndicator } from '@/components/EnvironmentIndicator';
 import { CreateWishlistDialog } from './components/CreateWishlistDialog';
 import { PendingInvitationsSection } from './components/PendingInvitationsSection';
 import { CreateWishlistButton } from './components/CreateWishlistButton';
