@@ -220,3 +220,20 @@ export const RosettenLoader = ({ label, size = 120, className }: RosettenLoaderP
     </svg>
   </div>
 );
+
+/** Rosetten from the lid up, to peek over a card's edge. Look direction is -1..1. */
+export const RosettenPeek = ({ look = 0, className }: { look?: number; className?: string }) => (
+  <svg viewBox="0 0 200 84" width={120} height={50} aria-hidden="true" className={cn('text-gh-ink', className)}>
+    <g {...STROKE}>
+      <path d="M100 52C78 6 38 22 62 50C72 58 92 56 100 52Z" fill={ROSETT.pink} />
+      <path d="M100 52C122 6 162 22 138 50C128 58 108 56 100 52Z" fill={ROSETT.pink} />
+      <rect x="40" y="52" width="120" height="40" rx="12" fill={ROSETT.deep} />
+      <rect x="90" y="52" width="20" height="40" fill={ROSETT.cream} />
+      <rect x="90" y="40" width="20" height="18" rx="7" fill={ROSETT.cream} />
+    </g>
+    <g fill={ROSETT.ink}>
+      <ellipse cx={66 + look * 6} cy={74} rx={5} ry={6} />
+      <ellipse cx={134 + look * 6} cy={74} rx={5} ry={6} />
+    </g>
+  </svg>
+);

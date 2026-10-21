@@ -179,3 +179,14 @@
 @media (prefers-reduced-motion: reduce) {
   .rs-hop, .rs-nod, .rs-shake { animation: none; }
 }
+
+@keyframes rs-peek {
+  0% { transform: translateY(100%); }
+  14% { transform: translateY(0); }
+  86% { transform: translateY(0); }
+  100% { transform: translateY(100%); }
+}
+.rs-peek { animation: rs-peek 1.4s ease-out 1 both; }
+@media (prefers-reduced-motion: reduce) {
+  .rs-peek { animation: none; }
+}
