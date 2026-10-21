@@ -38,7 +38,7 @@ Each top-level directory under `src/` is a self-contained feature with:
 - `services/` — Supabase query functions
 - `types/` — TypeScript interfaces
 
-Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, or the creator of a self-managed list), `Auth`, `Onboarding`, `Profile`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
+Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, or the creator of a self-managed list), `Auth` (`/auth`: sign in / sign up), `Onboarding` (first-time name), `Profile` (`/profile`: name, theme, language, sign out), `AcceptInvitation` (`/accept-invitation?token=…`: accepts directly when signed in), `PublicWishlist` (share-link view for anonymous users).
 
 **Shared code:**
 
@@ -61,7 +61,7 @@ Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wish
 
 ### Auth flow
 
-`AuthProvider` (`src/components/auth/AuthProvider.tsx`) wraps the router and redirects unauthenticated users to `/auth`. Public routes: `/auth`, `/accept-invitation`, `/shared/*`. After sign-in, `OnboardingService.checkIfOnboardingNeeded()` gates first-time users to `/onboarding`.
+`AuthProvider` (`src/components/auth/AuthProvider.tsx`) wraps the router and redirects unauthenticated users to `/auth`. Public routes: `/auth`, `/accept-invitation`, `/shared/*`. After sign-in, `OnboardingService.checkIfOnboardingNeeded()` gates first-time users to `/onboarding`. Where a signed-in person goes next is `postLoginPath(pendingToken)` (`src/Auth/lib/postLoginPath.ts`): back to `/accept-invitation?token=…` while an invitation token is pending in `sessionStorage` (`pendingInvitationToken`, removed only when the invitation is accepted or no longer valid), else Home. The header avatar opens `/profile`; theme, language and sign out live there.
 
 ### Environments
 
