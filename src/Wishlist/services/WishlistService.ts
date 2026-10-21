@@ -15,7 +15,7 @@ import type {
   Wishlist,
 } from '../types';
 
-const REQUEST_COLUMNS =
+export const REQUEST_COLUMNS =
   'id, item_id, item_title, kind, proposed, status, message, created_at, resolved_at';
 
 export class WishlistService {

@@ -109,3 +109,52 @@ export interface SettingsValues {
   enablePrice: boolean;
   enablePriority: boolean;
 }
+/** What an organizer reads of an item: the owner's columns plus who took it. */
+export interface OrganizerItem extends OwnerItem {
+  is_taken: boolean;
+  taken_by_name: string | null;
+  taken_at: string | null;
+}
+
+export interface ClaimRow {
+  id: string;
+  item_id: string;
+  claimer_name: string;
+  claimed_at: string;
+}
+
+export interface ItemWithClaims {
+  item: OrganizerItem;
+  /** Oldest first. */
+  claims: ClaimRow[];
+}
+
+export interface ShareLinkRow {
+  token: string;
+  is_active: boolean;
+}
+
+export interface OrganizerData {
+  wishlist: Wishlist;
+  /** The owner's name, for "Önskelista av Anna". */
+  ownerName: string | null;
+  items: OrganizerItem[];
+  claims: ClaimRow[];
+  /** Pending requests only. */
+  requests: ChangeRequestRow[];
+  shareLink: ShareLinkRow | null;
+}
+
+/** A pending request plus what only an organizer may know: is the item taken, and by whom. */
+export interface OrganizerRequest extends OwnerRequest {
+  claimed: boolean;
+  claimedBy: string | null;
+}
+
+export type OrganizerSheet =
+  | { type: 'add' }
+  | { type: 'item'; itemId: string }
+  | { type: 'edit'; itemId: string }
+  | { type: 'share' }
+  | { type: 'settings' }
+  | null;

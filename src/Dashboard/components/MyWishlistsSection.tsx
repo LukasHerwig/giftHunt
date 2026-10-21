@@ -54,11 +54,7 @@ export const MyWishlistsSection = ({
               key={wishlist.id}
               className="w-full bg-ios-secondary rounded-[24px] overflow-hidden text-left flex flex-col active:scale-[0.98] transition-all shadow-lg border border-ios-separator/10 group"
               onClick={() =>
-                navigate(
-                  wishlist.is_self_managed
-                    ? `/wishlist/${wishlist.id}/self`
-                    : `/wishlist/${wishlist.id}`
-                )
+                navigate(`/wishlist/${wishlist.id}`)
               }>
               {/* Image Area */}
               <div className="relative h-48 w-full bg-gradient-to-br from-ios-blue/20 via-ios-blue/5 to-ios-secondary flex items-center justify-center overflow-hidden">

@@ -20,6 +20,8 @@ interface ItemFormSheetProps {
   /** This item already has an open request. */
   pending: boolean;
   listTitle: string;
+  /** A warning above the fields, e.g. "Mormor has taken this". */
+  note?: string;
   busy: boolean;
   onSubmit: (form: ItemFormData) => Promise<ItemFormError | null>;
   onRemove: () => void;
@@ -34,6 +36,7 @@ export const ItemFormSheet = ({
   organizerName,
   pending,
   listTitle,
+  note,
   busy,
   onSubmit,
   onRemove,
@@ -103,6 +106,9 @@ export const ItemFormSheet = ({
         </>
       ) : (
         <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+          {note && (
+            <p className="rounded-gh-md bg-gh-warning-bg p-3 text-[14px] leading-5 text-gh-ink">{note}</p>
+          )}
           <ItemFormFields
             form={form}
             mode={mode}

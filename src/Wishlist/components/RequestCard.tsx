@@ -1,9 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { StatusPill } from '@/components/gh/StatusPill';
-import { priorityName } from '../lib/itemForm';
-import type { ChangedField, FieldValue, OwnerRequest } from '../types';
+import { ChangeList } from './ChangeList';
+import type { OwnerRequest } from '../types';
 
 interface RequestCardProps {
   request: OwnerRequest;
@@ -15,17 +14,6 @@ interface RequestCardProps {
 /** The owner's view of a change request: what was asked, then a neutral answer. */
 export const RequestCard = ({ request, organizerName, busy, onWithdraw }: RequestCardProps) => {
   const { t, i18n } = useTranslation();
-
-  const formatValue = (field: ChangedField, value: FieldValue | undefined): string => {
-    if (value === null || value === undefined || value === '') return t('wishlist.request.emptyValue');
-    if (field === 'image') return t('wishlist.request.imageChanged');
-    if (field === 'giftcard') return value ? t('wishlist.request.yes') : t('wishlist.request.no');
-    if (field === 'priority') {
-      const name = priorityName(Number(value));
-      return name ? t(`wishlist.form.prio.${name}`) : t('wishlist.request.emptyValue');
-    }
-    return String(value);
-  };
 
   const date = new Intl.DateTimeFormat(i18n.language, { day: 'numeric', month: 'short' }).format(
     new Date(request.when),
@@ -45,24 +33,7 @@ export const RequestCard = ({ request, organizerName, busy, onWithdraw }: Reques
         </p>
       </header>
 
-      {request.changes.length > 0 && (
-        <dl className="flex flex-col gap-1">
-          {request.changes.map((change) => (
-            <div key={change.field} className="flex flex-wrap items-baseline gap-x-2 text-[14px] leading-5">
-              <dt className="text-gh-muted">{t(`wishlist.request.field.${change.field}`)}</dt>
-              <dd className="flex flex-wrap items-center gap-x-2 text-gh-ink">
-                {change.before !== undefined && (
-                  <>
-                    <span className="text-gh-muted line-through">{formatValue(change.field, change.before)}</span>
-                    <ArrowRight className="h-4 w-4 text-gh-muted" aria-hidden="true" />
-                  </>
-                )}
-                <span className="font-semibold">{formatValue(change.field, change.after)}</span>
-              </dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      {request.changes.length > 0 && <ChangeList changes={request.changes} />}
 
       {request.state === 'pending' ? (
         <div className="flex flex-col items-start gap-3">

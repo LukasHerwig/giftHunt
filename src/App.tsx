@@ -9,13 +9,11 @@ import { AuthTester } from '@/components/AuthTester';
 import Dashboard from './Dashboard';
 import Auth from './Auth';
 import Onboarding from './Onboarding';
-import Wishlist, { ManageRedirect } from './Wishlist';
-import AdminWishlist from './AdminWishlist';
+import Wishlist, { WishlistRedirect } from './Wishlist';
 import AcceptInvitation from './AcceptInvitation';
 import PublicWishlist from './PublicWishlist';
 import Profile from './Profile';
 import SharedWishlists from './SharedWishlists';
-import SelfManagedWishlist from './SelfManagedWishlist';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -36,9 +34,9 @@ const App = () => (
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/shared-wishlists" element={<SharedWishlists />} />
                 <Route path="/wishlist/:id" element={<Wishlist />} />
-                <Route path="/wishlist/:id/manage" element={<ManageRedirect />} />
-                <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
-                <Route path="/wishlist/:id/self" element={<SelfManagedWishlist />} />
+                <Route path="/wishlist/:id/manage" element={<WishlistRedirect />} />
+                <Route path="/wishlist/:id/admin" element={<WishlistRedirect />} />
+                <Route path="/wishlist/:id/self" element={<WishlistRedirect />} />
                 <Route
                   path="/accept-invitation"
                   element={<AcceptInvitation />}

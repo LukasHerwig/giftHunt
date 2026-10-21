@@ -83,7 +83,7 @@ const SharedWishlists = () => {
                 <button
                   key={wishlist.id}
                   className="w-full bg-ios-secondary/50 backdrop-blur-xl rounded-[24px] px-6 py-5 flex items-center gap-4 active:bg-ios-secondary transition-all border border-ios-separator/10 group shadow-sm"
-                  onClick={() => navigate(`/wishlist/${wishlist.id}/admin`)}>
+                  onClick={() => navigate(`/wishlist/${wishlist.id}`)}>
                   <div className="w-12 h-12 rounded-full bg-ios-green/10 flex items-center justify-center shrink-0">
                     <Users className="w-6 h-6 text-ios-green" />
                   </div>
