@@ -36,7 +36,7 @@ export const RosettenRunner = () => {
     };
   }, [canPlay, pathname]);
 
-  if (!run) return null;
+  if (!run || !canPlay) return null;
   return (
     <div
       aria-hidden="true"

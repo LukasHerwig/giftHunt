@@ -208,3 +208,6 @@
 @media (prefers-reduced-motion: reduce) {
   .rs-runner, .rs-runner > svg, .rs-step-a, .rs-step-b { animation: none; }
 }
+
+/* Unstyled toasts: hide the toasts behind the front one in a collapsed stack, as sonner does for styled ones. */
+[data-sonner-toast][data-expanded='false'][data-front='false'] > * { opacity: 0; }

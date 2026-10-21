@@ -71,3 +71,6 @@ export const saveState = (storage: StorageLike, state: MischiefState): void => {
     /* storage blocked: the limits then only hold for this page */
   }
 };
+
+/** Where along the card's top edge a peek appears (percent): the right part, past the section title. */
+export const peekLeft = (random: number): number => 55 + random * 35;

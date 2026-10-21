@@ -10,6 +10,7 @@ import {
   mischiefRoute,
   recordPeek,
   recordRun,
+  peekLeft,
   saveState,
 } from './mischief.ts';
 
@@ -56,4 +57,10 @@ test('state survives a reload through storage and ignores broken data', () => {
   assert.deepEqual(loadState(storage), { peeks: 1, runs: 1, lastPeekAt: 5, lastRunAt: 6 });
   storage.setItem('gifthunt-mischief', '{not json');
   assert.deepEqual(loadState(storage), emptyState());
+});
+
+test('a peek stays in the right part of the card, past the section title', () => {
+  assert.equal(peekLeft(0), 55);
+  assert.equal(peekLeft(1), 90);
+  assert.ok(peekLeft(0.5) > 55 && peekLeft(0.5) < 90);
 });

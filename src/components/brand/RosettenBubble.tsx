@@ -20,7 +20,6 @@ export const RosettenBubble = ({ kind, message, lively }: RosettenBubbleProps) =
         className={cn('flex-none', lively && (kind === 'error' ? 'rs-shake' : kind === 'success' ? 'rs-hop' : 'rs-nod'))}
       />
       <div
-        role={kind === 'error' ? 'alert' : 'status'}
         className="relative min-w-0 flex-1 rounded-gh-lg border border-gh-line bg-gh-surface-200 px-3.5 py-3 text-[15px] font-semibold leading-5 text-gh-ink shadow-gh-menu before:absolute before:-left-[7px] before:bottom-4 before:h-3 before:w-3 before:rotate-45 before:border-b before:border-l before:border-gh-line before:bg-gh-surface-200 before:content-['']">
         {message}
       </div>

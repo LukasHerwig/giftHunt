@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
-import { canPeek, loadState, mischiefRoute, recordPeek, saveState } from '@/lib/mischief';
+import { canPeek, loadState, mischiefRoute, peekLeft, recordPeek, saveState } from '@/lib/mischief';
 import { useCanPlay } from '@/lib/playful';
 import { RosettenPeek } from './Rosetten';
 
@@ -21,7 +21,7 @@ export const Peek = ({ children }: { children: ReactNode }) => {
     const state = loadState(sessionStorage);
     if (!canPeek(state, now, Math.random)) return;
     saveState(sessionStorage, recordPeek(state, now));
-    setShowing({ left: 40 + Math.random() * 50, look: Math.random() * 2 - 1 });
+    setShowing({ left: peekLeft(Math.random()), look: Math.random() * 2 - 1 });
     timer.current = window.setTimeout(() => setShowing(null), 1400);
   }, [allowed, showing]);
 
@@ -46,7 +46,7 @@ export const Peek = ({ children }: { children: ReactNode }) => {
         <div
           aria-hidden="true"
           className="pointer-events-none absolute bottom-full z-0 overflow-hidden"
-          style={{ left: `${showing.left}%`, width: 120, height: 50, marginBottom: -1 }}>
+          style={{ left: `min(${showing.left}%, calc(100% - 132px))`, width: 120, height: 50, marginBottom: -1 }}>
           <div className="rs-peek">
             <RosettenPeek look={showing.look} />
           </div>
