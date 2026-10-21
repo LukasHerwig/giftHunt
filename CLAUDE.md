@@ -34,11 +34,11 @@ Each top-level directory under `src/` is a self-contained feature with:
 
 - `index.tsx` — entry component (route target)
 - `components/` — UI components private to the feature
-- `hooks/` — state hooks (e.g. `useDashboard.ts`)
+- `hooks/` — state hooks (e.g. `useHome.ts`)
 - `services/` — Supabase query functions
 - `types/` — TypeScript interfaces
 
-Features: `Dashboard`, `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, or the creator of a self-managed list), `Auth`, `Onboarding`, `Profile`, `SharedWishlists`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
+Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, or the creator of a self-managed list), `Auth`, `Onboarding`, `Profile`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
 
 **Shared code:**
 

@@ -2,18 +2,17 @@ import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { ThemeProvider } from '@/contexts/ThemeProvider';
 import { AuthTester } from '@/components/AuthTester';
-import Dashboard from './Dashboard';
+import Home from './Home';
 import Auth from './Auth';
 import Onboarding from './Onboarding';
 import Wishlist, { WishlistRedirect } from './Wishlist';
 import AcceptInvitation from './AcceptInvitation';
 import PublicWishlist from './PublicWishlist';
 import Profile from './Profile';
-import SharedWishlists from './SharedWishlists';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -28,11 +27,11 @@ const App = () => (
           <BrowserRouter basename={import.meta.env.PROD ? '/giftHunt' : ''}>
             <AuthProvider>
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/shared-wishlists" element={<SharedWishlists />} />
+                <Route path="/shared-wishlists" element={<Navigate to="/" replace />} />
                 <Route path="/wishlist/:id" element={<Wishlist />} />
                 <Route path="/wishlist/:id/manage" element={<WishlistRedirect />} />
                 <Route path="/wishlist/:id/admin" element={<WishlistRedirect />} />
