@@ -132,7 +132,14 @@ export class OrganizerService {
       .insert({ wishlist_id: wishlistId, created_by: user.id, token: crypto.randomUUID() })
       .select('token, is_active')
       .single();
-    if (error) throw error;
+    if (error) {
+      // A double tap lost the race against the one-link-per-list index: use the winner.
+      if (error.code === '23505') {
+        const winner = await OrganizerService.loadShareLink(wishlistId);
+        if (winner) return winner;
+      }
+      throw error;
+    }
     return { token: data.token, is_active: data.is_active };
   }
 
