@@ -246,6 +246,9 @@ isOneToOne: false
 "resolve_change_request":
 { Args: { "p_request_id": string,"p_approve": boolean,"p_message"?: string }; Returns: undefined
                            },
+"decline_invitation":
+{ Args: { "p_invitation_id": string }; Returns: undefined
+                           },
 "remove_wishlist_admin":
 { Args: { "p_wishlist_id": string }; Returns: Json
                            },
