@@ -76,3 +76,9 @@ export const buildProposal = (item: OwnerItem, form: ItemFormData): Partial<Item
   }
   return proposal as Partial<ItemRowValues>;
 };
+export const priorityName = (priority: number | null): 'low' | 'medium' | 'high' | null => {
+  if (priority === 1) return 'low';
+  if (priority === 2) return 'medium';
+  if (priority === 3) return 'high';
+  return null;
+};

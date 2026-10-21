@@ -4,6 +4,7 @@ import {
   buildProposal,
   emptyItemForm,
   formFromItem,
+  priorityName,
   toItemRow,
   validateItemForm,
 } from './itemForm.ts';
@@ -99,4 +100,12 @@ test('buildProposal: turning gift card off sends claim_cap null', () => {
 test('buildProposal: clearing a priority sends null', () => {
   const form = { ...formFromItem(item), priority: null };
   assert.deepEqual(buildProposal(item, form), { priority: null });
+});
+
+test('priorityName maps 1-3 to low, medium, high and anything else to null', () => {
+  assert.equal(priorityName(1), 'low');
+  assert.equal(priorityName(2), 'medium');
+  assert.equal(priorityName(3), 'high');
+  assert.equal(priorityName(null), null);
+  assert.equal(priorityName(0), null);
 });
