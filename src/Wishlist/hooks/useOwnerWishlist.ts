@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { WishlistService } from '../services/WishlistService';
 import { toOwnerRequests } from '../lib/changeRequests';
 import { buildProposal, validateItemForm } from '../lib/itemForm';
+import { errorCode } from '../lib/errorCode';
 import type {
   ItemFormData,
   ItemFormError,
@@ -67,7 +68,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
         return true;
       } catch (error) {
         console.error(error);
-        const code = error instanceof Error ? error.message : '';
+        const code = errorCode(error);
         if (code === 'edit_locked') {
           toast.error(t('wishlist.toast.listShared'));
           setSheet(null);
