@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -30,6 +30,8 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
   const [segment, setSegment] = useState<Segment>('available');
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  // A second tap while an action runs must not start a second one (busy only updates after a render).
+  const running = useRef(false);
 
   const load = useCallback(async () => {
     if (!wishlistId) {
@@ -62,6 +64,8 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
   /** Runs an action; known error codes become a clear toast and, where the list changed under us, a reload. */
   const run = useCallback(
     async (action: () => Promise<void>, errorKey: string): Promise<boolean> => {
+      if (running.current) return false;
+      running.current = true;
       setBusy(true);
       try {
         await action();
@@ -87,6 +91,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
         }
         return false;
       } finally {
+        running.current = false;
         setBusy(false);
       }
     },

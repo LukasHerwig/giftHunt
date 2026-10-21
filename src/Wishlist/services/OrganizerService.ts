@@ -60,13 +60,16 @@ export class OrganizerService {
   }
 
   private static async loadShareLink(wishlistId: string): Promise<ShareLinkRow | null> {
+    // Oldest first, so a stray duplicate never breaks the page.
     const { data, error } = await supabase
       .from('share_links')
       .select('token, is_active')
       .eq('wishlist_id', wishlistId)
-      .maybeSingle();
+      .order('created_at', { ascending: true })
+      .limit(1);
     if (error) throw error;
-    return data ? { token: data.token, is_active: data.is_active } : null;
+    const link = data?.[0];
+    return link ? { token: link.token, is_active: link.is_active } : null;
   }
 
   private static async loadOwnerName(ownerId: string): Promise<string | null> {
