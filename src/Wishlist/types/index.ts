@@ -101,3 +101,11 @@ export type Sheet =
   | null;
 
 export type Mode = 'owner' | 'organizer' | 'self' | 'none';
+
+export interface SettingsValues {
+  title: string;
+  description: string;
+  enableLinks: boolean;
+  enablePrice: boolean;
+  enablePriority: boolean;
+}
