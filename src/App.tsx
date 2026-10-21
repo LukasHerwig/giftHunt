@@ -9,7 +9,7 @@ import { AuthTester } from '@/components/AuthTester';
 import Dashboard from './Dashboard';
 import Auth from './Auth';
 import Onboarding from './Onboarding';
-import ManageWishlist from './ManageWishlist';
+import Wishlist, { ManageRedirect } from './Wishlist';
 import AdminWishlist from './AdminWishlist';
 import AcceptInvitation from './AcceptInvitation';
 import PublicWishlist from './PublicWishlist';
@@ -35,10 +35,8 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/shared-wishlists" element={<SharedWishlists />} />
-                <Route
-                  path="/wishlist/:id/manage"
-                  element={<ManageWishlist />}
-                />
+                <Route path="/wishlist/:id" element={<Wishlist />} />
+                <Route path="/wishlist/:id/manage" element={<ManageRedirect />} />
                 <Route path="/wishlist/:id/admin" element={<AdminWishlist />} />
                 <Route path="/wishlist/:id/self" element={<SelfManagedWishlist />} />
                 <Route

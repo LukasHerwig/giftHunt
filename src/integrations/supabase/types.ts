@@ -49,7 +49,19 @@ isOneToOne: true
       referencedColumns: ["id"]
     }
                   ]
-                },"item_claims": {
+                },"item_change_requests": {
+  Row: {
+    "created_at": string,"created_by": string,"id": string,"item_id": string | null,"item_title": string,"kind": string,"message": string | null,"proposed": Json | null,"resolved_at": string | null,"resolved_by": string | null,"status": string,"wishlist_id": string
+  }
+  ComputedFields: never
+  Insert: {
+    "created_at"?: string,"created_by": string,"id"?: string,"item_id"?: string | null,"item_title": string,"kind": string,"message"?: string | null,"proposed"?: Json | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"wishlist_id": string
+  }
+  Update: {
+    "created_at"?: string,"created_by"?: string,"id"?: string,"item_id"?: string | null,"item_title"?: string,"kind"?: string,"message"?: string | null,"proposed"?: Json | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"wishlist_id"?: string
+  }
+  Relationships: []
+},"item_claims": {
                   Row: {
                     "claimed_at": string,"claimer_name": string,"created_at": string,"id": string,"item_id": string
                   }
@@ -224,6 +236,12 @@ isOneToOne: false
                            },
 "item_wishlist_id":
 { Args: { "p_item_id": string }; Returns: string
+                           },
+"request_item_change":
+{ Args: { "p_item_id": string,"p_kind": string,"p_proposed"?: Json }; Returns: string
+                           },
+"withdraw_change_request":
+{ Args: { "p_request_id": string }; Returns: undefined
                            },
 "remove_wishlist_admin":
 { Args: { "p_wishlist_id": string }; Returns: Json

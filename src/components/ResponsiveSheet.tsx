@@ -12,6 +12,8 @@ interface ResponsiveSheetProps {
   /** Muted line under the desktop heading. */
   subtitle?: string;
   closeLabel: string;
+  /** Mobile has no header; forms show the title as a heading above the content. */
+  showTitleOnMobile?: boolean;
   children: ReactNode;
 }
 
@@ -25,6 +27,7 @@ export const ResponsiveSheet = ({
   title,
   subtitle,
   closeLabel,
+  showTitleOnMobile = false,
   children,
 }: ResponsiveSheetProps) => {
   const isMobile = useIsMobile();
@@ -45,7 +48,15 @@ export const ResponsiveSheet = ({
             <div className="mx-auto mb-2 mt-3 h-1.5 w-9 rounded-gh-pill bg-gh-line-strong" />
           </Sheet.Header>
           <Sheet.Content scrollClassName="pb-safe">
-            <div className="flex flex-col gap-4 px-4 pb-6 pt-2">{children}</div>
+            <div className="flex flex-col gap-4 px-4 pb-6 pt-2">
+              {showTitleOnMobile && (
+                <div className="flex flex-col gap-1">
+                  <h2 className="text-[22px] font-bold leading-7 text-gh-ink">{title}</h2>
+                  {subtitle && <p className="text-[13px] leading-[18px] text-gh-muted">{subtitle}</p>}
+                </div>
+              )}
+              {children}
+            </div>
           </Sheet.Content>
         </Sheet.Container>
         <Sheet.Backdrop onTap={() => onOpenChange(false)} className="!bg-gh-scrim" />
