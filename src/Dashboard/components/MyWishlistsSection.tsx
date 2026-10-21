@@ -57,7 +57,7 @@ export const MyWishlistsSection = ({
                 navigate(
                   wishlist.is_self_managed
                     ? `/wishlist/${wishlist.id}/self`
-                    : `/wishlist/${wishlist.id}/manage`
+                    : `/wishlist/${wishlist.id}`
                 )
               }>
               {/* Image Area */}

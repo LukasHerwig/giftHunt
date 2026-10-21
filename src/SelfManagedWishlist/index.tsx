@@ -15,8 +15,7 @@ import { UntakeItemDialog } from '@/AdminWishlist/components/UntakeItemDialog';
 import { AdminEditItemDialog } from '@/AdminWishlist/components/AdminEditItemDialog';
 import { AdminDeleteItemDialog } from '@/AdminWishlist/components/AdminDeleteItemDialog';
 
-// Reuse add item dialog from ManageWishlist
-import { AddItemDialog } from '@/ManageWishlist/components/AddItemDialog';
+import { AddItemDialog } from './components/AddItemDialog';
 
 const SelfManagedWishlist = () => {
   const { t } = useTranslation();

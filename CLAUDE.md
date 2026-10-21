@@ -38,7 +38,7 @@ Each top-level directory under `src/` is a self-contained feature with:
 - `services/` — Supabase query functions
 - `types/` — TypeScript interfaces
 
-Features: `Dashboard`, `ManageWishlist` (owner editing items), `AdminWishlist` (admin reading/stats), `SelfManagedWishlist` (creator acting as own admin — reuses AdminWishlist components), `Auth`, `Onboarding`, `Profile`, `SharedWishlists`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
+Features: `Dashboard`, `Wishlist` (`/wishlist/:id`, owner mode; organizer mode follows in phase 4c), `AdminWishlist` (admin reading/stats), `SelfManagedWishlist` (creator acting as own admin — reuses AdminWishlist components), `Auth`, `Onboarding`, `Profile`, `SharedWishlists`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
 
 **Shared code:**
 
