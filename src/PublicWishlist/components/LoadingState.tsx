@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -9,7 +11,7 @@ export const LoadingState = () => {
       <div
         role="status"
         aria-label={t('publicWishlist.loadingList')}
-        className="mx-auto flex w-full max-w-[960px] flex-col gap-6 px-4 pb-10 pt-8 md:px-8 md:pt-16">
+        className={cn(PAGE_COLUMN, 'flex flex-col gap-6 pb-10 pt-8 md:pt-16')}>
         <div className="flex flex-col gap-3">
           <Skeleton className="h-4 w-32 bg-gh-surface-300" />
           <Skeleton className="h-9 w-3/4 bg-gh-surface-300" />

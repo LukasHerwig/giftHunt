@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -75,7 +77,7 @@ const PublicWishlist = () => {
 
   return (
     <div className="min-h-screen bg-gh-bg pb-safe text-gh-ink">
-      <main className="mx-auto flex w-full max-w-[960px] flex-col gap-6 px-4 pb-10 pt-8 md:gap-8 md:px-8 md:pt-16">
+      <main className={cn(PAGE_COLUMN, 'flex flex-col gap-6 pb-10 pt-8 md:gap-8 md:pt-16')}>
         <header className="flex flex-col gap-2">
           {wishlist.creator_name && (
             <p className="text-[13px] leading-[18px] text-gh-muted">

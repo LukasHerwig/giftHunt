@@ -4,6 +4,8 @@ import { ChevronLeft, User } from 'lucide-react';
 import { useAuth } from '@/components/auth/useAuth';
 import { useProfileName } from '@/components/useProfileName';
 import { initials } from '@/lib/personName';
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 
 const ProfileAvatar = () => {
   const { t } = useTranslation();
@@ -31,7 +33,7 @@ const AppHeader = ({ title, hideAvatar = false }: AppHeaderProps) => {
   const { t } = useTranslation();
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gh-line bg-gh-surface-100/90 pt-[env(safe-area-inset-top)] backdrop-blur-xl">
-      <div className="mx-auto flex h-14 w-full max-w-4xl items-center justify-between px-4">
+      <div className={cn(PAGE_COLUMN, 'flex h-14 items-center justify-between')}>
         {title ? (
           <div className="flex items-center gap-1">
             <Link

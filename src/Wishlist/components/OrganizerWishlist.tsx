@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
 import { Gift, Plus, Settings, Share2 } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
@@ -73,7 +75,7 @@ export const OrganizerWishlist = ({ wishlistId, mode }: OrganizerWishlistProps) 
   return (
     <div className="min-h-screen bg-gh-bg pb-safe text-gh-ink">
       <AppHeader />
-      <main className="mx-auto flex w-full max-w-[960px] flex-col gap-6 px-4 pb-10 pt-6 md:gap-8 md:px-8 md:pt-12">
+      <main className={cn(PAGE_COLUMN, 'flex flex-col gap-6 pb-10 pt-6 md:gap-8 md:pt-12')}>
         <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6">
           <div className="flex max-w-[560px] flex-col gap-2">
             {!self && (

@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -7,7 +9,7 @@ export const HomeLoading = () => {
     <div
       role="status"
       aria-label={t('home.loading')}
-      className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-4 pb-10 pt-6 md:px-8 md:pt-12">
+      className={cn(PAGE_COLUMN, 'flex flex-col gap-8 pb-10 pt-6 md:pt-12')}>
       <Skeleton className="h-9 w-3/5 bg-gh-surface-300" />
       <div className="flex flex-col gap-3">
         <Skeleton className="h-6 w-2/5 bg-gh-surface-300" />

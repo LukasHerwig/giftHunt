@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
 import { User } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
@@ -39,7 +41,7 @@ const Profile = () => {
           }
         />
       ) : (
-        <main className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-4 pb-10 pt-6 md:gap-10 md:px-8 md:pt-12">
+        <main className={cn(PAGE_COLUMN, 'flex flex-col gap-8 pb-10 pt-6 md:gap-10 md:pt-12')}>
           <AboutSection
             email={page.profile.email}
             fullName={page.fullName}
