@@ -90,6 +90,8 @@ The look comes from the **GiftHunt design system** (claude.ai artifact: https://
 - **Status:** item status is a word plus a pill (`gh-available`/`gh-available-bg` "Ledig", `gh-taken`/`gh-taken-bg` "Tagen"); destructive is `gh-danger` (rust), never the accent.
 - **Legacy:** older screens still use shadcn variables and an `ios-*` palette; both point at the GiftHunt tokens (`src/index.css`). Text on `bg-ios-blue` / `bg-ios-red` uses `text-ios-on-blue` / `text-ios-on-red`. New code uses the `gh-*` names only.
 
+**Page column** — on desktop the header and every in-app page share one column: `PAGE_COLUMN` from `src/components/pageColumn.ts` (centred, max 960px, 16px sides on mobile and 32px from `md`, so 896px of content). Use `cn(PAGE_COLUMN, '…vertical padding and layout…')` on a page's `<main>`, never your own `max-w-*`/`px-*`; a unit test fails if a screen hardcodes `max-w-[720px]` or `max-w-[960px]`. Narrow forms (auth, onboarding, invitation) are 440px on purpose and stay centred.
+
 **Responsive overlays** — use `useIsMobile()` to switch:
 
 - Mobile → `Drawer` (bottom sheet) from `@/components/ui/drawer`

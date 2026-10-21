@@ -39,7 +39,7 @@ const AppHeader = ({ title, hideAvatar = false }: AppHeaderProps) => {
             <Link
               to="/"
               aria-label={t('common.back')}
-              className="-ml-2 flex h-11 w-11 items-center justify-center rounded-gh-pill text-gh-ink">
+              className="-ml-2.5 flex h-11 w-11 items-center justify-center rounded-gh-pill text-gh-ink">
               <ChevronLeft className="h-6 w-6" aria-hidden="true" />
             </Link>
             <h1 className="text-[20px] font-bold leading-6 tracking-[-0.3px] text-gh-ink">{title}</h1>
