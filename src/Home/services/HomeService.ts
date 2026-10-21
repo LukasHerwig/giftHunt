@@ -12,15 +12,15 @@ import type {
 
 export class HomeService {
   static async loadHome(userId: string, email: string): Promise<HomeData> {
-    const [owned, organized, invitations] = await Promise.all([
+    const [fullName, owned, organized, invitations] = await Promise.all([
+      HomeService.loadFullName(userId),
       HomeService.loadOwned(userId),
       HomeService.loadOrganized(userId),
       HomeService.loadInvitations(email),
     ]);
-    return { owned, organized, invitations };
+    return { fullName, owned, organized, invitations };
   }
 
-  /** Lists the user made, including ones made for someone else; item count and organizer in one query. */
   /**
    * Items per list in one query. Claim columns are private, so `wishlist_items(count)` as an
    * embedded select is refused (it needs the whole table); `wishlist_id` is readable.
@@ -37,6 +37,13 @@ export class HomeService {
     return counts;
   }
 
+  private static async loadFullName(userId: string): Promise<string | null> {
+    const { data, error } = await supabase.from('profiles').select('full_name').eq('id', userId).maybeSingle();
+    if (error) throw error;
+    return data?.full_name ?? null;
+  }
+
+  /** Lists the user made, including ones made for someone else, with their organizer. */
   private static async loadOwned(userId: string): Promise<OwnedListRaw[]> {
     const { data, error } = await supabase
       .from('wishlists')

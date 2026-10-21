@@ -6,6 +6,7 @@ import {
   toInvitationRows,
   toOrganizedRows,
   toOwnedRows,
+  withoutOwnLists,
 } from './homeRows.ts';
 import type { InvitationRaw, OrganizedListRaw, OwnedListRaw } from '../types/index.ts';
 
@@ -84,4 +85,10 @@ const invitation = (over: Partial<InvitationRaw> = {}): InvitationRaw => ({
 test('an invitation shows the list and who invited', () => {
   assert.deepEqual(toInvitationRows([invitation()]), [{ id: 'i1', title: 'Annas 35-årsdag', inviterName: 'Anna Lind' }]);
   assert.equal(toInvitationRows([invitation({ inviter: null })])[0].inviterName, null);
+});
+
+test('an invitation to a list the user made themselves is not shown', () => {
+  const mine = invitation({ id: 'i2', wishlistId: 'own' });
+  const theirs = invitation({ id: 'i3', wishlistId: 'other' });
+  assert.deepEqual(withoutOwnLists([mine, theirs], ['own']).map((i) => i.id), ['i3']);
 });

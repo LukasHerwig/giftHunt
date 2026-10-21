@@ -41,6 +41,10 @@ export const toOrganizedRows = (lists: OrganizedListRaw[]): OrganizedRow[] =>
     requestCount: list.requestCount,
   }));
 
+/** An invitation to a list the user made themselves can never be accepted, so it is not offered. */
+export const withoutOwnLists = (invitations: InvitationRaw[], ownedIds: string[]): InvitationRaw[] =>
+  invitations.filter((invitation) => !ownedIds.includes(invitation.wishlistId));
+
 export const toInvitationRows = (invitations: InvitationRaw[]): InvitationRow[] =>
   invitations.map((invitation) => ({
     id: invitation.id,

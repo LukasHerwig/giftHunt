@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuth } from '@/components/auth/useAuth';
 import { errorCode } from '@/Wishlist/lib/errorCode';
-import { firstName, toInvitationRows, toOrganizedRows, toOwnedRows } from '../lib/homeRows';
+import { firstName, toInvitationRows, toOrganizedRows, toOwnedRows, withoutOwnLists } from '../lib/homeRows';
 import { validateNewList } from '../lib/newList';
 import { HomeService } from '../services/HomeService';
 import type { HomeData, NewListError, NewListForm } from '../types';
@@ -43,8 +43,8 @@ export const useHome = () => {
 
   const owned = useMemo(() => toOwnedRows(data?.owned ?? []), [data]);
   const organized = useMemo(() => toOrganizedRows(data?.organized ?? []), [data]);
-  const invitations = useMemo(() => toInvitationRows(data?.invitations ?? []), [data]);
-  const greetingName = firstName(user?.user_metadata?.full_name as string | undefined);
+  const invitations = useMemo(() => toInvitationRows(withoutOwnLists(data?.invitations ?? [], (data?.owned ?? []).map((list) => list.id))), [data]);
+  const greetingName = firstName(data?.fullName);
 
   const run = useCallback(
     async (action: () => Promise<void>, errorKey: string): Promise<boolean> => {
@@ -57,7 +57,7 @@ export const useHome = () => {
       } catch (error) {
         console.error(error);
         const code = errorCode(error);
-        if (code === 'invitation_not_found' || code === 'already_accepted' || code === 'invitation_expired') {
+        if (code === 'invitation_not_found' || code === 'already_accepted' || code === 'invitation_expired' || code === 'owner_cannot_be_admin') {
           toast.error(t('home.toast.invitationGone'));
           await load();
         } else if (code === 'admin_already_exists') {

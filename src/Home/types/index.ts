@@ -33,6 +33,7 @@ export interface InvitationRaw {
 }
 
 export interface HomeData {
+  fullName: string | null;
   owned: OwnedListRaw[];
   organized: OrganizedListRaw[];
   invitations: InvitationRaw[];
