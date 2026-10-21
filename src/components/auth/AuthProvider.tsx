@@ -4,7 +4,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
 import { toast } from 'sonner';
 import { AuthContext, AuthContextType } from './AuthContext';
-import { OnboardingService } from '@/Auth/services';
+import i18n from '@/lib/i18n';
+import { AuthService, OnboardingService } from '@/Auth/services';
+import { postLoginPath } from '@/Auth/lib/postLoginPath';
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -41,13 +43,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (needsOnboarding && location.pathname !== '/onboarding') {
           navigate('/onboarding');
         } else if (!needsOnboarding && location.pathname === '/auth') {
-          navigate('/');
+          navigate(postLoginPath(AuthService.getPendingInvitationToken()));
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         // If there's an error, just redirect normally
         if (location.pathname === '/auth') {
-          navigate('/');
+          navigate(postLoginPath(AuthService.getPendingInvitationToken()));
         }
       }
     },
@@ -65,10 +67,10 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Redirect to auth page
       navigate('/auth');
-      toast.success('Signed out successfully');
+      toast.success(i18n.t('auth.signedOut'));
     } catch (error) {
       console.error('Error signing out:', error);
-      toast.error('Error signing out');
+      toast.error(i18n.t('auth.signOutFailed'));
     }
   };
 
@@ -149,7 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
-            toast.info('Session expired. Please sign in again.');
+            toast.info(i18n.t('auth.sessionExpired'));
           }
           break;
 

@@ -13,6 +13,10 @@ export class AuthService {
     return sessionStorage.getItem('pendingInvitationToken');
   }
 
+  static setPendingInvitationToken(token: string): void {
+    sessionStorage.setItem('pendingInvitationToken', token);
+  }
+
   static removePendingInvitationToken(): void {
     sessionStorage.removeItem('pendingInvitationToken');
   }

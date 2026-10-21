@@ -91,28 +91,34 @@
     "creating": "Skapar..."
   },
   "auth": {
-    "welcomeBack": "Välkommen tillbaka! Logga in för att hantera dina önskelistor",
-    "createAccount": "Skapa ett konto för att börja göra önskelistor",
-    "welcomeBackTitle": "Välkommen Tillbaka!",
-    "signInDescription": "Ange din e-post och lösenord för att komma åt dina önskelistor",
-    "createAccountTitle": "Kom Igång",
-    "signUpDescription": "Skapa ditt konto för att börja bygga och dela önskelistor",
-    "signInButton": "Logga in",
-    "createAccountButton": "Skapa Konto",
-    "signingIn": "Loggar in...",
-    "creatingAccount": "Skapar konto...",
-    "noAccount": "Har du inget konto? Registrera dig",
-    "hasAccount": "Har du redan ett konto? Logga in",
-    "newUserQuestion": "Ny på GiftHunt?",
-    "createNewAccount": "Skapa ett konto",
-    "existingUserQuestion": "Har du redan ett konto?",
-    "signInInstead": "Logga in här",
-    "passwordRequirement": "Lösenordet måste vara minst 6 tecken långt",
-    "fillAllFields": "Vänligen fyll i alla fält",
-    "passwordTooShort": "Lösenordet måste vara minst 6 tecken",
-    "welcomeBackSuccess": "Välkommen tillbaka!",
-    "accountCreated": "Konto skapat! Välkommen!",
-    "somethingWentWrong": "Något gick fel"
+    "titleSignIn": "Välkommen tillbaka",
+    "titleSignUp": "Skapa ditt konto",
+    "leadSignIn": "Logga in för att se och dela dina önskelistor.",
+    "leadSignUp": "Gör önskelistor och dela dem med dem som vill ge.",
+    "modeLabel": "Logga in eller skapa konto",
+    "signIn": "Logga in",
+    "signUp": "Skapa konto",
+    "email": "E-post",
+    "emailPlaceholder": "namn@exempel.se",
+    "password": "Lösenord",
+    "passwordHelp": "Minst 6 tecken.",
+    "errors": {
+      "emailRequired": "Fyll i din e-postadress.",
+      "emailInvalid": "E-postadressen ser inte rätt ut. Kontrollera den.",
+      "passwordRequired": "Fyll i ett lösenord.",
+      "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
+      "invalidCredentials": "E-postadressen eller lösenordet stämmer inte. Kontrollera dem och försök igen.",
+      "alreadyRegistered": "Det finns redan ett konto med den här adressen. Logga in i stället.",
+      "emailNotConfirmed": "Bekräfta din e-postadress först. Vi har skickat ett mejl till dig.",
+      "generic": "Något gick fel. Försök igen."
+    },
+    "toast": {
+      "welcomeBack": "Välkommen tillbaka",
+      "accountCreated": "Kontot är skapat"
+    },
+    "signedOut": "Du är utloggad",
+    "sessionExpired": "Sessionen gick ut. Logga in igen.",
+    "signOutFailed": "Du kunde inte loggas ut. Försök igen."
   },
   "publicWishlist": {
     "claimErrors": {

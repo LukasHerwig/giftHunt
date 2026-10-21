@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Session } from '@supabase/supabase-js';
 import { AuthService } from '../services/AuthService';
+import { postLoginPath } from '../lib/postLoginPath';
 import { AuthState, AuthActions } from '../types';
 
 export const useAuth = (): AuthState & AuthActions => {
@@ -11,14 +12,7 @@ export const useAuth = (): AuthState & AuthActions => {
   const handleAuthStateChange = useCallback(
     (session: Session | null) => {
       if (session) {
-        // Check if there's a pending invitation token
-        const pendingToken = AuthService.getPendingInvitationToken();
-        if (pendingToken) {
-          AuthService.removePendingInvitationToken();
-          navigate(`/accept-invitation?token=${pendingToken}`);
-        } else {
-          navigate('/');
-        }
+        navigate(postLoginPath(AuthService.getPendingInvitationToken()));
       }
     },
     [navigate]

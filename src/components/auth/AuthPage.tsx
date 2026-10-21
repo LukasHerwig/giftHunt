@@ -1,175 +1,115 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Segmented } from '@/components/gh/Segmented';
+import { TextField } from '@/components/gh/TextField';
+import { AccountHeading, AccountShell } from '@/components/AccountShell';
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-import { Gift, Loader2, UserPlus, LogIn } from 'lucide-react';
-import LanguageSwitcher from '../LanguageSwitcher';
-import GiftHuntIcon from '../GiftHuntIcon';
+  authErrorField,
+  authErrorKey,
+  validateAuthForm,
+  type AuthErrorKey,
+  type AuthFormErrors,
+  type AuthMode,
+} from '@/Auth/lib/authForm';
 
 export const AuthPage = () => {
   const { t } = useTranslation();
-  const [isLogin, setIsLogin] = useState(true);
+  const [params] = useSearchParams();
+  const [mode, setMode] = useState<AuthMode>(params.get('mode') === 'signup' ? 'signUp' : 'signIn');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState<AuthFormErrors>({});
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const handleAuth = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const message = (key?: AuthErrorKey) => (key ? t(`auth.errors.${key}`) : undefined);
+  const signingUp = mode === 'signUp';
 
-    if (!email || !password) {
-      toast.error(t('auth.fillAllFields'));
-      return;
-    }
+  const changeMode = (next: string) => {
+    setMode(next === 'signUp' ? 'signUp' : 'signIn');
+    setErrors({});
+  };
 
-    if (password.length < 6) {
-      toast.error(t('auth.passwordTooShort'));
-      return;
-    }
+  // After a successful sign-in AuthProvider sends the person on (Home, or back to an invitation).
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (loading) return;
+    const found = validateAuthForm(mode, email, password);
+    setErrors(found);
+    if (found.email || found.password) return;
 
     setLoading(true);
-
     try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) throw error;
-        toast.success(t('auth.welcomeBackSuccess'));
-        navigate('/');
-      } else {
-        const redirectUrl = `${getBaseUrl()}/`;
+      const address = email.trim();
+      if (signingUp) {
         const { error } = await supabase.auth.signUp({
-          email,
+          email: address,
           password,
-          options: {
-            emailRedirectTo: redirectUrl,
-          },
+          options: { emailRedirectTo: `${getBaseUrl()}/` },
         });
-
         if (error) throw error;
-        toast.success(t('auth.accountCreated'));
-        navigate('/');
+        toast.success(t('auth.toast.accountCreated'));
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email: address, password });
+        if (error) throw error;
+        toast.success(t('auth.toast.welcomeBack'));
       }
-    } catch (error: unknown) {
-      toast.error((error as Error)?.message || t('auth.somethingWentWrong'));
+    } catch (error) {
+      console.error('Auth error:', error);
+      const key = authErrorKey((error as Error)?.message);
+      setErrors({ [authErrorField(key)]: key });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-ios-background">
-      <div className="w-full max-w-[400px] space-y-8">
-        <div className="text-center space-y-2">
-          <GiftHuntIcon className="mx-auto w-20 h-20 text-ios-blue" />
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">
-            GiftHunt
-          </h1>
-          <p className="text-ios-gray text-lg">
-            {isLogin ? t('auth.welcomeBack') : t('auth.createAccount')}
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {/* Mode Toggle Buttons (iOS Segmented Control Style) */}
-          <div className="p-[2px] bg-ios-tertiary/80 backdrop-blur-md rounded-[9px] flex shadow-inner">
-            <button
-              type="button"
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 py-1.5 text-[13px] font-medium rounded-[7px] transition-all duration-200 ${
-                isLogin
-                  ? 'bg-ios-secondary dark:bg-ios-quaternary text-foreground shadow-sm'
-                  : 'text-ios-gray hover:text-foreground'
-              }`}
-              disabled={loading}>
-              {t('common.signIn')}
-            </button>
-            <button
-              type="button"
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 py-1.5 text-[13px] font-medium rounded-[7px] transition-all duration-200 ${
-                !isLogin
-                  ? 'bg-ios-secondary dark:bg-ios-quaternary text-foreground shadow-sm'
-                  : 'text-ios-gray hover:text-foreground'
-              }`}
-              disabled={loading}>
-              {t('common.signUp')}
-            </button>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-6">
-            <div className="bg-ios-secondary rounded-[10px] overflow-hidden">
-              <div className="px-4">
-                <input
-                  type="email"
-                  placeholder={t('common.email')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-11 bg-transparent text-[17px] outline-none placeholder-[#C7C7CC] dark:placeholder-[#48484A]"
-                  disabled={loading}
-                />
-              </div>
-              <div className="h-[0.5px] bg-gh-line ml-4"></div>
-              <div className="px-4">
-                <input
-                  type="password"
-                  placeholder={t('common.password')}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full h-11 bg-transparent text-[17px] outline-none placeholder-[#C7C7CC] dark:placeholder-[#48484A]"
-                  disabled={loading}
-                />
-              </div>
-            </div>
-
-            {!isLogin && (
-              <p className="px-4 text-[13px] text-ios-gray">
-                {t('auth.passwordRequirement')}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              className={`w-full h-12 rounded-[12px] text-[17px] font-semibold transition-all active:opacity-70 flex items-center justify-center ${
-                isLogin ? 'bg-ios-blue text-ios-on-blue' : 'bg-ios-green text-ios-on-blue'
-              } disabled:opacity-50`}
-              disabled={loading}>
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : isLogin ? (
-                t('auth.signInButton')
-              ) : (
-                t('auth.createAccountButton')
-              )}
-            </button>
-          </form>
-
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-ios-blue text-[17px] hover:underline"
-              disabled={loading}>
-              {isLogin ? t('auth.createNewAccount') : t('auth.signInInstead')}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <AccountShell>
+      <AccountHeading
+        title={signingUp ? t('auth.titleSignUp') : t('auth.titleSignIn')}
+        lead={signingUp ? t('auth.leadSignUp') : t('auth.leadSignIn')}
+      />
+      <Segmented
+        ariaLabel={t('auth.modeLabel')}
+        value={mode}
+        onChange={changeMode}
+        options={[
+          { value: 'signIn', label: t('auth.signIn') },
+          { value: 'signUp', label: t('auth.signUp') },
+        ]}
+      />
+      <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+        <TextField
+          label={t('auth.email')}
+          type="email"
+          autoComplete="email"
+          placeholder={t('auth.emailPlaceholder')}
+          value={email}
+          error={message(errors.email)}
+          onChange={(event) => setEmail(event.target.value)}
+        />
+        <TextField
+          label={t('auth.password')}
+          type="password"
+          autoComplete={signingUp ? 'new-password' : 'current-password'}
+          value={password}
+          help={signingUp ? t('auth.passwordHelp') : undefined}
+          error={message(errors.password)}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <Button
+          type="submit"
+          disabled={loading}
+          className="h-[52px] w-full gap-2 rounded-gh-md text-[17px] font-semibold">
+          {loading && <Loader2 className="animate-spin" aria-hidden="true" />}
+          {signingUp ? t('auth.signUp') : t('auth.signIn')}
+        </Button>
+      </form>
+    </AccountShell>
   );
 };
