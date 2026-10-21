@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { AuthContext, AuthContextType } from './AuthContext';
 import i18n from '@/lib/i18n';
 import { AuthLoadingState } from '@/Auth/components/AuthLoadingState';
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Redirect to auth page
       navigate('/auth');
-      toast.success(i18n.t('auth.signedOut'));
+      toast.success(i18n.t('auth.signedOut'), 'sleep');
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error(i18n.t('auth.signOutFailed'));
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
-            if (!signingOut.current) toast.info(i18n.t('auth.sessionExpired'));
+            if (!signingOut.current) toast.info(i18n.t('auth.sessionExpired'), 'sleep');
           }
           break;
 

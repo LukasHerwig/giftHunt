@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { AuthService } from '@/Auth/services';
 import { errorCode } from '@/Wishlist/lib/errorCode';
@@ -72,7 +72,7 @@ export const useAcceptInvitation = (token: string | null) => {
     try {
       await AcceptInvitationService.acceptInvitation(raw.id);
       AuthService.removePendingInvitationToken();
-      toast.success(t('acceptInvitation.accepted'));
+      toast.success(t('acceptInvitation.accepted'), 'love');
       if (alive.current) navigate(`/wishlist/${raw.wishlist_id}`, { replace: true });
     } catch (error) {
       console.error('Error accepting invitation:', error);

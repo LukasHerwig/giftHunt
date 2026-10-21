@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { nameChanged, validateName, type NameError } from '@/lib/personName';
 import { ProfileService } from '../services/ProfileService';
@@ -59,7 +59,7 @@ export const useProfile = () => {
       const saved = fullName.trim();
       setProfile((current) => (current ? { ...current, full_name: saved } : current));
       setFullNameState(saved);
-      toast.success(t('profile.toast.saved'));
+      toast.success(t('profile.toast.saved'), 'wink');
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error(t('profile.toast.saveFailed'));

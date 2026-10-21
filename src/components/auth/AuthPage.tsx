@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { supabase } from '@/integrations/supabase/client';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { Button } from '@/components/ui/button';
@@ -53,11 +53,11 @@ export const AuthPage = () => {
           options: { emailRedirectTo: `${getBaseUrl()}/` },
         });
         if (error) throw error;
-        toast.success(t('auth.toast.accountCreated'));
+        toast.success(t('auth.toast.accountCreated'), 'love');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: address, password });
         if (error) throw error;
-        toast.success(t('auth.toast.welcomeBack'));
+        toast.success(t('auth.toast.welcomeBack'), 'love');
       }
     } catch (error) {
       console.error('Auth error:', error);

@@ -7,4 +7,5 @@ export const ROSETT = {
   highlight: '#FFFFFF',
   gold: '#F0C27E',
   tear: '#BFD7EA',
+  heart: '#E5707A',
 } as const;

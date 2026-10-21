@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { errorCode } from '../lib/errorCode';
 import { validateItemForm } from '../lib/itemForm';
 import { splitItems } from '../lib/organizerItems';
@@ -74,17 +74,17 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
         console.error(error);
         const code = errorCode(error);
         if (code === 'not_pending' || code === 'request_not_found') {
-          toast.error(t('wishlist.org.toast.requestAnswered'));
+          toast.error(t('wishlist.org.toast.requestAnswered'), 'lost');
           await load();
         } else if (code === 'item_not_found' || code === 'edit_locked') {
-          toast.error(t('wishlist.org.toast.itemGone'));
+          toast.error(t('wishlist.org.toast.itemGone'), 'lost');
           setSheet(null);
           await load();
         } else if (code === 'claim_not_found') {
-          toast.error(t('wishlist.org.toast.claimGone'));
+          toast.error(t('wishlist.org.toast.claimGone'), 'lost');
           await load();
         } else if (code === 'share_link_not_found') {
-          toast.error(t('wishlist.org.toast.linkGone'));
+          toast.error(t('wishlist.org.toast.linkGone'), 'lost');
           await load();
         } else {
           toast.error(t(errorKey));
@@ -119,7 +119,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
     if (invalid) return invalid;
     const ok = await run(() => WishlistService.updateItem(item.id, form), 'wishlist.toast.saveFailed');
     if (ok) {
-      toast.success(t('wishlist.toast.saved'));
+      toast.success(t('wishlist.toast.saved'), 'wink');
       closeSheet();
       await load();
     }
@@ -129,7 +129,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
   const removeItem = async (item: OrganizerItem) => {
     const ok = await run(() => WishlistService.deleteItem(item.id), 'wishlist.toast.removeFailed');
     if (ok) {
-      toast.success(t('wishlist.toast.removed'));
+      toast.success(t('wishlist.toast.removed'), 'teary');
       closeSheet();
       await load();
     }
@@ -138,7 +138,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
   const untake = async (item: OrganizerItem) => {
     const ok = await run(() => OrganizerService.untake(item.id), 'wishlist.org.toast.untakeFailed');
     if (ok) {
-      toast.success(t('wishlist.org.toast.madeFree'));
+      toast.success(t('wishlist.org.toast.madeFree'), 'wink');
       closeSheet();
       await load();
     }
@@ -150,7 +150,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
       'wishlist.org.toast.removeClaimFailed',
     );
     if (ok) {
-      toast.success(t('wishlist.org.toast.claimRemoved'));
+      toast.success(t('wishlist.org.toast.claimRemoved'), 'teary');
       await load();
     }
   };
@@ -161,7 +161,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
       'wishlist.org.toast.resolveFailed',
     );
     if (ok) {
-      toast.success(t(approve ? 'wishlist.org.toast.approved' : 'wishlist.org.toast.kept'));
+      toast.success(t(approve ? 'wishlist.org.toast.approved' : 'wishlist.org.toast.kept'), 'wink');
       await load();
     }
   };
@@ -179,7 +179,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
       'wishlist.org.toast.linkFailed',
     );
     if (ok) {
-      toast.success(t(active ? 'wishlist.org.toast.linkOn' : 'wishlist.org.toast.linkOff'));
+      toast.success(t(active ? 'wishlist.org.toast.linkOn' : 'wishlist.org.toast.linkOff'), active ? 'happy' : 'sleep');
       await load();
     }
   };
@@ -190,7 +190,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
     try {
       await navigator.clipboard.writeText(shareUrl(data.shareLink.token));
       setCopied(true);
-      toast.success(t('wishlist.org.toast.linkCopied'));
+      toast.success(t('wishlist.org.toast.linkCopied'), 'wink');
       window.setTimeout(() => setCopied(false), 3000);
     } catch (error) {
       console.error('Copy link error:', error);
@@ -207,7 +207,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
       'wishlist.toast.settingsFailed',
     );
     if (ok) {
-      toast.success(t('wishlist.toast.settingsSaved'));
+      toast.success(t('wishlist.toast.settingsSaved'), 'wink');
       closeSheet();
       await load();
     }
@@ -218,7 +218,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
     if (!wishlistId) return;
     const ok = await run(() => WishlistService.deleteList(wishlistId), 'wishlist.toast.deleteFailed');
     if (ok) {
-      toast.success(t('wishlist.toast.listDeleted'));
+      toast.success(t('wishlist.toast.listDeleted'), 'teary');
       navigate('/');
     }
   };
