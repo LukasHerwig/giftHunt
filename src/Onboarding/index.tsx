@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuth } from '@/components/auth/useAuth';
-import { OnboardingService } from '@/Auth/services';
+import { AuthService, OnboardingService } from '@/Auth/services';
+import { postLoginPath } from '@/Auth/lib/postLoginPath';
 import { OnboardingStep } from '@/Auth/components/OnboardingStep';
 import { AuthLoadingState } from '@/Auth/components/AuthLoadingState';
 import { useState, useCallback } from 'react';
@@ -29,7 +30,7 @@ const Onboarding = () => {
 
       // If user doesn't need onboarding, redirect to main app
       if (!needs) {
-        navigate('/');
+        navigate(postLoginPath(AuthService.getPendingInvitationToken()));
         return;
       }
     } catch (error) {
@@ -56,7 +57,7 @@ const Onboarding = () => {
         setSaving(true);
         await OnboardingService.completeOnboarding(user.id, name);
         toast.success(t('onboarding.welcomeComplete'));
-        navigate('/');
+        navigate(postLoginPath(AuthService.getPendingInvitationToken()));
       } catch (error) {
         console.error('Error completing onboarding:', error);
         toast.error(t('onboarding.errorSaving'));

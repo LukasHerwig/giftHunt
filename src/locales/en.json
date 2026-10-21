@@ -529,15 +529,17 @@
     "system": "System"
   },
   "onboarding": {
-    "welcomeTitle": "Welcome to WishList!",
-    "welcomeDescription": "Let's get you set up. Please tell us your name so others can identify you when claiming items.",
-    "nameLabel": "Your Name",
-    "namePlaceholder": "Enter your full name",
-    "nameHelpText": "This name will be shown to wishlist owners when you claim items as gifts.",
+    "title": "Welcome to GiftHunt",
+    "lead": "What's your name? The people you share lists with will see it.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "First and last name",
     "continue": "Continue",
-    "saving": "Saving...",
-    "welcomeComplete": "Welcome! Your profile is now complete.",
-    "errorSaving": "Failed to save your name. Please try again."
+    "errors": {
+      "required": "Enter your name.",
+      "tooLong": "The name can be at most 100 characters."
+    },
+    "welcomeComplete": "Welcome!",
+    "errorSaving": "Couldn't save your name. Try again."
   },
   "wishlist": {
     "loading": "Loading your wishlist",

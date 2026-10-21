@@ -530,15 +530,17 @@
     "system": "System"
   },
   "onboarding": {
-    "welcomeTitle": "Välkommen till WishList!",
-    "welcomeDescription": "Låt oss sätta upp dig. Berätta ditt namn så att andra kan identifiera dig när du hämtar föremål.",
-    "nameLabel": "Ditt Namn",
-    "namePlaceholder": "Ange ditt fullständiga namn",
-    "nameHelpText": "Detta namn kommer att visas för önskelisteägare när du hämtar föremål som gåvor.",
+    "title": "Välkommen till GiftHunt",
+    "lead": "Vad heter du? Namnet ser de du delar listor med.",
+    "nameLabel": "Ditt namn",
+    "namePlaceholder": "För- och efternamn",
     "continue": "Fortsätt",
-    "saving": "Sparar...",
-    "welcomeComplete": "Välkommen! Din profil är nu komplett.",
-    "errorSaving": "Misslyckades med att spara ditt namn. Försök igen."
+    "errors": {
+      "required": "Fyll i ditt namn.",
+      "tooLong": "Namnet får vara högst 100 tecken."
+    },
+    "welcomeComplete": "Välkommen!",
+    "errorSaving": "Namnet kunde inte sparas. Försök igen."
   },
   "wishlist": {
     "loading": "Laddar din önskelista",
