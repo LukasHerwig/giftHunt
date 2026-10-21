@@ -237,3 +237,35 @@ export const RosettenPeek = ({ look = 0, className }: { look?: number; className
     </g>
   </svg>
 );
+
+/** Rosetten in mid-run, seen from the front, leaning forward. Two leg positions swap via CSS. */
+export const RosettenRun = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 200 200" width={84} height={84} aria-hidden="true" className={cn('text-gh-ink', className)}>
+    <g transform="rotate(8 100 190)">
+      <ellipse cx="100" cy="194" rx="46" ry="5" fill="currentColor" opacity=".1" />
+      <g {...STROKE}>
+        <path d="M48 130C30 140 24 118 34 108" fill="none" />
+        <path d="M152 130C170 120 176 142 166 152" fill="none" />
+        <g className="rs-step-a">
+          <rect x="56" y="172" width="24" height="14" rx="7" fill={ROSETT.deep} transform="rotate(-18 68 179)" />
+          <rect x="118" y="178" width="24" height="14" rx="7" fill={ROSETT.deep} transform="rotate(14 130 185)" />
+        </g>
+        <g className="rs-step-b">
+          <rect x="62" y="178" width="24" height="14" rx="7" fill={ROSETT.deep} transform="rotate(14 74 185)" />
+          <rect x="112" y="172" width="24" height="14" rx="7" fill={ROSETT.deep} transform="rotate(-18 124 179)" />
+        </g>
+        <rect x="48" y="98" width="104" height="82" rx="16" fill={ROSETT.pink} />
+        <rect x="40" y="76" width="120" height="32" rx="12" fill={ROSETT.deep} />
+        <rect x="90" y="76" width="20" height="32" fill={ROSETT.cream} />
+        <path d="M100 76C80 40 44 56 64 78C74 86 92 82 100 76Z" fill={ROSETT.pink} />
+        <path d="M100 76C120 40 156 56 136 78C126 86 108 82 100 76Z" fill={ROSETT.pink} />
+        <rect x="90" y="64" width="20" height="18" rx="7" fill={ROSETT.cream} />
+      </g>
+      <g fill={ROSETT.ink}>
+        <ellipse cx="86" cy="130" rx="6" ry="7" />
+        <ellipse cx="122" cy="130" rx="6" ry="7" />
+      </g>
+      <path d="M94 148Q104 158 114 148" fill="none" stroke={ROSETT.ink} strokeWidth={4} strokeLinecap="round" />
+    </g>
+  </svg>
+);

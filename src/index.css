@@ -190,3 +190,21 @@
 @media (prefers-reduced-motion: reduce) {
   .rs-peek { animation: none; }
 }
+
+@keyframes rs-run {
+  from { transform: translateX(-120px); }
+  to { transform: translateX(calc(100vw + 120px)); }
+}
+@keyframes rs-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes rs-step-a { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes rs-step-b { 0%, 49% { opacity: 0; } 50%, 100% { opacity: 1; } }
+.rs-runner { animation: rs-run 6s linear 1 both; }
+.rs-runner > svg { animation: rs-bounce 0.5s ease-in-out infinite; }
+.rs-step-a { animation: rs-step-a 0.5s steps(1) infinite; }
+.rs-step-b { animation: rs-step-b 0.5s steps(1) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .rs-runner, .rs-runner > svg, .rs-step-a, .rs-step-b { animation: none; }
+}
