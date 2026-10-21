@@ -70,7 +70,7 @@ export class AdminWishlistService {
 
   static async getWishlistItems(wishlistId: string): Promise<WishlistItem[]> {
     const { data, error } = await supabase
-      .from('wishlist_items')
+      .from('wishlist_items_admin')
       .select('*')
       .eq('wishlist_id', wishlistId)
       .order('created_at', { ascending: false });

@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { ITEM_COLUMNS } from '@/lib/itemColumns';
 import { EmailService } from '@/lib/EmailService';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { fetchLinkMetadata } from '@/lib/metadataUtils';
@@ -132,7 +133,7 @@ export class ManageWishlistService {
           url: imageUrl,
         },
       ])
-      .select()
+      .select(ITEM_COLUMNS)
       .single();
 
     if (error) throw error;
@@ -177,7 +178,7 @@ export class ManageWishlistService {
         url: imageUrl,
       })
       .eq('id', itemId)
-      .select()
+      .select(ITEM_COLUMNS)
       .single();
 
     if (error) throw error;

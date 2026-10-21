@@ -119,6 +119,8 @@ When `is_giftcard = true`, multiple people can claim the same item via `item_cla
 - Personal data: `auth.uid() = user_id`
 - Admin access: `EXISTS (SELECT 1 FROM wishlist_admins WHERE wishlist_id = ... AND admin_id = auth.uid())`
 - Avoid circular cross-table policy references — use simple `auth.uid()` checks where possible.
+- Claim data (`is_taken`, `taken_by_name`, `taken_at`) is not readable from `wishlist_items` by any signed-in user. Organizers read it through the `wishlist_items_admin` view; use `ITEM_COLUMNS` from `src/lib/itemColumns.ts` (never `select('*')` or a bare `.select()`) on the table. A new column on `wishlist_items` needs an explicit `GRANT SELECT (col)` for `authenticated`.
+- The owner of a non-self-managed list cannot update or delete existing items while an active share link exists (changes go through `request_item_change`).
 
 ### Database migrations
 

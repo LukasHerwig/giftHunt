@@ -21,7 +21,7 @@ select is(
    from unnest(array['wishlists','wishlist_items','item_claims','share_links','wishlist_admins','admin_invitations','profiles']) t,
         unnest(array['SELECT','INSERT','UPDATE','DELETE']) p
    where has_table_privilege('authenticated', 'public.' || t, p)),
-  28, 'authenticated has full DML (RLS decides the rows)');
+  27, 'authenticated has full DML except SELECT on wishlist_items (column grants)');
 
 select is(
   (select count(*)::int
@@ -48,7 +48,10 @@ select set_eq(
     ('wishlists_owner_all'),
     ('wishlists_admin_read'),
     ('wishlists_invitee_read'),
-    ('items_owner_all'),
+    ('items_owner_select'),
+    ('items_owner_insert'),
+    ('items_owner_update'),
+    ('items_owner_delete'),
     ('items_admin_all'),
     ('claims_admin_read'),
     ('claims_admin_delete'),

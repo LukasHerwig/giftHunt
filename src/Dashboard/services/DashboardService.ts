@@ -21,7 +21,7 @@ export class DashboardService {
       (ownedData || []).map(async (wishlist) => {
         const { count, error: countError } = await supabase
           .from('wishlist_items')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('wishlist_id', wishlist.id);
 
         if (countError) {
@@ -89,7 +89,7 @@ export class DashboardService {
         (adminWishlistData || []).map(async (wishlist) => {
           const { count, error: countError } = await supabase
             .from('wishlist_items')
-            .select('*', { count: 'exact', head: true })
+            .select('id', { count: 'exact', head: true })
             .eq('wishlist_id', wishlist.id);
 
           if (countError) {

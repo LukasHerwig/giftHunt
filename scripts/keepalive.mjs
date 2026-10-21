@@ -99,7 +99,7 @@ const created = unwrap(
       title: `${TITLE_PREFIX}${timestamp}`,
       description: 'Automated activity ping.',
     })
-    .select()
+    .select('id')
     .single()
 );
 step('created', created.id);

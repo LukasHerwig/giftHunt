@@ -79,7 +79,6 @@ const ManageWishlist = () => {
     handleAddItem,
     handleEditItem,
     handleUpdateItem,
-    handleEditDescriptionOnly,
     handleUpdateDescriptionOnly,
     handleDeleteItem,
     handleInviteAdmin,
@@ -178,7 +177,6 @@ const ManageWishlist = () => {
             wishlist={wishlist}
             hasActiveShareLink={hasActiveShareLink}
             onEditItem={handleEditItem}
-            onEditDescriptionOnly={handleEditDescriptionOnly}
             onDeleteItem={handleDeleteItem}
             formatUrl={formatUrl}
             onAddItem={() => setDialogOpen(true)}
