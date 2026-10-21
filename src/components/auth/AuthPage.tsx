@@ -53,11 +53,11 @@ export const AuthPage = () => {
           options: { emailRedirectTo: `${getBaseUrl()}/` },
         });
         if (error) throw error;
-        toast.success(t('auth.toast.accountCreated'));
+        toast.success(t('auth.toast.accountCreated'), 'love');
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email: address, password });
         if (error) throw error;
-        toast.success(t('auth.toast.welcomeBack'));
+        toast.success(t('auth.toast.welcomeBack'), 'love');
       }
     } catch (error) {
       console.error('Auth error:', error);

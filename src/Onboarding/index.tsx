@@ -56,7 +56,7 @@ const Onboarding = () => {
       try {
         setSaving(true);
         await OnboardingService.completeOnboarding(user.id, name);
-        toast.success(t('onboarding.welcomeComplete'));
+        toast.success(t('onboarding.welcomeComplete'), 'love');
         navigate(postLoginPath(AuthService.getPendingInvitationToken()));
       } catch (error) {
         console.error('Error completing onboarding:', error);

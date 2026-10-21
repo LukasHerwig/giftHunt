@@ -72,7 +72,7 @@ export const useAcceptInvitation = (token: string | null) => {
     try {
       await AcceptInvitationService.acceptInvitation(raw.id);
       AuthService.removePendingInvitationToken();
-      toast.success(t('acceptInvitation.accepted'));
+      toast.success(t('acceptInvitation.accepted'), 'love');
       if (alive.current) navigate(`/wishlist/${raw.wishlist_id}`, { replace: true });
     } catch (error) {
       console.error('Error accepting invitation:', error);

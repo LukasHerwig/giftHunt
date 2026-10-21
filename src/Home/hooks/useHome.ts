@@ -58,7 +58,7 @@ export const useHome = () => {
         console.error(error);
         const code = errorCode(error);
         if (code === 'invitation_not_found' || code === 'already_accepted' || code === 'invitation_expired' || code === 'owner_cannot_be_admin') {
-          toast.error(t('home.toast.invitationGone'));
+          toast.error(t('home.toast.invitationGone'), 'lost');
           await load();
         } else if (code === 'admin_already_exists') {
           toast.error(t('home.toast.organizerExists'));
@@ -95,7 +95,7 @@ export const useHome = () => {
   const acceptInvitation = async (invitationId: string) => {
     const ok = await run(() => HomeService.acceptInvitation(invitationId), 'home.toast.acceptFailed');
     if (ok) {
-      toast.success(t('home.toast.accepted'));
+      toast.success(t('home.toast.accepted'), 'love');
       await load();
     }
   };
@@ -103,7 +103,7 @@ export const useHome = () => {
   const declineInvitation = async (invitationId: string) => {
     const ok = await run(() => HomeService.declineInvitation(invitationId), 'home.toast.declineFailed');
     if (ok) {
-      toast.success(t('home.toast.declined'));
+      toast.success(t('home.toast.declined'), 'teary');
       await load();
     }
   };

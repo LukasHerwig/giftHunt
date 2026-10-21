@@ -75,14 +75,14 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
           setSheet(null);
           await load();
         } else if (code === 'edit_directly') {
-          toast.error(t('wishlist.toast.listChanged'));
+          toast.error(t('wishlist.toast.listChanged'), 'lost');
           setSheet(null);
           await load();
         } else if (code === 'request_pending') {
           toast.error(t('wishlist.toast.requestPending'));
           await load();
         } else if (code === 'item_not_found') {
-          toast.error(t('wishlist.toast.itemGone'));
+          toast.error(t('wishlist.toast.itemGone'), 'lost');
           setSheet(null);
           await load();
         } else if (code === 'invite_pending') {
@@ -139,7 +139,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
         await WishlistService.requestEdit(item.id, proposal);
       }, 'wishlist.toast.requestFailed');
       if (ok) {
-        toast.success(t('wishlist.toast.requestSent'));
+        toast.success(t('wishlist.toast.requestSent'), 'wink');
         closeSheet();
         await load();
       }
@@ -148,7 +148,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
 
     const ok = await run(() => WishlistService.updateItem(item.id, form), 'wishlist.toast.saveFailed');
     if (ok) {
-      toast.success(t('wishlist.toast.saved'));
+      toast.success(t('wishlist.toast.saved'), 'wink');
       closeSheet();
       await load();
     }
@@ -163,7 +163,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
       shared ? 'wishlist.toast.requestFailed' : 'wishlist.toast.removeFailed',
     );
     if (ok) {
-      toast.success(t(shared ? 'wishlist.toast.requestRemoveSent' : 'wishlist.toast.removed'));
+      toast.success(t(shared ? 'wishlist.toast.requestRemoveSent' : 'wishlist.toast.removed'), shared ? 'wink' : 'teary');
       closeSheet();
       await load();
     }
@@ -175,7 +175,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
       'wishlist.toast.withdrawFailed',
     );
     if (ok) {
-      toast.success(t('wishlist.toast.requestWithdrawn'));
+      toast.success(t('wishlist.toast.requestWithdrawn'), 'teary');
       await load();
     }
   };
@@ -202,7 +202,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
       'wishlist.toast.revokeFailed',
     );
     if (ok) {
-      toast.success(t('wishlist.toast.inviteRevoked'));
+      toast.success(t('wishlist.toast.inviteRevoked'), 'teary');
       await load();
     }
   };
@@ -214,7 +214,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
       'wishlist.toast.organizerRemoveFailed',
     );
     if (ok) {
-      toast.success(t('wishlist.toast.organizerRemoved'));
+      toast.success(t('wishlist.toast.organizerRemoved'), 'teary');
       await load();
     }
   };
@@ -227,7 +227,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
       'wishlist.toast.settingsFailed',
     );
     if (ok) {
-      toast.success(t('wishlist.toast.settingsSaved'));
+      toast.success(t('wishlist.toast.settingsSaved'), 'wink');
       closeSheet();
       await load();
     }
@@ -238,7 +238,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
     if (!wishlistId) return;
     const ok = await run(() => WishlistService.deleteList(wishlistId), 'wishlist.toast.deleteFailed');
     if (ok) {
-      toast.success(t('wishlist.toast.listDeleted'));
+      toast.success(t('wishlist.toast.listDeleted'), 'teary');
       navigate('/');
     }
   };

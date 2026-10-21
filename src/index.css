@@ -211,3 +211,29 @@
 
 /* Unstyled toasts: hide the toasts behind the front one in a collapsed stack, as sonner does for styled ones. */
 [data-sonner-toast][data-expanded='false'][data-front='false'] > * { opacity: 0; }
+
+@keyframes rs-pulse {
+  0%, 100% { transform: scale(1); }
+  40% { transform: scale(1.08); }
+  70% { transform: scale(0.98); }
+}
+@keyframes rs-sway {
+  0%, 100% { transform: rotate(0); }
+  35% { transform: rotate(-4deg); }
+  70% { transform: rotate(3deg); }
+}
+@keyframes rs-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.03); }
+}
+@keyframes rs-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  96% { transform: scaleY(0.1); }
+}
+.rs-pulse { animation: rs-pulse 0.7s ease-in-out 1; }
+.rs-sway { animation: rs-sway 1.2s ease-in-out 1; }
+.rs-breathe { transform-origin: 50% 100%; animation: rs-breathe 2.4s ease-in-out infinite; }
+.rs-alive .rs-blink { transform-box: fill-box; transform-origin: center; animation: rs-blink 3.6s infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .rs-pulse, .rs-sway, .rs-breathe, .rs-alive .rs-blink { animation: none; }
+}

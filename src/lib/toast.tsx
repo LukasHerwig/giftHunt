@@ -1,19 +1,19 @@
 import { toast as sonner } from 'sonner';
 import { RosettenBubble } from '@/components/brand';
-import { bubbleFor, type ToastKind } from '@/lib/bubble';
+import { bubbleFor, type BubblePose, type ToastKind } from '@/lib/bubble';
 import { getPlayful } from '@/lib/playful';
 
 const reducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-const say = (kind: ToastKind, message: string) =>
-  sonner.custom(() => <RosettenBubble kind={kind} message={message} lively={getPlayful() && !reducedMotion()} />, {
-    duration: bubbleFor(kind).durationMs,
+const say = (kind: ToastKind, message: string, pose?: BubblePose) =>
+  sonner.custom(() => <RosettenBubble kind={kind} message={message} pose={pose} lively={getPlayful() && !reducedMotion()} />, {
+    duration: bubbleFor(kind, pose).durationMs,
   });
 
-/** Same calls as sonner's, but Rosetten says it. */
+/** Same calls as sonner's, but Rosetten says it, with the face that fits. */
 export const toast = {
-  success: (message: string) => say('success', message),
-  error: (message: string) => say('error', message),
-  info: (message: string) => say('info', message),
+  success: (message: string, pose?: BubblePose) => say('success', message, pose),
+  error: (message: string, pose?: BubblePose) => say('error', message, pose),
+  info: (message: string, pose?: BubblePose) => say('info', message, pose),
 };

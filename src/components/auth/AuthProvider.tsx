@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
       // Redirect to auth page
       navigate('/auth');
-      toast.success(i18n.t('auth.signedOut'));
+      toast.success(i18n.t('auth.signedOut'), 'sleep');
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error(i18n.t('auth.signOutFailed'));
@@ -157,7 +157,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
-            if (!signingOut.current) toast.info(i18n.t('auth.sessionExpired'));
+            if (!signingOut.current) toast.info(i18n.t('auth.sessionExpired'), 'sleep');
           }
           break;
 
