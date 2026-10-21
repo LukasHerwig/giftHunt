@@ -45,13 +45,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (needsOnboarding && location.pathname !== '/onboarding') {
           navigate('/onboarding');
         } else if (!needsOnboarding && location.pathname === '/auth') {
-          navigate(postLoginPath(AuthService.getPendingInvitationToken()));
+          navigate(postLoginPath(AuthService.getPendingInvitationToken()), { replace: true });
         }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         // If there's an error, just redirect normally
         if (location.pathname === '/auth') {
-          navigate(postLoginPath(AuthService.getPendingInvitationToken()));
+          navigate(postLoginPath(AuthService.getPendingInvitationToken()), { replace: true });
         }
       }
     },

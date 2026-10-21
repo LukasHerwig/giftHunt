@@ -32,6 +32,14 @@ export const useAcceptInvitation = (token: string | null) => {
   const [state, setState] = useState<FlowState>(LOADING);
   // The effect runs twice under StrictMode and again when `t` changes; accept only once per key.
   const started = useRef<string | null>(null);
+  // The accept can finish after the person was sent elsewhere (onboarding): then do not navigate or set state.
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
   const run = useCallback(async () => {
     if (!token) {
@@ -65,12 +73,12 @@ export const useAcceptInvitation = (token: string | null) => {
       await AcceptInvitationService.acceptInvitation(raw.id);
       AuthService.removePendingInvitationToken();
       toast.success(t('acceptInvitation.accepted'));
-      navigate(`/wishlist/${raw.wishlist_id}`, { replace: true });
+      if (alive.current) navigate(`/wishlist/${raw.wishlist_id}`, { replace: true });
     } catch (error) {
       console.error('Error accepting invitation:', error);
       const problem = acceptProblem(errorCode(error));
       if (problem === 'gone') AuthService.removePendingInvitationToken();
-      setState({ phase: 'problem', problem, invitation });
+      if (alive.current) setState({ phase: 'problem', problem, invitation });
     }
   }, [token, userId, t, navigate]);
 
