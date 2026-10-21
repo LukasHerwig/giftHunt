@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Session, User } from '@supabase/supabase-js';
@@ -18,6 +18,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
+  // An intentional sign-out must not also announce an expired session.
+  const signingOut = useRef(false);
 
   // Routes that don't require authentication
   const publicRoutes = ['/auth', '/accept-invitation', '/shared'];
@@ -57,6 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   );
 
   const signOut = async () => {
+    signingOut.current = true;
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
@@ -71,6 +74,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (error) {
       console.error('Error signing out:', error);
       toast.error(i18n.t('auth.signOutFailed'));
+    } finally {
+      signingOut.current = false;
     }
   };
 
@@ -151,7 +156,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
           if (!isPublicRoute && !isOnboardingRoute) {
             navigate('/auth');
-            toast.info(i18n.t('auth.sessionExpired'));
+            if (!signingOut.current) toast.info(i18n.t('auth.sessionExpired'));
           }
           break;
 

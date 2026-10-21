@@ -50,7 +50,7 @@ const Profile = () => {
             onSubmit={page.save}
           />
 
-          <div className="grid gap-8 md:grid-cols-2 md:gap-6">
+          <div className="grid gap-8 md:grid-cols-[1.5fr_1fr] md:gap-6">
             <section className="flex flex-col gap-3">
               <SectionHeader title={t('profile.sectionAppearance')} />
               <Segmented
