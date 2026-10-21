@@ -3,7 +3,8 @@ import { Rosetten, type RosettenPose } from '@/components/brand';
 import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
-  pose: RosettenPose;
+  /** Left out where the mascot would sit next to what is taken. */
+  pose?: RosettenPose;
   title: string;
   text?: string;
   action?: ReactNode;
@@ -25,7 +26,7 @@ export const EmptyState = ({
       'flex flex-col items-center gap-2 px-4 text-center',
       size === 'screen' ? 'py-10' : 'py-8',
     )}>
-    <Rosetten pose={pose} size={size === 'screen' ? 144 : 104} />
+    {pose && <Rosetten pose={pose} size={size === 'screen' ? 144 : 104} />}
     <Heading
       className={cn(
         'mt-3 font-bold text-gh-ink',

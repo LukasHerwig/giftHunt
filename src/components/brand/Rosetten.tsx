@@ -201,7 +201,8 @@ interface RosettenLoaderProps {
 
 /** Floats and wiggles its bow while something loads; stands still under reduced motion. */
 export const RosettenLoader = ({ label, size = 120, className }: RosettenLoaderProps) => (
-  <div role="status" aria-label={label} className={className}>
+  <div role="status" className={className}>
+    <span className="sr-only">{label}</span>
     <svg viewBox="0 0 200 200" width={size} height={size} aria-hidden="true" className="text-gh-ink">
       <g className="rs-float">
         <Figure

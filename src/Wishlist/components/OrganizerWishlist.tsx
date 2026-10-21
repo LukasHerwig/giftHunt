@@ -146,7 +146,6 @@ export const OrganizerWishlist = ({ wishlistId, mode }: OrganizerWishlistProps) 
           </div>
           {shown.length === 0 ? (
             <EmptyState
-              pose="sleep"
               title={t(segment === 'available' ? 'wishlist.org.empty.availableTitle' : 'wishlist.org.empty.takenTitle')}
               text={t(segment === 'available' ? 'wishlist.org.empty.availableText' : 'wishlist.org.empty.takenText')}
             />
