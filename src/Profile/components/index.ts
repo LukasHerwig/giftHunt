@@ -1,3 +1,2 @@
-export { ProfileLoadingState } from './ProfileLoadingState';
-export { ProfileNotFoundState } from './ProfileNotFoundState';
-export { PersonalInformationCard } from './PersonalInformationCard';
+export { AboutSection } from './AboutSection';
+export { ProfileLoading } from './ProfileLoading';

@@ -1,81 +1,97 @@
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useProfile } from './hooks/useProfile';
-import { ProfileLoadingState } from './components/ProfileLoadingState';
-import { ProfileNotFoundState } from './components/ProfileNotFoundState';
-import { PersonalInformationCard } from './components/PersonalInformationCard';
-import { Loader2, Check } from 'lucide-react';
+import { User } from 'lucide-react';
+import AppHeader from '@/components/AppHeader';
+import { useAuth } from '@/components/auth/useAuth';
 import { Button } from '@/components/ui/button';
-import { BackButton } from '@/components/BackButton';
+import { EmptyState } from '@/components/gh/EmptyState';
+import { SectionHeader } from '@/components/gh/SectionHeader';
+import { Segmented } from '@/components/gh/Segmented';
+import { useTheme, type Mode } from '@/contexts/ThemeContext';
+import { AboutSection, ProfileLoading } from './components';
+import { useProfile } from './hooks/useProfile';
+import { formatMemberSince } from './lib/memberSince';
 
 const Profile = () => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
-  const { profile, loading, saving, fullName, handleSave, setFullName } =
-    useProfile();
-
-  const hasChanges = fullName.trim() !== (profile?.full_name || '');
-
-  if (loading) {
-    return <ProfileLoadingState />;
-  }
-
-  if (!profile) {
-    return <ProfileNotFoundState />;
-  }
+  const { t, i18n } = useTranslation();
+  const { signOut } = useAuth();
+  const { theme, setMode } = useTheme();
+  const page = useProfile();
+  const language = i18n.language?.startsWith('sv') ? 'sv' : 'en';
 
   return (
-    <div className="min-h-screen bg-ios-background pb-32 pb-safe">
-      {/* Simple Navigation Header */}
-      <div className="sticky top-0 z-50 bg-ios-background/80 backdrop-blur-xl border-b border-ios-separator/10 pt-[env(safe-area-inset-top)]">
-        <div className="mx-auto max-w-4xl w-full px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <BackButton to="/" />
-            <h1 className="text-[20px] font-bold text-foreground tracking-tight">
-              {t('profile.title')}
-            </h1>
-          </div>
-
-          {hasChanges && (
+    <div className="min-h-screen bg-gh-bg pb-safe text-gh-ink">
+      <AppHeader title={t('profile.title')} />
+      {page.loading ? (
+        <ProfileLoading />
+      ) : page.failed || !page.profile ? (
+        <EmptyState
+          icon={User}
+          size="screen"
+          title={t('profile.loadFailed')}
+          action={
             <Button
-              onClick={handleSave}
-              disabled={saving || !fullName.trim()}
-              className="bg-ios-blue hover:bg-ios-blue/90 text-ios-on-blue rounded-full px-6 h-10 font-semibold shadow-lg active:scale-95 transition-all animate-in fade-in zoom-in duration-200">
-              {saving ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  {t('common.save')}
-                </div>
-              )}
+              type="button"
+              variant="outline"
+              onClick={() => void page.reload()}
+              className="h-12 rounded-gh-md px-6 text-[16px] font-semibold">
+              {t('profile.retry')}
             </Button>
-          )}
-        </div>
-      </div>
-
-      <main className="container mx-auto px-4 max-w-4xl mt-8 relative z-10">
-        {/* Profile Summary Section */}
-        <div className="flex flex-col items-center mb-10">
-          <div className="w-24 h-24 bg-ios-secondary backdrop-blur-xl border border-ios-separator/10 rounded-full flex items-center justify-center mb-4 shadow-xl">
-            <span className="text-[36px] font-bold text-foreground">
-              {fullName.charAt(0).toUpperCase() || '?'}
-            </span>
-          </div>
-          <h2 className="text-[24px] font-bold text-foreground tracking-tight">
-            {fullName || t('profile.fullNamePlaceholder')}
-          </h2>
-          <p className="text-[15px] text-ios-gray mt-1">{profile.email}</p>
-        </div>
-
-        <PersonalInformationCard
-          profile={profile}
-          fullName={fullName}
-          onFullNameChange={setFullName}
-          onSave={handleSave}
-          saving={saving}
+          }
         />
-      </main>
+      ) : (
+        <main className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-4 pb-10 pt-6 md:gap-10 md:px-8 md:pt-12">
+          <AboutSection
+            email={page.profile.email}
+            fullName={page.fullName}
+            error={page.nameError}
+            changed={page.changed}
+            saving={page.saving}
+            onChange={page.setFullName}
+            onSubmit={page.save}
+          />
+
+          <div className="grid gap-8 md:grid-cols-2 md:gap-6">
+            <section className="flex flex-col gap-3">
+              <SectionHeader title={t('profile.sectionAppearance')} />
+              <Segmented
+                ariaLabel={t('profile.sectionAppearance')}
+                value={theme.mode}
+                onChange={(value) => setMode(value as Mode)}
+                options={[
+                  { value: 'light', label: t('profile.themeLight') },
+                  { value: 'dark', label: t('profile.themeDark') },
+                  { value: 'system', label: t('profile.themeSystem') },
+                ]}
+              />
+            </section>
+            <section className="flex flex-col gap-3">
+              <SectionHeader title={t('profile.sectionLanguage')} />
+              <Segmented
+                ariaLabel={t('profile.sectionLanguage')}
+                value={language}
+                onChange={(value) => void i18n.changeLanguage(value)}
+                options={[
+                  { value: 'sv', label: t('profile.languageSv') },
+                  { value: 'en', label: t('profile.languageEn') },
+                ]}
+              />
+            </section>
+          </div>
+
+          <div className="flex flex-col gap-4 border-t border-gh-line pt-6 md:flex-row md:items-center md:justify-between">
+            <p className="text-[13px] leading-[18px] text-gh-muted">
+              {t('profile.memberSince', { date: formatMemberSince(page.profile.created_at, language) })}
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void signOut()}
+              className="h-[52px] w-full rounded-gh-md px-6 text-[16px] font-semibold md:w-auto">
+              {t('profile.signOut')}
+            </Button>
+          </div>
+        </main>
+      )}
     </div>
   );
 };

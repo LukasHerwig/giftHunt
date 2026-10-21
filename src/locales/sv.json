@@ -485,20 +485,32 @@
   },
   "profile": {
     "title": "Profil",
-    "description": "Hantera din personliga information och kontoinställningar",
-    "personalInformation": "Personlig Information",
-    "updateYourPersonalDetails": "Uppdatera dina personliga detaljer",
+    "sectionAbout": "Om dig",
+    "name": "Namn",
+    "namePlaceholder": "För- och efternamn",
     "email": "E-post",
-    "emailCannotBeChanged": "E-postadress kan inte ändras",
-    "fullName": "Fullständigt Namn",
-    "fullNamePlaceholder": "Ange ditt fullständiga namn",
-    "accountInformation": "Kontoinformation",
-    "memberSince": "Medlem sedan",
-    "lastUpdated": "Senast uppdaterad",
-    "saveChanges": "Spara Ändringar",
-    "saving": "Sparar...",
-    "nameRequired": "Namnet kan inte vara tomt",
-    "nameHelpText": "Ditt namn kommer att visas för önskelisteägare när du hämtar föremål som gåvor, och för att identifiera vems önskelista det är."
+    "emailHelp": "E-postadressen kan inte ändras.",
+    "save": "Spara namn",
+    "errors": {
+      "required": "Fyll i ditt namn.",
+      "tooLong": "Namnet får vara högst 100 tecken."
+    },
+    "sectionAppearance": "Utseende",
+    "themeLight": "Ljust",
+    "themeDark": "Mörkt",
+    "themeSystem": "Följ enheten",
+    "sectionLanguage": "Språk",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "memberSince": "Medlem sedan {{date}}",
+    "signOut": "Logga ut",
+    "loading": "Laddar din profil",
+    "loadFailed": "Profilen kunde inte laddas.",
+    "retry": "Försök igen",
+    "toast": {
+      "saved": "Namnet är sparat",
+      "saveFailed": "Namnet kunde inte sparas. Försök igen."
+    }
   },
   "theme": {
     "title": "Temainställningar",

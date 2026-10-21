@@ -484,20 +484,32 @@
   },
   "profile": {
     "title": "Profile",
-    "description": "Manage your personal information and account settings",
-    "personalInformation": "Personal Information",
-    "updateYourPersonalDetails": "Update your personal details",
+    "sectionAbout": "About you",
+    "name": "Name",
+    "namePlaceholder": "First and last name",
     "email": "Email",
-    "emailCannotBeChanged": "Email address cannot be changed",
-    "fullName": "Full Name",
-    "fullNamePlaceholder": "Enter your full name",
-    "accountInformation": "Account Information",
-    "memberSince": "Member since",
-    "lastUpdated": "Last updated",
-    "saveChanges": "Save Changes",
-    "saving": "Saving...",
-    "nameRequired": "Name cannot be empty",
-    "nameHelpText": "Your name helps others identify whose wishlist they're viewing and shows who claimed which items."
+    "emailHelp": "The email address can't be changed.",
+    "save": "Save name",
+    "errors": {
+      "required": "Enter your name.",
+      "tooLong": "The name can be at most 100 characters."
+    },
+    "sectionAppearance": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "Match device",
+    "sectionLanguage": "Language",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "memberSince": "Member since {{date}}",
+    "signOut": "Sign out",
+    "loading": "Loading your profile",
+    "loadFailed": "Couldn't load your profile.",
+    "retry": "Try again",
+    "toast": {
+      "saved": "Name saved",
+      "saveFailed": "Couldn't save your name. Try again."
+    }
   },
   "theme": {
     "title": "Theme Settings",
