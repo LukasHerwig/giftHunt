@@ -90,6 +90,8 @@ The look comes from the **GiftHunt design system** (claude.ai artifact: https://
 - **Status:** item status is a word plus a pill (`gh-available`/`gh-available-bg` "Ledig", `gh-taken`/`gh-taken-bg` "Tagen"); destructive is `gh-danger` (rust), never the accent.
 - **Legacy:** older screens still use shadcn variables and an `ios-*` palette; both point at the GiftHunt tokens (`src/index.css`). Text on `bg-ios-blue` / `bg-ios-red` uses `text-ios-on-blue` / `text-ios-on-red`. New code uses the `gh-*` names only.
 
+**Page column** — on desktop the header and every in-app page share one column: `PAGE_COLUMN` from `src/components/pageColumn.ts` (centred, max 960px, 16px sides on mobile and 32px from `md`, so 896px of content). Use `cn(PAGE_COLUMN, '…vertical padding and layout…')` on a page's `<main>`, never your own `max-w-*`/`px-*`; a unit test fails if a screen hardcodes `max-w-[720px]` or `max-w-[960px]`. Narrow forms (auth, onboarding, invitation) are 440px on purpose and stay centred.
+
 **Responsive overlays** — use `useIsMobile()` to switch:
 
 - Mobile → `Drawer` (bottom sheet) from `@/components/ui/drawer`
@@ -128,3 +130,22 @@ When `is_giftcard = true`, multiple people can claim the same item via `item_cla
 All schema changes go in `supabase/migrations/` as timestamped SQL files. Generate via `npx supabase db diff`, not by hand. Never push directly to production without testing locally with `npx supabase db reset` first.
 
 To sync production data into local: `./sync-remote-data.sh`.
+
+## How we work
+
+Scale the process to the size of the change. Say which flow you pick; the user can override it.
+
+| Kind of work | Flow |
+| --- | --- |
+| **Small bug or tweak** (wrong label, bad redirect, one-file fix) | Fix it (failing test first when it is logic), show the result, then push and PR once the user says so. No issue, design or plan. |
+| **Bigger bug** (cause unclear, touches data, auth or RLS) | Reproduce and find the cause first, propose the fix in chat, implement after approval. |
+| **UI update to an existing screen** | Short design in chat, or one board in the design canvas if it is visual. Approve, then implement; write a plan only when there are several steps. |
+| **New feature** | Issue → design (canvas if visual) → approved → plan → approved → implement → verify → PR. |
+
+- **Issues:** features get a GitHub issue (`gh issue create`): problem, who it affects, acceptance criteria, what is out of scope. Design, plan and PR link back to it; the PR says `Closes #N`. Skip issues for anything smaller than a feature.
+- **Design:** visual work is designed as boards in a claude.ai Design artifact that uses the GiftHunt design system (link above), approved by the user before any code. Specs and plans live in `docs/superpowers/specs/` and `docs/superpowers/plans/` (dated `YYYY-MM-DD-name.md`).
+- **Branches:** new work happens in a git worktree on its own branch (never on `main`); stage files by name; new commits, never amend unless asked.
+- **Verify:** `npm run test:unit`, `npx tsc --noEmit -p tsconfig.app.json`, `npm run lint`, `npm run build`, and `npm run test:db` when the database changes. Anything visible is also checked in Chrome against local Supabase (mobile 390 px and desktop 1280 px, light and dark, sv and en) and compared with the approved design. Baseline: lint has 10 known problems (3 errors, 7 warnings); do not add more.
+- **Review:** before merging a feature, or anything touching auth, RLS or migrations, have a fresh reviewer (most capable model) read the whole branch against the plan. Small fixes skip this.
+- **Approval:** never push, open a PR or merge without the user saying so. Say when a merge will run `supabase db push` against production (any new migration) and what it changes there.
+- **Docs:** update this file and the feature `README.md` in the same PR when behavior or conventions change.

@@ -1,3 +1,5 @@
+import { cn } from '@/lib/utils';
+import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Gift, Plus, Users } from 'lucide-react';
@@ -44,7 +46,7 @@ const Home = () => {
           }
         />
       ) : (
-        <main className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-4 pb-10 pt-6 md:gap-10 md:px-8 md:pt-12">
+        <main className={cn(PAGE_COLUMN, 'flex flex-col gap-8 pb-10 pt-6 md:gap-10 md:pt-12')}>
           <h1 className="text-[32px] font-bold leading-9 tracking-[-0.8px] text-gh-ink">
             {home.greetingName ? t('home.greeting', { name: home.greetingName }) : t('home.greetingNoName')}
           </h1>
