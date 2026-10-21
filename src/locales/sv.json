@@ -387,20 +387,34 @@
     "returnHome": "Tillbaka till startsidan"
   },
   "acceptInvitation": {
-    "invalidInvitation": "Ogiltig Inbjudan",
-    "goToHome": "Gå till startsidan",
-    "youveBeenInvited": "Du har blivit inbjuden!",
-    "invitedToManage": "Du har blivit inbjuden att hjälpa till att hantera en önskelista som administratör.",
-    "invitedBy": "Inbjuden av",
-    "someone": "Någon",
-    "asAdminYouCan": "Som administratör kommer du att kunna:",
-    "seeItemsTaken": "Se vilka föremål som har tagits och av vem",
-    "shareWishlistLink": "Dela önskelistans länk med andra",
-    "coordinateGifts": "Koordinera gåvogivning",
-    "helpManage": "Hjälpa till att hantera önskelistan",
-    "signInToAccept": "Logga in eller skapa ett konto för att acceptera denna inbjudan.",
-    "signInCreateAccount": "Logga in / Skapa konto",
-    "afterSignInInfo": "Efter inloggning kommer du att se inbjudan på din instrumentpanel där du kan acceptera den."
+    "loading": "Kontrollerar inbjudan",
+    "titleNamed": "{{name}} vill att du delar en lista",
+    "titleNoName": "Du är inbjuden att dela en lista",
+    "lead": "Som arrangör delar du listan med dem som vill ge och håller koll på vem som köper vad.",
+    "listLabel": "Önskelista",
+    "note": "Inbjudan är skickad till e-postadressen du fick den på. Logga in eller skapa ett konto med den adressen, så godtas inbjudan direkt.",
+    "signIn": "Logga in",
+    "signUp": "Skapa konto",
+    "accepted": "Du är nu arrangör",
+    "home": "Till startsidan",
+    "gone": {
+      "title": "Den här inbjudan gäller inte längre",
+      "text": "Den kan ha dragits tillbaka, redan godtagits eller gått ut. Be den som bjöd in dig om en ny."
+    },
+    "wrongAccount": {
+      "title": "Inbjudan är till en annan adress",
+      "text": "Du är inloggad som {{email}}. Inbjudan skickades till en annan e-postadress. Logga ut och logga in med den adress du fick inbjudan på.",
+      "signOut": "Logga ut"
+    },
+    "unconfirmed": {
+      "title": "Bekräfta din e-postadress",
+      "text": "Du måste bekräfta din e-postadress innan du kan godta inbjudan. Vi har skickat ett mejl till dig."
+    },
+    "failed": {
+      "title": "Inbjudan kunde inte godtas",
+      "text": "Något gick fel. Försök igen.",
+      "retry": "Försök igen"
+    }
   },
   "adminWishlist": {
     "copyShareLink": "Kopiera delningslänk",

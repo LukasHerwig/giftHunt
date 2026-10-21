@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { acceptProblem, toInvitationData, tokenProblem } from './invitation.ts';
-import type { InvitationQueryResult } from './invitation.ts';
+import type { InvitationQueryResult } from '../types.ts';
 
 const raw = (over: Partial<InvitationQueryResult> = {}): InvitationQueryResult => ({
   id: 'i1',

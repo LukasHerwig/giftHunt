@@ -1,34 +1,30 @@
 import { useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/components/auth/useAuth';
+import { InviteLoading, InviteProblem, InvitePrompt, InviteShell } from './components';
 import { useAcceptInvitation } from './hooks';
-import { LoadingState, ErrorState, SuccessState } from './components';
 
 const AcceptInvitation = () => {
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const [params] = useSearchParams();
+  const { user } = useAuth();
+  const flow = useAcceptInvitation(params.get('token'));
 
-  const {
-    loading,
-    error,
-    invitationValid,
-    invitationData,
-    handleSignIn,
-    handleGoHome,
-  } = useAcceptInvitation(token);
-
-  if (loading) {
-    return <LoadingState />;
-  }
-
-  if (error) {
-    return <ErrorState error={error} onGoHome={handleGoHome} />;
-  }
-
-  if (invitationValid && invitationData) {
-    return <SuccessState invitationData={invitationData} onSignIn={handleSignIn} />;
-  }
-
-  // Fallback to error state
-  return <ErrorState error="Unable to process invitation" onGoHome={handleGoHome} />;
+  return (
+    <InviteShell signedIn={Boolean(user)}>
+      {flow.phase === 'loading' && <InviteLoading />}
+      {flow.phase === 'prompt' && flow.invitation && (
+        <InvitePrompt invitation={flow.invitation} onSignIn={flow.goSignIn} onSignUp={flow.goSignUp} />
+      )}
+      {flow.phase === 'problem' && flow.problem && (
+        <InviteProblem
+          problem={flow.problem}
+          email={user?.email}
+          onHome={flow.goHome}
+          onLeave={() => void flow.leave()}
+          onRetry={flow.retry}
+        />
+      )}
+    </InviteShell>
+  );
 };
 
 export default AcceptInvitation;

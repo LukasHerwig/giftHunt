@@ -386,20 +386,34 @@
     "returnHome": "Return to Home"
   },
   "acceptInvitation": {
-    "invalidInvitation": "Invalid Invitation",
-    "goToHome": "Go to Home",
-    "youveBeenInvited": "You've been invited!",
-    "invitedToManage": "You've been invited to help manage a wishlist as an admin.",
-    "invitedBy": "Invited by",
-    "someone": "Someone",
-    "asAdminYouCan": "As an admin, you'll be able to:",
-    "seeItemsTaken": "See which items have been taken and by whom",
-    "shareWishlistLink": "Share the wishlist link with others",
-    "coordinateGifts": "Coordinate gift-giving efforts",
-    "helpManage": "Help manage the wishlist",
-    "signInToAccept": "Please sign in or create an account to accept this invitation.",
-    "signInCreateAccount": "Sign In / Create Account",
-    "afterSignInInfo": "After signing in, you'll see the invitation on your dashboard where you can accept it."
+    "loading": "Checking the invitation",
+    "titleNamed": "{{name}} wants you to share a list",
+    "titleNoName": "You're invited to share a list",
+    "lead": "As organizer you share the list with the people who want to give and keep track of who buys what.",
+    "listLabel": "Wishlist",
+    "note": "The invitation was sent to the email address you received it on. Sign in or create an account with that address and the invitation is accepted right away.",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "accepted": "You are now an organizer",
+    "home": "Go to the start page",
+    "gone": {
+      "title": "This invitation is no longer valid",
+      "text": "It may have been withdrawn, already accepted or expired. Ask whoever invited you for a new one."
+    },
+    "wrongAccount": {
+      "title": "The invitation is for another address",
+      "text": "You are signed in as {{email}}. The invitation was sent to another email address. Sign out and sign in with the address you received the invitation on.",
+      "signOut": "Sign out"
+    },
+    "unconfirmed": {
+      "title": "Confirm your email address",
+      "text": "You need to confirm your email address before you can accept the invitation. We have sent you an email."
+    },
+    "failed": {
+      "title": "The invitation couldn't be accepted",
+      "text": "Something went wrong. Try again.",
+      "retry": "Try again"
+    }
   },
   "adminWishlist": {
     "copyShareLink": "Copy Share Link",
