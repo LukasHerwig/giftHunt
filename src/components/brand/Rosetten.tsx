@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
 import { ROSETT } from './palette';
 
 export type RosettenPose = 'hello' | 'happy' | 'sleep' | 'lost' | 'sad' | 'locked';
 
+// The outline follows the theme (dark ink on light, light ink on dark) through `text-gh-ink`; the face stays dark on the pink body.
 const STROKE = {
-  stroke: ROSETT.ink,
+  stroke: 'currentColor',
   strokeWidth: 4,
   strokeLinejoin: 'round',
   strokeLinecap: 'round',
@@ -28,7 +30,7 @@ interface FigureProps {
 
 const Figure = ({ leftArm, rightArm, droop = false, wiggle = false, extras, face, overlay }: FigureProps) => (
   <>
-    <ellipse cx="100" cy="192" rx="52" ry="6" fill={ROSETT.ink} opacity=".1" />
+    <ellipse cx="100" cy="192" rx="52" ry="6" fill="currentColor" opacity=".1" />
     <g {...STROKE}>
       <path d={leftArm} fill="none" />
       <path d={rightArm} fill="none" />
@@ -117,7 +119,7 @@ const POSES: Record<RosettenPose, () => ReactNode> = {
       leftArm="M48 130C26 118 26 92 50 80"
       rightArm={ARM_DOWN_RIGHT}
       extras={<path d="M150 40C150 22 178 22 178 40C178 52 164 52 164 66" fill="none" strokeWidth={5} />}
-      overlay={<circle cx="164" cy="78" r="3.5" fill={ROSETT.ink} />}
+      overlay={<circle cx="164" cy="78" r="3.5" fill="currentColor" />}
       face={
         <>
           <g fill={ROSETT.ink}>
@@ -136,13 +138,13 @@ const POSES: Record<RosettenPose, () => ReactNode> = {
       rightArm={ARM_DOWN_RIGHT}
       droop
       extras={
-        <>
+        <g transform="translate(8 -18)">
           <path
             d="M140 40C132 40 128 46 130 52C122 52 120 62 128 64H164C174 64 176 52 168 50C168 42 152 38 140 40Z"
             fill={ROSETT.cream}
           />
           <path d="M134 74L170 34" fill="none" />
-        </>
+        </g>
       }
       overlay={<path d="M126 138C121 148 131 148 126 138Z" fill={ROSETT.tear} stroke={ROSETT.ink} strokeWidth={2} />}
       face={
@@ -186,7 +188,7 @@ interface RosettenProps {
 
 /** The mascot. Decorative: the heading next to it says what is going on. */
 export const Rosetten = ({ pose, size = 120, className }: RosettenProps) => (
-  <svg viewBox="0 0 200 200" width={size} height={size} aria-hidden="true" className={className}>
+  <svg viewBox="0 0 200 200" width={size} height={size} aria-hidden="true" className={cn('text-gh-ink', className)}>
     {POSES[pose]()}
   </svg>
 );
@@ -200,7 +202,7 @@ interface RosettenLoaderProps {
 /** Floats and wiggles its bow while something loads; stands still under reduced motion. */
 export const RosettenLoader = ({ label, size = 120, className }: RosettenLoaderProps) => (
   <div role="status" aria-label={label} className={className}>
-    <svg viewBox="0 0 200 200" width={size} height={size} aria-hidden="true">
+    <svg viewBox="0 0 200 200" width={size} height={size} aria-hidden="true" className="text-gh-ink">
       <g className="rs-float">
         <Figure
           leftArm={ARM_DOWN_LEFT}
