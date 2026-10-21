@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/gh/EmptyState';
 import { SectionHeader } from '@/components/gh/SectionHeader';
 import { Segmented } from '@/components/gh/Segmented';
+import { SwitchRow } from '@/components/gh/SwitchRow';
+import { usePlayful } from '@/lib/playful';
 import { useTheme, type Mode } from '@/contexts/ThemeContext';
 import { AboutSection, ProfileLoading } from './components';
 import { useProfile } from './hooks/useProfile';
@@ -17,6 +19,7 @@ const Profile = () => {
   const { signOut } = useAuth();
   const { theme, setMode } = useTheme();
   const page = useProfile();
+  const [playful, setPlayful] = usePlayful();
   const language = i18n.language?.startsWith('sv') ? 'sv' : 'en';
 
   return (
@@ -77,6 +80,15 @@ const Profile = () => {
                 ]}
               />
             </section>
+          </div>
+
+          <div className="overflow-hidden rounded-gh-lg border border-gh-line bg-gh-surface-200">
+            <SwitchRow
+              label={t('profile.playful')}
+              description={t('profile.playfulHelp')}
+              checked={playful}
+              onChange={setPlayful}
+            />
           </div>
 
           <div className="flex flex-col gap-4 border-t border-gh-line pt-6 md:flex-row md:items-center md:justify-between">

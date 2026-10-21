@@ -161,7 +161,9 @@
     "toast": {
       "saved": "Namnet är sparat",
       "saveFailed": "Namnet kunde inte sparas. Försök igen."
-    }
+    },
+    "playful": "Lekfull maskot",
+    "playfulHelp": "Rosetten tittar fram och springer förbi då och då."
   },
   "theme": {
     "title": "Temainställningar",

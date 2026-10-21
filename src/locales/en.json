@@ -161,7 +161,9 @@
     "toast": {
       "saved": "Name saved",
       "saveFailed": "Couldn't save your name. Try again."
-    }
+    },
+    "playful": "Playful mascot",
+    "playfulHelp": "Rosetten peeks out and runs by now and then."
   },
   "theme": {
     "title": "Theme Settings",
