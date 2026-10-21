@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/components/auth/useAuth';
-import { OwnerWishlist, WishlistLoading } from './components';
-import { modePath, resolveMode } from './lib/mode';
+import { OrganizerWishlist, OwnerWishlist, WishlistLoading } from './components';
+import { resolveMode } from './lib/mode';
 import { WishlistService } from './services/WishlistService';
 import type { Mode } from './types';
 
 /**
- * One address for a wishlist, whoever opens it. Owners get the owner screen;
- * until phase 4c organizers and self-managed owners are sent on to the screens
- * that still serve them, and everyone else goes Home.
+ * One address for a wishlist, whoever opens it: the owner, the invited organizer
+ * and the creator of a self-managed list each get their own mode; anyone else goes Home.
  */
 const Wishlist = () => {
   const { id } = useParams();
@@ -41,11 +40,12 @@ const Wishlist = () => {
 
   if (!id || mode === null) return <WishlistLoading />;
   if (mode === 'owner') return <OwnerWishlist wishlistId={id} />;
-  return <Navigate to={modePath(mode, id)} replace />;
+  if (mode === 'organizer' || mode === 'self') return <OrganizerWishlist wishlistId={id} mode={mode} />;
+  return <Navigate to="/" replace />;
 };
 
-/** Old bookmarks of /wishlist/:id/manage land on the new address. */
-export const ManageRedirect = () => {
+/** Old addresses (/manage, /admin, /self) land on the new one. */
+export const WishlistRedirect = () => {
   const { id } = useParams();
   return <Navigate to={id ? `/wishlist/${id}` : '/'} replace />;
 };

@@ -38,7 +38,7 @@ Each top-level directory under `src/` is a self-contained feature with:
 - `services/` — Supabase query functions
 - `types/` — TypeScript interfaces
 
-Features: `Dashboard`, `Wishlist` (`/wishlist/:id`, owner mode; organizer mode follows in phase 4c), `AdminWishlist` (admin reading/stats), `SelfManagedWishlist` (creator acting as own admin — reuses AdminWishlist components), `Auth`, `Onboarding`, `Profile`, `SharedWishlists`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
+Features: `Dashboard`, `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, or the creator of a self-managed list), `Auth`, `Onboarding`, `Profile`, `SharedWishlists`, `AcceptInvitation`, `PublicWishlist` (share-link view for anonymous users).
 
 **Shared code:**
 
@@ -104,7 +104,7 @@ Action placement convention: primary actions top-right, cancel/close top-left, d
 When `is_giftcard = true`, multiple people can claim the same item via `item_claims`. The optional `claim_cap` (integer) limits how many claims are allowed; `null` = unlimited.
 
 - **Public view**: item shown as taken (no progress indicator) once cap is reached.
-- **Admin / self-managed view**: item moves to the "taken" section when cap is reached; admins can remove individual claims one-by-one via `RemoveClaimDialog` (same sheet pattern as `UntakeItemDialog`).
+- **Organizer / self-managed view**: a gift card moves to Tagna when its cap is reached; the organizer removes individual gifts one by one in the item sheet (inline `ConfirmBlock`).
 - Always set `claim_cap = null` when saving a non-giftcard item.
 
 ### Admin system rules
@@ -112,7 +112,8 @@ When `is_giftcard = true`, multiple people can claim the same item via `item_cla
 - One admin per wishlist (enforced by DB constraint).
 - Invitation workflow: creator sends invite → recipient gets email with token → acceptance creates `wishlist_admins` record + marks invitation accepted.
 - Hide the invite button when an admin already exists OR a pending invitation exists.
-- `SelfManagedWishlist` (`is_self_managed = true` on the wishlist) lets the creator act as their own admin with full add/edit/delete/untake/remove-claim capabilities — it reuses `AdminWishlist` components directly.
+- A self-managed list (`is_self_managed = true`) lets the creator act as their own organizer on the same screen: add items, settings, share link, make free, remove a gift; no change requests.
+- An invited organizer cannot add items (the database refuses it): the owner decides what is on the list. The organizer can still edit, delete, make an item free and answer change requests.
 
 ### RLS patterns
 

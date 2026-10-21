@@ -143,7 +143,7 @@ The component automatically handles:
 ## Integration Points
 
 - **Authentication**: Integrates with useAuth for user state
-- **Navigation**: Routes to the Wishlist (owner), AdminWishlist and SelfManagedWishlist screens
+- **Navigation**: Routes to the Wishlist screen (`/wishlist/:id`)
 - **Backend**: Complex database queries with relationships and counts
 - **Internationalization**: Full i18n support for all text content
 
