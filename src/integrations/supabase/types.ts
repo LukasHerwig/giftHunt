@@ -97,14 +97,14 @@ isOneToOne: false
                   ]
                 },"share_links": {
                   Row: {
-                    "created_at": string,"created_by": string,"expires_at": string | null,"id": string,"token": string,"wishlist_id": string
+                    "created_at": string,"created_by": string,"expires_at": string | null,"id": string,"is_active": boolean,"token": string,"wishlist_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"created_by": string,"expires_at"?: string | null,"id"?: string,"token": string,"wishlist_id": string
+                    "created_at"?: string,"created_by": string,"expires_at"?: string | null,"id"?: string,"is_active"?: boolean,"token": string,"wishlist_id": string
                   }
                   Update: {
-                    "created_at"?: string,"created_by"?: string,"expires_at"?: string | null,"id"?: string,"token"?: string,"wishlist_id"?: string
+                    "created_at"?: string,"created_by"?: string,"expires_at"?: string | null,"id"?: string,"is_active"?: boolean,"token"?: string,"wishlist_id"?: string
                   }
                   Relationships: [
                     {
@@ -242,6 +242,9 @@ isOneToOne: false
                            },
 "withdraw_change_request":
 { Args: { "p_request_id": string }; Returns: undefined
+                           },
+"resolve_change_request":
+{ Args: { "p_request_id": string,"p_approve": boolean,"p_message"?: string }; Returns: undefined
                            },
 "remove_wishlist_admin":
 { Args: { "p_wishlist_id": string }; Returns: Json
