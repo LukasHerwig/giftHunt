@@ -47,6 +47,11 @@ test('a gift card at its cap is taken', () => {
   assert.equal(isItemTaken(item({ is_giftcard: true, claim_cap: 3 }), 3), true);
 });
 
+test('a gift card with a stale taken flag follows its claims, like the giver page does', () => {
+  assert.equal(isItemTaken(item({ is_giftcard: true, claim_cap: 5, is_taken: true }), 2), false);
+  assert.equal(isItemTaken(item({ is_giftcard: true, claim_cap: 2, is_taken: true }), 2), true);
+});
+
 test('an unlimited gift card is never taken by claims alone', () => {
   assert.equal(isItemTaken(item({ is_giftcard: true, claim_cap: null }), 40), false);
 });

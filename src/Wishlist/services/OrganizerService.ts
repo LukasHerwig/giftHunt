@@ -82,8 +82,10 @@ export class OrganizerService {
     return data?.full_name ?? null;
   }
 
-  /** Makes a regular item free again. */
+  /** Makes a regular item free again (also clears claim rows left from when it was a gift card). */
   static async untake(itemId: string): Promise<void> {
+    const { error: claimsError } = await supabase.from('item_claims').delete().eq('item_id', itemId);
+    if (claimsError) throw claimsError;
     const { data, error } = await supabase
       .from('wishlist_items')
       .update({ is_taken: false, taken_by_name: null, taken_at: null })

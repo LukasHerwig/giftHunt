@@ -5,9 +5,10 @@ import type { ClaimRow, ItemWithClaims, OrganizerItem } from '../types/index.ts'
  * stays available (and shows its progress); an unlimited one never runs out.
  */
 export const isItemTaken = (item: OrganizerItem, claimCount: number): boolean => {
-  if (item.is_taken) return true;
-  if (!item.is_giftcard) return claimCount > 0;
-  return item.claim_cap != null && claimCount >= item.claim_cap;
+  // A gift card follows its claims only (a stale is_taken from when it was a regular
+  // item is ignored, as the giver page does), a regular item follows is_taken or a claim row.
+  if (item.is_giftcard) return item.claim_cap != null && claimCount >= item.claim_cap;
+  return item.is_taken || claimCount > 0;
 };
 
 /** The people who took or gave, oldest first, each once. */
