@@ -822,6 +822,7 @@
       "invitationGone": "Den inbjudan gäller inte längre.",
       "organizerExists": "Den här listan har redan en arrangör.",
       "emailNotConfirmed": "Bekräfta din e-postadress först och försök sedan igen."
-    }
+    },
+    "retry": "Försök igen"
   }
 }

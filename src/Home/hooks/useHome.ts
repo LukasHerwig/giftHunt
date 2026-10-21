@@ -17,6 +17,7 @@ export const useHome = () => {
   const email = user?.email ?? '';
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   // A second tap while an action runs must not start a second one.
@@ -26,9 +27,11 @@ export const useHome = () => {
     if (!userId) return;
     try {
       setData(await HomeService.loadHome(userId, email));
+      setFailed(false);
     } catch (error) {
       console.error('Load home error:', error);
       toast.error(t('home.toast.loadFailed'));
+      setFailed(true);
     } finally {
       setLoading(false);
     }
@@ -107,6 +110,8 @@ export const useHome = () => {
 
   return {
     loading,
+    failed,
+    reload: load,
     owned,
     organized,
     invitations,

@@ -28,6 +28,21 @@ const Home = () => {
       <AppHeader />
       {home.loading ? (
         <HomeLoading />
+      ) : home.failed ? (
+        <EmptyState
+          icon={Gift}
+          size="screen"
+          title={t('home.toast.loadFailed')}
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => void home.reload()}
+              className="h-12 rounded-gh-md px-6 text-[16px] font-semibold">
+              {t('home.retry')}
+            </Button>
+          }
+        />
       ) : (
         <main className="mx-auto flex w-full max-w-[720px] flex-col gap-8 px-4 pb-10 pt-6 md:gap-10 md:px-8 md:pt-12">
           <h1 className="text-[32px] font-bold leading-9 tracking-[-0.8px] text-gh-ink">

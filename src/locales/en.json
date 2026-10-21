@@ -821,6 +821,7 @@
       "invitationGone": "That invitation is no longer valid.",
       "organizerExists": "This list already has an organizer.",
       "emailNotConfirmed": "Confirm your e-mail address first, then try again."
-    }
+    },
+    "retry": "Try again"
   }
 }

@@ -9,8 +9,6 @@ import type {
   ProfileName,
 } from '../types';
 
-type CountRow = { count: number }[] | null;
-const countOf = (rows: CountRow): number => rows?.[0]?.count ?? 0;
 
 export class HomeService {
   static async loadHome(userId: string, email: string): Promise<HomeData> {
@@ -23,23 +21,40 @@ export class HomeService {
   }
 
   /** Lists the user made, including ones made for someone else; item count and organizer in one query. */
+  /**
+   * Items per list in one query. Claim columns are private, so `wishlist_items(count)` as an
+   * embedded select is refused (it needs the whole table); `wishlist_id` is readable.
+   */
+  private static async countItems(listIds: string[]): Promise<Map<string, number>> {
+    const counts = new Map<string, number>();
+    if (listIds.length === 0) return counts;
+    const { data, error } = await supabase
+      .from('wishlist_items')
+      .select('wishlist_id')
+      .in('wishlist_id', listIds);
+    if (error) throw error;
+    for (const row of data ?? []) counts.set(row.wishlist_id, (counts.get(row.wishlist_id) ?? 0) + 1);
+    return counts;
+  }
+
   private static async loadOwned(userId: string): Promise<OwnedListRaw[]> {
     const { data, error } = await supabase
       .from('wishlists')
       .select(
-        'id, title, description, is_self_managed, created_at, items:wishlist_items(count), admins:wishlist_admins(profile:profiles!admin_id(full_name, email))',
+        'id, title, description, is_self_managed, created_at, admins:wishlist_admins(profile:profiles!admin_id(full_name, email))',
       )
       .eq('creator_id', userId)
       .order('created_at', { ascending: false });
     if (error) throw error;
 
     type Row = Omit<OwnedListRaw, 'itemCount' | 'organizer'> & {
-      items: CountRow;
       admins: { profile: ProfileName | null }[] | null;
     };
-    return ((data ?? []) as unknown as Row[]).map(({ items, admins, ...list }) => ({
+    const lists = (data ?? []) as unknown as Row[];
+    const counts = await HomeService.countItems(lists.map((list) => list.id));
+    return lists.map(({ admins, ...list }) => ({
       ...list,
-      itemCount: countOf(items),
+      itemCount: counts.get(list.id) ?? 0,
       organizer: admins?.[0]?.profile ?? null,
     }));
   }
@@ -49,7 +64,7 @@ export class HomeService {
     const { data, error } = await supabase
       .from('wishlists')
       .select(
-        'id, title, description, owner:profiles!creator_id(full_name, email), items:wishlist_items(count), mine:wishlist_admins!inner(admin_id)',
+        'id, title, description, owner:profiles!creator_id(full_name, email), mine:wishlist_admins!inner(admin_id)',
       )
       .eq('mine.admin_id', userId)
       .neq('creator_id', userId)
@@ -58,11 +73,11 @@ export class HomeService {
 
     type Row = Omit<OrganizedListRaw, 'itemCount' | 'requestCount' | 'owner'> & {
       owner: ProfileName | null;
-      items: CountRow;
     };
     const lists = (data ?? []) as unknown as Row[];
     if (lists.length === 0) return [];
 
+    const counts = await HomeService.countItems(lists.map((list) => list.id));
     const { data: requests, error: requestError } = await supabase
       .from('item_change_requests')
       .select('wishlist_id')
@@ -74,9 +89,9 @@ export class HomeService {
       waiting.set(request.wishlist_id, (waiting.get(request.wishlist_id) ?? 0) + 1);
     }
 
-    return lists.map(({ items, ...list }) => ({
+    return lists.map((list) => ({
       ...list,
-      itemCount: countOf(items),
+      itemCount: counts.get(list.id) ?? 0,
       requestCount: waiting.get(list.id) ?? 0,
     }));
   }
