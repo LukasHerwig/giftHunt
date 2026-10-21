@@ -1,95 +1,84 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { useAuth } from '@/components/auth/useAuth';
+import { nameChanged, validateName, type NameError } from '@/lib/personName';
 import { ProfileService } from '../services/ProfileService';
-import { ProfileState, ProfileActions } from '../types';
+import type { ProfileData } from '../types';
 
-export const useProfile = (): ProfileState & ProfileActions => {
+export const useProfile = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const userId = user?.id;
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [fullName, setFullNameState] = useState('');
+  const [nameError, setNameError] = useState<NameError | null>(null);
+  // A second tap while saving must not start a second save.
+  const running = useRef(false);
 
-  const [state, setState] = useState<ProfileState>({
-    profile: null,
-    loading: true,
-    saving: false,
-    fullName: '',
-  });
-
-  const loadProfile = useCallback(async () => {
-    if (!user) return;
-
+  const load = useCallback(async () => {
+    if (!userId) return;
+    setLoading(true);
     try {
-      setState((prev) => ({ ...prev, loading: true }));
-      const profile = await ProfileService.getProfile(user.id);
-
-      setState((prev) => ({
-        ...prev,
-        profile,
-        fullName: profile.full_name || '',
-        loading: false,
-      }));
+      const loaded = await ProfileService.getProfile(userId);
+      setProfile(loaded);
+      setFullNameState(loaded.full_name ?? '');
+      setFailed(false);
     } catch (error) {
       console.error('Error loading profile:', error);
-      toast.error(t('messages.failedToLoadProfile'));
-      setState((prev) => ({ ...prev, loading: false }));
+      toast.error(t('profile.loadFailed'));
+      setFailed(true);
+    } finally {
+      setLoading(false);
     }
-  }, [user, t]);
-
-  const handleSave = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-
-      if (!user || !state.profile) return;
-
-      // Validate that name is not empty or just spaces
-      if (!state.fullName.trim()) {
-        toast.error(t('profile.nameRequired'));
-        return;
-      }
-
-      try {
-        setState((prev) => ({ ...prev, saving: true }));
-
-        await ProfileService.updateProfile(user.id, {
-          fullName: state.fullName,
-        });
-
-        setState((prev) => ({
-          ...prev,
-          profile: prev.profile
-            ? {
-                ...prev.profile,
-                full_name: state.fullName.trim() || null,
-              }
-            : null,
-          saving: false,
-        }));
-
-        toast.success(t('messages.profileUpdated'));
-      } catch (error) {
-        console.error('Error updating profile:', error);
-        toast.error(t('messages.failedToUpdateProfile'));
-        setState((prev) => ({ ...prev, saving: false }));
-      }
-    },
-    [user, state.profile, state.fullName, t]
-  );
-
-  const setFullName = useCallback((name: string) => {
-    setState((prev) => ({ ...prev, fullName: name }));
-  }, []);
+  }, [userId, t]);
 
   useEffect(() => {
-    if (user) {
-      loadProfile();
+    void load();
+  }, [load]);
+
+  const setFullName = (value: string) => {
+    setFullNameState(value);
+    setNameError(null);
+  };
+
+  const save = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!userId || running.current) return;
+    const invalid = validateName(fullName);
+    setNameError(invalid);
+    if (invalid) return;
+
+    running.current = true;
+    setSaving(true);
+    try {
+      await ProfileService.updateProfile(userId, { fullName });
+      const saved = fullName.trim();
+      setProfile((current) => (current ? { ...current, full_name: saved } : current));
+      setFullNameState(saved);
+      toast.success(t('profile.toast.saved'));
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast.error(t('profile.toast.saveFailed'));
+    } finally {
+      running.current = false;
+      setSaving(false);
     }
-  }, [user, loadProfile]);
+  };
 
   return {
-    ...state,
-    loadProfile,
-    handleSave,
+    profile,
+    loading,
+    failed,
+    saving,
+    fullName,
+    nameError,
+    changed: nameChanged(profile?.full_name ?? null, fullName),
     setFullName,
+    save,
+    reload: load,
   };
 };

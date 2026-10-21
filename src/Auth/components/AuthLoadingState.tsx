@@ -1,9 +1,7 @@
 import { Loader2 } from 'lucide-react';
 
-export const AuthLoadingState = () => {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-ios-background">
-      <Loader2 className="w-8 h-8 animate-spin text-ios-blue" />
-    </div>
-  );
-};
+export const AuthLoadingState = () => (
+  <div className="flex min-h-screen items-center justify-center bg-gh-bg">
+    <Loader2 className="h-8 w-8 animate-spin text-gh-primary-strong" aria-hidden="true" />
+  </div>
+);

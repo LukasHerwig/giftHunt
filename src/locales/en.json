@@ -91,28 +91,34 @@
     "creating": "Creating..."
   },
   "auth": {
-    "welcomeBack": "Welcome back! Sign in to manage your wishlists",
-    "createAccount": "Create an account to start making wishlists",
-    "welcomeBackTitle": "Welcome Back!",
-    "signInDescription": "Enter your email and password to access your wishlists",
-    "createAccountTitle": "Get Started",
-    "signUpDescription": "Create your account to start building and sharing wishlists",
-    "signInButton": "Sign In",
-    "createAccountButton": "Create Account",
-    "signingIn": "Signing in...",
-    "creatingAccount": "Creating account...",
-    "noAccount": "Don't have an account? Sign up",
-    "hasAccount": "Already have an account? Sign in",
-    "newUserQuestion": "New to GiftHunt?",
-    "createNewAccount": "Create an account",
-    "existingUserQuestion": "Already have an account?",
-    "signInInstead": "Sign in here",
-    "passwordRequirement": "Password must be at least 6 characters long",
-    "fillAllFields": "Please fill in all fields",
-    "passwordTooShort": "Password must be at least 6 characters",
-    "welcomeBackSuccess": "Welcome back!",
-    "accountCreated": "Account created! Welcome!",
-    "somethingWentWrong": "Something went wrong"
+    "titleSignIn": "Welcome back",
+    "titleSignUp": "Create your account",
+    "leadSignIn": "Sign in to see and share your wishlists.",
+    "leadSignUp": "Make wishlists and share them with the people who want to give.",
+    "modeLabel": "Sign in or create an account",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "email": "Email",
+    "emailPlaceholder": "name@example.com",
+    "password": "Password",
+    "passwordHelp": "At least 6 characters.",
+    "errors": {
+      "emailRequired": "Enter your email address.",
+      "emailInvalid": "That email address doesn't look right. Check it.",
+      "passwordRequired": "Enter a password.",
+      "passwordTooShort": "The password must be at least 6 characters.",
+      "invalidCredentials": "The email or password is wrong. Check them and try again.",
+      "alreadyRegistered": "An account with this address already exists. Sign in instead.",
+      "emailNotConfirmed": "Confirm your email address first. We have sent you an email.",
+      "generic": "Something went wrong. Try again."
+    },
+    "toast": {
+      "welcomeBack": "Welcome back",
+      "accountCreated": "Account created"
+    },
+    "signedOut": "You are signed out",
+    "sessionExpired": "Your session expired. Sign in again.",
+    "signOutFailed": "Couldn't sign you out. Try again."
   },
   "publicWishlist": {
     "claimErrors": {
@@ -380,20 +386,34 @@
     "returnHome": "Return to Home"
   },
   "acceptInvitation": {
-    "invalidInvitation": "Invalid Invitation",
-    "goToHome": "Go to Home",
-    "youveBeenInvited": "You've been invited!",
-    "invitedToManage": "You've been invited to help manage a wishlist as an admin.",
-    "invitedBy": "Invited by",
-    "someone": "Someone",
-    "asAdminYouCan": "As an admin, you'll be able to:",
-    "seeItemsTaken": "See which items have been taken and by whom",
-    "shareWishlistLink": "Share the wishlist link with others",
-    "coordinateGifts": "Coordinate gift-giving efforts",
-    "helpManage": "Help manage the wishlist",
-    "signInToAccept": "Please sign in or create an account to accept this invitation.",
-    "signInCreateAccount": "Sign In / Create Account",
-    "afterSignInInfo": "After signing in, you'll see the invitation on your dashboard where you can accept it."
+    "loading": "Checking the invitation",
+    "titleNamed": "{{name}} wants you to share a list",
+    "titleNoName": "You're invited to share a list",
+    "lead": "As organizer you share the list with the people who want to give and keep track of who buys what.",
+    "listLabel": "Wishlist",
+    "note": "The invitation was sent to the email address you received it on. Sign in or create an account with that address and the invitation is accepted right away.",
+    "signIn": "Sign in",
+    "signUp": "Create account",
+    "accepted": "You are now an organizer",
+    "home": "Go to the start page",
+    "gone": {
+      "title": "This invitation is no longer valid",
+      "text": "It may have been withdrawn, already accepted or expired. Ask whoever invited you for a new one."
+    },
+    "wrongAccount": {
+      "title": "The invitation is for another address",
+      "text": "You are signed in as {{email}}. The invitation was sent to another email address. Sign out and sign in with the address you received the invitation on.",
+      "signOut": "Sign out"
+    },
+    "unconfirmed": {
+      "title": "Confirm your email address",
+      "text": "You need to confirm your email address before you can accept the invitation. We have sent you an email."
+    },
+    "failed": {
+      "title": "The invitation couldn't be accepted",
+      "text": "Something went wrong. Try again.",
+      "retry": "Try again"
+    }
   },
   "adminWishlist": {
     "copyShareLink": "Copy Share Link",
@@ -484,20 +504,32 @@
   },
   "profile": {
     "title": "Profile",
-    "description": "Manage your personal information and account settings",
-    "personalInformation": "Personal Information",
-    "updateYourPersonalDetails": "Update your personal details",
+    "sectionAbout": "About you",
+    "name": "Name",
+    "namePlaceholder": "First and last name",
     "email": "Email",
-    "emailCannotBeChanged": "Email address cannot be changed",
-    "fullName": "Full Name",
-    "fullNamePlaceholder": "Enter your full name",
-    "accountInformation": "Account Information",
-    "memberSince": "Member since",
-    "lastUpdated": "Last updated",
-    "saveChanges": "Save Changes",
-    "saving": "Saving...",
-    "nameRequired": "Name cannot be empty",
-    "nameHelpText": "Your name helps others identify whose wishlist they're viewing and shows who claimed which items."
+    "emailHelp": "The email address can't be changed.",
+    "save": "Save name",
+    "errors": {
+      "required": "Enter your name.",
+      "tooLong": "The name can be at most 100 characters."
+    },
+    "sectionAppearance": "Appearance",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "sectionLanguage": "Language",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "memberSince": "Member since {{date}}",
+    "signOut": "Sign out",
+    "loading": "Loading your profile",
+    "loadFailed": "Couldn't load your profile.",
+    "retry": "Try again",
+    "toast": {
+      "saved": "Name saved",
+      "saveFailed": "Couldn't save your name. Try again."
+    }
   },
   "theme": {
     "title": "Theme Settings",
@@ -511,15 +543,17 @@
     "system": "System"
   },
   "onboarding": {
-    "welcomeTitle": "Welcome to WishList!",
-    "welcomeDescription": "Let's get you set up. Please tell us your name so others can identify you when claiming items.",
-    "nameLabel": "Your Name",
-    "namePlaceholder": "Enter your full name",
-    "nameHelpText": "This name will be shown to wishlist owners when you claim items as gifts.",
+    "title": "Welcome to GiftHunt",
+    "lead": "What's your name? The people you share lists with will see it.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "First and last name",
     "continue": "Continue",
-    "saving": "Saving...",
-    "welcomeComplete": "Welcome! Your profile is now complete.",
-    "errorSaving": "Failed to save your name. Please try again."
+    "errors": {
+      "required": "Enter your name.",
+      "tooLong": "The name can be at most 100 characters."
+    },
+    "welcomeComplete": "Welcome!",
+    "errorSaving": "Couldn't save your name. Try again."
   },
   "wishlist": {
     "loading": "Loading your wishlist",

@@ -91,28 +91,34 @@
     "creating": "Skapar..."
   },
   "auth": {
-    "welcomeBack": "Välkommen tillbaka! Logga in för att hantera dina önskelistor",
-    "createAccount": "Skapa ett konto för att börja göra önskelistor",
-    "welcomeBackTitle": "Välkommen Tillbaka!",
-    "signInDescription": "Ange din e-post och lösenord för att komma åt dina önskelistor",
-    "createAccountTitle": "Kom Igång",
-    "signUpDescription": "Skapa ditt konto för att börja bygga och dela önskelistor",
-    "signInButton": "Logga in",
-    "createAccountButton": "Skapa Konto",
-    "signingIn": "Loggar in...",
-    "creatingAccount": "Skapar konto...",
-    "noAccount": "Har du inget konto? Registrera dig",
-    "hasAccount": "Har du redan ett konto? Logga in",
-    "newUserQuestion": "Ny på GiftHunt?",
-    "createNewAccount": "Skapa ett konto",
-    "existingUserQuestion": "Har du redan ett konto?",
-    "signInInstead": "Logga in här",
-    "passwordRequirement": "Lösenordet måste vara minst 6 tecken långt",
-    "fillAllFields": "Vänligen fyll i alla fält",
-    "passwordTooShort": "Lösenordet måste vara minst 6 tecken",
-    "welcomeBackSuccess": "Välkommen tillbaka!",
-    "accountCreated": "Konto skapat! Välkommen!",
-    "somethingWentWrong": "Något gick fel"
+    "titleSignIn": "Välkommen tillbaka",
+    "titleSignUp": "Skapa ditt konto",
+    "leadSignIn": "Logga in för att se och dela dina önskelistor.",
+    "leadSignUp": "Gör önskelistor och dela dem med dem som vill ge.",
+    "modeLabel": "Logga in eller skapa konto",
+    "signIn": "Logga in",
+    "signUp": "Skapa konto",
+    "email": "E-post",
+    "emailPlaceholder": "namn@exempel.se",
+    "password": "Lösenord",
+    "passwordHelp": "Minst 6 tecken.",
+    "errors": {
+      "emailRequired": "Fyll i din e-postadress.",
+      "emailInvalid": "E-postadressen ser inte rätt ut. Kontrollera den.",
+      "passwordRequired": "Fyll i ett lösenord.",
+      "passwordTooShort": "Lösenordet måste vara minst 6 tecken.",
+      "invalidCredentials": "E-postadressen eller lösenordet stämmer inte. Kontrollera dem och försök igen.",
+      "alreadyRegistered": "Det finns redan ett konto med den här adressen. Logga in i stället.",
+      "emailNotConfirmed": "Bekräfta din e-postadress först. Vi har skickat ett mejl till dig.",
+      "generic": "Något gick fel. Försök igen."
+    },
+    "toast": {
+      "welcomeBack": "Välkommen tillbaka",
+      "accountCreated": "Kontot är skapat"
+    },
+    "signedOut": "Du är utloggad",
+    "sessionExpired": "Sessionen gick ut. Logga in igen.",
+    "signOutFailed": "Du kunde inte loggas ut. Försök igen."
   },
   "publicWishlist": {
     "claimErrors": {
@@ -381,20 +387,34 @@
     "returnHome": "Tillbaka till startsidan"
   },
   "acceptInvitation": {
-    "invalidInvitation": "Ogiltig Inbjudan",
-    "goToHome": "Gå till startsidan",
-    "youveBeenInvited": "Du har blivit inbjuden!",
-    "invitedToManage": "Du har blivit inbjuden att hjälpa till att hantera en önskelista som administratör.",
-    "invitedBy": "Inbjuden av",
-    "someone": "Någon",
-    "asAdminYouCan": "Som administratör kommer du att kunna:",
-    "seeItemsTaken": "Se vilka föremål som har tagits och av vem",
-    "shareWishlistLink": "Dela önskelistans länk med andra",
-    "coordinateGifts": "Koordinera gåvogivning",
-    "helpManage": "Hjälpa till att hantera önskelistan",
-    "signInToAccept": "Logga in eller skapa ett konto för att acceptera denna inbjudan.",
-    "signInCreateAccount": "Logga in / Skapa konto",
-    "afterSignInInfo": "Efter inloggning kommer du att se inbjudan på din instrumentpanel där du kan acceptera den."
+    "loading": "Kontrollerar inbjudan",
+    "titleNamed": "{{name}} vill att du delar en lista",
+    "titleNoName": "Du är inbjuden att dela en lista",
+    "lead": "Som arrangör delar du listan med dem som vill ge och håller koll på vem som köper vad.",
+    "listLabel": "Önskelista",
+    "note": "Inbjudan är skickad till e-postadressen du fick den på. Logga in eller skapa ett konto med den adressen, så godtas inbjudan direkt.",
+    "signIn": "Logga in",
+    "signUp": "Skapa konto",
+    "accepted": "Du är nu arrangör",
+    "home": "Till startsidan",
+    "gone": {
+      "title": "Den här inbjudan gäller inte längre",
+      "text": "Den kan ha dragits tillbaka, redan godtagits eller gått ut. Be den som bjöd in dig om en ny."
+    },
+    "wrongAccount": {
+      "title": "Inbjudan är till en annan adress",
+      "text": "Du är inloggad som {{email}}. Inbjudan skickades till en annan e-postadress. Logga ut och logga in med den adress du fick inbjudan på.",
+      "signOut": "Logga ut"
+    },
+    "unconfirmed": {
+      "title": "Bekräfta din e-postadress",
+      "text": "Du måste bekräfta din e-postadress innan du kan godta inbjudan. Vi har skickat ett mejl till dig."
+    },
+    "failed": {
+      "title": "Inbjudan kunde inte godtas",
+      "text": "Något gick fel. Försök igen.",
+      "retry": "Försök igen"
+    }
   },
   "adminWishlist": {
     "copyShareLink": "Kopiera delningslänk",
@@ -485,20 +505,32 @@
   },
   "profile": {
     "title": "Profil",
-    "description": "Hantera din personliga information och kontoinställningar",
-    "personalInformation": "Personlig Information",
-    "updateYourPersonalDetails": "Uppdatera dina personliga detaljer",
+    "sectionAbout": "Om dig",
+    "name": "Namn",
+    "namePlaceholder": "För- och efternamn",
     "email": "E-post",
-    "emailCannotBeChanged": "E-postadress kan inte ändras",
-    "fullName": "Fullständigt Namn",
-    "fullNamePlaceholder": "Ange ditt fullständiga namn",
-    "accountInformation": "Kontoinformation",
-    "memberSince": "Medlem sedan",
-    "lastUpdated": "Senast uppdaterad",
-    "saveChanges": "Spara Ändringar",
-    "saving": "Sparar...",
-    "nameRequired": "Namnet kan inte vara tomt",
-    "nameHelpText": "Ditt namn kommer att visas för önskelisteägare när du hämtar föremål som gåvor, och för att identifiera vems önskelista det är."
+    "emailHelp": "E-postadressen kan inte ändras.",
+    "save": "Spara namn",
+    "errors": {
+      "required": "Fyll i ditt namn.",
+      "tooLong": "Namnet får vara högst 100 tecken."
+    },
+    "sectionAppearance": "Utseende",
+    "themeLight": "Ljust",
+    "themeDark": "Mörkt",
+    "themeSystem": "Följ enheten",
+    "sectionLanguage": "Språk",
+    "languageSv": "Svenska",
+    "languageEn": "English",
+    "memberSince": "Medlem sedan {{date}}",
+    "signOut": "Logga ut",
+    "loading": "Laddar din profil",
+    "loadFailed": "Profilen kunde inte laddas.",
+    "retry": "Försök igen",
+    "toast": {
+      "saved": "Namnet är sparat",
+      "saveFailed": "Namnet kunde inte sparas. Försök igen."
+    }
   },
   "theme": {
     "title": "Temainställningar",
@@ -512,15 +544,17 @@
     "system": "System"
   },
   "onboarding": {
-    "welcomeTitle": "Välkommen till WishList!",
-    "welcomeDescription": "Låt oss sätta upp dig. Berätta ditt namn så att andra kan identifiera dig när du hämtar föremål.",
-    "nameLabel": "Ditt Namn",
-    "namePlaceholder": "Ange ditt fullständiga namn",
-    "nameHelpText": "Detta namn kommer att visas för önskelisteägare när du hämtar föremål som gåvor.",
+    "title": "Välkommen till GiftHunt",
+    "lead": "Vad heter du? Namnet ser de du delar listor med.",
+    "nameLabel": "Ditt namn",
+    "namePlaceholder": "För- och efternamn",
     "continue": "Fortsätt",
-    "saving": "Sparar...",
-    "welcomeComplete": "Välkommen! Din profil är nu komplett.",
-    "errorSaving": "Misslyckades med att spara ditt namn. Försök igen."
+    "errors": {
+      "required": "Fyll i ditt namn.",
+      "tooLong": "Namnet får vara högst 100 tecken."
+    },
+    "welcomeComplete": "Välkommen!",
+    "errorSaving": "Namnet kunde inte sparas. Försök igen."
   },
   "wishlist": {
     "loading": "Laddar din önskelista",
