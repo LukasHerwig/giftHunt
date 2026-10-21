@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { errorCode } from '../lib/errorCode';
 import { validateItemForm } from '../lib/itemForm';
 import { splitItems } from '../lib/organizerItems';

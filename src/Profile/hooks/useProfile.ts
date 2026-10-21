@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { nameChanged, validateName, type NameError } from '@/lib/personName';
 import { ProfileService } from '../services/ProfileService';

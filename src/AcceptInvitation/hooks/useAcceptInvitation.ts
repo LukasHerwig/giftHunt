@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { AuthService } from '@/Auth/services';
 import { errorCode } from '@/Wishlist/lib/errorCode';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { WishlistService } from '../services/WishlistService';
 import { toOwnerRequests } from '../lib/changeRequests';
 import { buildProposal, validateItemForm } from '../lib/itemForm';

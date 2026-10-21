@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { AuthService, OnboardingService } from '@/Auth/services';
 import { postLoginPath } from '@/Auth/lib/postLoginPath';
