@@ -683,6 +683,85 @@
       "settingsSaved": "Inställningarna är sparade",
       "deleteFailed": "Det gick inte att radera listan. Försök igen.",
       "listDeleted": "Listan är raderad"
+    },
+    "org": {
+      "eyebrow": "Önskelista av {{name}}",
+      "ownerFallback": "ägaren",
+      "sectionRequests": "Förfrågningar",
+      "segmentLabel": "Visa",
+      "segment": {
+        "available": "Lediga",
+        "taken": "Tagna"
+      },
+      "empty": {
+        "availableTitle": "Inga lediga önskningar",
+        "availableText": "Allt på listan är taget.",
+        "takenTitle": "Inget taget än",
+        "takenText": "När någon tar en önskning syns det här."
+      },
+      "pillTaken": "Tagen",
+      "takenBy": "Tagen av {{name}}",
+      "allGave": "Alla har gett",
+      "editNote": "{{names}} har redan tagit den här. Hör av dig om du ändrar något som påverkar köpet.",
+      "request": {
+        "editLead": "{{name}} vill ändra önskningen",
+        "removeLead": "{{name}} vill ta bort önskningen",
+        "removeNote": "Om du godkänner försvinner önskningen från listan.",
+        "messageLabel": "Meddelande till {{name}}",
+        "messageHelp": "{{name}} ser bara att ändringen är gjord eller att du behöll önskningen, plus ditt meddelande. {{name}} ser aldrig att den är tagen.",
+        "approve": "Godkänn",
+        "keep": "Behåll som den är"
+      },
+      "sheet": {
+        "givenBy": "Dessa har gett",
+        "takenOn": "Tagen {{date}}",
+        "edit": "Ändra önskningen",
+        "untake": "Gör ledig",
+        "removeClaim": "Ta bort",
+        "openStore": "Öppna i butiken",
+        "untakeQuestion": "Göra {{title}} ledig igen?",
+        "untakeContext": "{{name}}s namn tas bort och andra kan ta önskningen. Hör gärna av dig först.",
+        "untakeContextNoName": "Andra kan ta önskningen. Hör gärna av dig till den som tagit den först.",
+        "untakeAction": "Gör ledig",
+        "removeClaimQuestion": "Ta bort {{name}}s gåva?",
+        "removeClaimContext": "Det blir plats för en till. Hör gärna av dig till {{name}} först.",
+        "removeClaimAction": "Ta bort gåvan"
+      },
+      "share": {
+        "title": "Dela listan",
+        "noneTitle": "Skapa en länk",
+        "noneLead": "Den som får länken kan välja en önskning utan konto. Bara du ser vem som tagit vad.",
+        "create": "Skapa länk",
+        "urlLabel": "Länk",
+        "copy": "Kopiera länk",
+        "copied": "Länken är kopierad",
+        "active": "Länken är aktiv",
+        "activeHelp": "Den som har länken kan välja en önskning.",
+        "inactiveBadge": "Avstängd",
+        "inactiveHelp": "Slå på så fungerar samma länk igen.",
+        "offQuestion": "Stänga av länken?",
+        "offContext": "Den som öppnar länken ser då ett meddelande om att den inte är aktiv. Du kan slå på samma länk igen.",
+        "offAction": "Stäng av länken"
+      },
+      "toast": {
+        "loadFailed": "Det gick inte att ladda listan. Försök igen.",
+        "requestAnswered": "Den förfrågan är redan besvarad eller tillbakadragen.",
+        "itemGone": "Den önskningen finns inte längre.",
+        "claimGone": "Den gåvan är redan borttagen.",
+        "linkGone": "Det finns ingen länk för listan längre.",
+        "untakeFailed": "Det gick inte att göra önskningen ledig. Försök igen.",
+        "madeFree": "Önskningen är ledig igen",
+        "removeClaimFailed": "Det gick inte att ta bort gåvan. Försök igen.",
+        "claimRemoved": "Gåvan är borttagen",
+        "resolveFailed": "Det gick inte att svara på förfrågan. Försök igen.",
+        "approved": "Ändringen är gjord",
+        "kept": "Önskningen behölls som den var",
+        "linkFailed": "Det gick inte att ändra länken. Försök igen.",
+        "linkOn": "Länken är på",
+        "linkOff": "Länken är avstängd",
+        "linkCopied": "Länken är kopierad",
+        "copyFailed": "Det gick inte att kopiera länken. Kopiera den för hand från rutan."
+      }
     }
   }
 }

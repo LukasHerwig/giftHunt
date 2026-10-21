@@ -682,6 +682,85 @@
       "settingsSaved": "The settings are saved",
       "deleteFailed": "Could not delete the list. Try again.",
       "listDeleted": "The list is deleted"
+    },
+    "org": {
+      "eyebrow": "Wishlist by {{name}}",
+      "ownerFallback": "the owner",
+      "sectionRequests": "Requests",
+      "segmentLabel": "Show",
+      "segment": {
+        "available": "Available",
+        "taken": "Taken"
+      },
+      "empty": {
+        "availableTitle": "Nothing available",
+        "availableText": "Everything on the list is taken.",
+        "takenTitle": "Nothing taken yet",
+        "takenText": "When someone takes a wish, it shows up here."
+      },
+      "pillTaken": "Taken",
+      "takenBy": "Taken by {{name}}",
+      "allGave": "Everyone has given",
+      "editNote": "{{names}} has already taken this. Get in touch if you change something that affects the purchase.",
+      "request": {
+        "editLead": "{{name}} wants to change the wish",
+        "removeLead": "{{name}} wants to remove the wish",
+        "removeNote": "If you approve, the wish disappears from the list.",
+        "messageLabel": "Message to {{name}}",
+        "messageHelp": "{{name}} only sees that the change is done or that you kept the wish, plus your message. {{name}} never sees that it is taken.",
+        "approve": "Approve",
+        "keep": "Keep as it is"
+      },
+      "sheet": {
+        "givenBy": "Who has given",
+        "takenOn": "Taken {{date}}",
+        "edit": "Change the wish",
+        "untake": "Make available",
+        "removeClaim": "Remove",
+        "openStore": "Open in the shop",
+        "untakeQuestion": "Make {{title}} available again?",
+        "untakeContext": "{{name}}'s name is removed and others can take the wish. Get in touch with them first.",
+        "untakeContextNoName": "Others can take the wish. Get in touch with whoever took it first.",
+        "untakeAction": "Make available",
+        "removeClaimQuestion": "Remove {{name}}'s gift?",
+        "removeClaimContext": "There is room for one more. Get in touch with {{name}} first.",
+        "removeClaimAction": "Remove the gift"
+      },
+      "share": {
+        "title": "Share the list",
+        "noneTitle": "Create a link",
+        "noneLead": "Anyone who gets the link can pick a wish without an account. Only you see who took what.",
+        "create": "Create link",
+        "urlLabel": "Link",
+        "copy": "Copy link",
+        "copied": "The link is copied",
+        "active": "The link is on",
+        "activeHelp": "Anyone with the link can pick a wish.",
+        "inactiveBadge": "Turned off",
+        "inactiveHelp": "Turn it on and the same link works again.",
+        "offQuestion": "Turn off the link?",
+        "offContext": "Whoever opens the link sees a message that it is not active. You can turn the same link on again.",
+        "offAction": "Turn off the link"
+      },
+      "toast": {
+        "loadFailed": "Could not load the list. Try again.",
+        "requestAnswered": "That request has already been answered or withdrawn.",
+        "itemGone": "That wish is gone.",
+        "claimGone": "That gift is already removed.",
+        "linkGone": "There is no link for this list any more.",
+        "untakeFailed": "Could not make the wish available. Try again.",
+        "madeFree": "The wish is available again",
+        "removeClaimFailed": "Could not remove the gift. Try again.",
+        "claimRemoved": "The gift is removed",
+        "resolveFailed": "Could not answer the request. Try again.",
+        "approved": "The change is done",
+        "kept": "The wish is kept as it was",
+        "linkFailed": "Could not change the link. Try again.",
+        "linkOn": "The link is on",
+        "linkOff": "The link is turned off",
+        "linkCopied": "The link is copied",
+        "copyFailed": "Could not copy the link. Copy it by hand from the box."
+      }
     }
   }
 }
