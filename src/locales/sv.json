@@ -633,7 +633,9 @@
       "removeAction": "Ta bort arrangören",
       "errors": {
         "invalid_email": "Det ser inte ut som en e-postadress. Skriv hela adressen."
-      }
+      },
+      "sentFailedTitle": "Inbjudan skapad, men mejlet gick inte iväg",
+      "sentFailedLead": "Vi kunde inte skicka mejlet till {{email}}. Dra tillbaka inbjudan och försök igen."
     },
     "settingsSheet": {
       "title": "Inställningar",

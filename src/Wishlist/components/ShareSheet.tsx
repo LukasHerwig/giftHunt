@@ -12,6 +12,7 @@ interface ShareSheetProps {
   organizer: OrganizerState;
   organizerName: string | null;
   inviteSentTo: string | null;
+  inviteEmailFailed: boolean;
   listTitle: string;
   busy: boolean;
   onInvite: (email: string) => Promise<'invalid_email' | null>;
@@ -25,6 +26,7 @@ export const ShareSheet = ({
   organizer,
   organizerName,
   inviteSentTo,
+  inviteEmailFailed,
   listTitle,
   busy,
   onInvite,
@@ -65,9 +67,13 @@ export const ShareSheet = ({
               className="h-12 w-12 text-gh-primary-strong duration-300 animate-in zoom-in-90 motion-reduce:animate-none"
               aria-hidden="true"
             />
-            <h3 className="mt-2 text-[22px] font-bold leading-7">{t('wishlist.share.sentTitle')}</h3>
+            <h3 className="mt-2 text-[22px] font-bold leading-7">
+              {inviteEmailFailed ? t('wishlist.share.sentFailedTitle') : t('wishlist.share.sentTitle')}
+            </h3>
             <p className="text-[16px] leading-6 text-gh-ink-2">
-              {t('wishlist.share.sentLead', { email: inviteSentTo })}
+              {inviteEmailFailed
+                ? t('wishlist.share.sentFailedLead', { email: inviteSentTo })
+                : t('wishlist.share.sentLead', { email: inviteSentTo })}
             </p>
             <p className="text-[13px] leading-[18px] text-gh-muted">{t('wishlist.share.sentNote')}</p>
           </div>

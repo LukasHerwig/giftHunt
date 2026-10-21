@@ -188,6 +188,7 @@ export const OwnerWishlist = ({ wishlistId }: OwnerWishlistProps) => {
           organizer={organizer}
           organizerName={wishlist.organizerName}
           inviteSentTo={wishlist.inviteSentTo}
+          inviteEmailFailed={wishlist.inviteEmailFailed}
           listTitle={list.title}
           busy={busy}
           onInvite={wishlist.invite}

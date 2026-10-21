@@ -59,6 +59,8 @@ export const ItemFormSheet = ({
   const resolveLink = async () => {
     const link = form.link.trim();
     if (!link || form.url) return;
+    // Tabbing through an unchanged link must not fetch (and so change) anything.
+    if (mode === 'edit' && link === (item?.link ?? '')) return;
     setResolving(true);
     const metadata = await fetchLinkMetadata(link);
     setResolving(false);

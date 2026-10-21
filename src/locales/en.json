@@ -632,7 +632,9 @@
       "removeAction": "Remove the organizer",
       "errors": {
         "invalid_email": "That does not look like an e-mail address. Write the whole address."
-      }
+      },
+      "sentFailedTitle": "Invitation created, but the e-mail did not go out",
+      "sentFailedLead": "We could not send the e-mail to {{email}}. Withdraw the invitation and try again."
     },
     "settingsSheet": {
       "title": "Settings",

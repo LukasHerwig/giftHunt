@@ -177,11 +177,20 @@ export class WishlistService {
     if (error) throw error;
   }
 
-  static async invite(wishlistId: string, email: string): Promise<void> {
+  /** Returns whether the invitation e-mail went out (the invitation exists either way). */
+  static async invite(wishlistId: string, email: string): Promise<{ emailSent: boolean }> {
     const {
       data: { user },
     } = await supabase.auth.getUser();
     if (!user) throw new Error('not_authenticated');
+
+    // One invitation per list: an expired one would block a new invitation for good.
+    const { error: cleanupError } = await supabase
+      .from('admin_invitations')
+      .delete()
+      .eq('wishlist_id', wishlistId)
+      .lt('expires_at', new Date().toISOString());
+    if (cleanupError) throw cleanupError;
 
     const token = crypto.randomUUID();
     const expiresAt = new Date();
@@ -199,7 +208,7 @@ export class WishlistService {
       throw error;
     }
 
-    // The invitation exists even if the mail fails; the owner can retry later.
+    // The invitation exists even if the mail fails; the owner is told so and can withdraw and retry.
     try {
       const { data: list } = await supabase
         .from('wishlists')
@@ -217,8 +226,10 @@ export class WishlistService {
         list?.title || 'Wishlist',
         inviter?.full_name || undefined,
       );
+      return { emailSent: true };
     } catch (emailError) {
       console.error('Failed to send invitation email:', emailError);
+      return { emailSent: false };
     }
   }
 

@@ -23,6 +23,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
   const [sheet, setSheet] = useState<Sheet>(null);
   const [busy, setBusy] = useState(false);
   const [inviteSentTo, setInviteSentTo] = useState<string | null>(null);
+  const [inviteEmailFailed, setInviteEmailFailed] = useState(false);
 
   const load = useCallback(async () => {
     if (!wishlistId) {
@@ -101,6 +102,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
   const closeSheet = useCallback(() => {
     setSheet(null);
     setInviteSentTo(null);
+    setInviteEmailFailed(false);
   }, []);
 
   const addItem = async (form: ItemFormData): Promise<ItemFormError | null> => {
@@ -123,16 +125,19 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
     if (!data) return null;
 
     if (data.shared) {
-      const ready = await WishlistService.withLinkImage(form);
-      const proposal = buildProposal(item, ready);
+      const proposal = buildProposal(item, form);
       if (Object.keys(proposal).length === 0) {
         closeSheet();
         return null;
       }
-      const ok = await run(
-        () => WishlistService.requestEdit(item.id, proposal),
-        'wishlist.toast.requestFailed',
-      );
+      const ok = await run(async () => {
+        // A new link brings its picture along; nothing else is added on the owner's behalf.
+        if (proposal.link && !form.url.trim()) {
+          const { url } = await WishlistService.withLinkImage(form);
+          if (url) proposal.url = url;
+        }
+        await WishlistService.requestEdit(item.id, proposal);
+      }, 'wishlist.toast.requestFailed');
       if (ok) {
         toast.success(t('wishlist.toast.requestSent'));
         closeSheet();
@@ -179,8 +184,12 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
     const trimmed = email.trim();
     if (!wishlistId) return null;
     if (!/^\S+@\S+\.\S+$/.test(trimmed)) return 'invalid_email';
-    const ok = await run(() => WishlistService.invite(wishlistId, trimmed), 'wishlist.toast.inviteFailed');
+    let emailSent = true;
+    const ok = await run(async () => {
+      emailSent = (await WishlistService.invite(wishlistId, trimmed)).emailSent;
+    }, 'wishlist.toast.inviteFailed');
     if (ok) {
+      setInviteEmailFailed(!emailSent);
       setInviteSentTo(trimmed);
       await load();
     }
@@ -243,6 +252,7 @@ export const useOwnerWishlist = (wishlistId: string | undefined) => {
     sheet,
     busy,
     inviteSentTo,
+    inviteEmailFailed,
     openAdd: () => setSheet({ type: 'add' }),
     openItem: (itemId: string) => setSheet({ type: 'item', itemId }),
     openShare: () => setSheet({ type: 'share' }),
