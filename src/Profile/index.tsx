@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils';
 import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
-import { User } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { useAuth } from '@/components/auth/useAuth';
 import { Button } from '@/components/ui/button';
@@ -27,7 +26,7 @@ const Profile = () => {
         <ProfileLoading />
       ) : page.failed || !page.profile ? (
         <EmptyState
-          icon={User}
+          pose="sad"
           size="screen"
           title={t('profile.loadFailed')}
           action={

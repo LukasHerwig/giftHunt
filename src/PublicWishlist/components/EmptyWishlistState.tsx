@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { Gift } from 'lucide-react';
 import { EmptyState } from '@/components/gh/EmptyState';
 
 export const EmptyWishlistState = ({ creatorName }: { creatorName: string | null }) => {
@@ -7,7 +6,7 @@ export const EmptyWishlistState = ({ creatorName }: { creatorName: string | null
 
   return (
     <EmptyState
-      icon={Gift}
+      pose="sleep"
       title={t('publicWishlist.emptyTitle')}
       text={
         creatorName

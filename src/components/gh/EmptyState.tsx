@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
-import type { LucideIcon } from 'lucide-react';
+import { Rosetten, type RosettenPose } from '@/components/brand';
 import { cn } from '@/lib/utils';
 
 interface EmptyStateProps {
-  icon: LucideIcon;
+  pose: RosettenPose;
   title: string;
   text?: string;
   action?: ReactNode;
@@ -13,7 +13,7 @@ interface EmptyStateProps {
 
 /** Heading, one line, one action. Never just a grey line. */
 export const EmptyState = ({
-  icon: Icon,
+  pose,
   title,
   text,
   action,
@@ -25,7 +25,7 @@ export const EmptyState = ({
       'flex flex-col items-center gap-2 px-4 text-center',
       size === 'screen' ? 'py-10' : 'py-8',
     )}>
-    <Icon className="h-10 w-10 text-gh-muted" aria-hidden="true" />
+    <Rosetten pose={pose} size={size === 'screen' ? 144 : 104} />
     <Heading
       className={cn(
         'mt-3 font-bold text-gh-ink',

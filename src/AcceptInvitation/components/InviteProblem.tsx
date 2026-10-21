@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import { Link2Off } from 'lucide-react';
 import { AccountHeading } from '@/components/AccountShell';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/gh/EmptyState';
@@ -26,7 +25,7 @@ export const InviteProblem = ({ problem, email, onHome, onLeave, onRetry }: Invi
   if (problem === 'gone') {
     return (
       <EmptyState
-        icon={Link2Off}
+        pose="lost"
         size="screen"
         headingAs="h1"
         title={t('acceptInvitation.gone.title')}
