@@ -1,7 +1,11 @@
-import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { RosettenLoader } from '@/components/brand';
 
-export const AuthLoadingState = () => (
-  <div className="flex min-h-screen items-center justify-center bg-gh-bg">
-    <Loader2 className="h-8 w-8 animate-spin text-gh-primary-strong" aria-hidden="true" />
-  </div>
-);
+export const AuthLoadingState = () => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gh-bg">
+      <RosettenLoader label={t('common.loading')} size={144} />
+    </div>
+  );
+};
