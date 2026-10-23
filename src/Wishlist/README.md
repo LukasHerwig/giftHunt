@@ -3,9 +3,10 @@
 The wishlist screen at `/wishlist/:id` (spec: `docs/superpowers/specs/2026-10-20-ui-redesign-design.md`).
 
 ## What it does
-- `index.tsx` finds the viewer's role (`lib/mode.ts`). **Owner** gets `components/OwnerWishlist`. **Organizers** and the creator of a **self-managed** list get `components/OrganizerWishlist`; everyone else goes Home. The old `/manage`, `/admin` and `/self` addresses redirect here.
+- `index.tsx` finds the viewer's role (`lib/mode.ts`). **Owner** gets `components/OwnerWishlist`. **Organizers** and the creator of a **self-managed** list get `components/OrganizerWishlist`; an owner opening their own **archived** list gets `components/ArchivedWishlist`; everyone else goes Home. The old `/manage`, `/admin` and `/self` addresses redirect here.
 - Owner mode: add, edit and delete items; invite and follow an organizer (the owner never sees the share link or anything about what is taken); list settings; and, once the list is shared, change requests.
 - Organizer mode: decide the owner's change requests (with an optional message), Lediga · Tagna, who took what, make an item free, remove one gift from a gift card, edit or delete an item, and create, copy and turn off the share link. A self-managed creator gets the same screen plus add item and settings, and no requests. An invited organizer cannot add items (the database refuses it).
+- **Archive** (owner and self-managed creator, in Settings, inline confirm): `archive_wishlist` deletes the share link, invitations and organizer, drops waiting requests and makes the list read-only for everyone, keeping items and claims. The archived screen shows a banner with **Restore** (`unarchive_wishlist`: a plain list, so invite and share again) and Delete; its items are not tappable. The page resolves its mode again after archiving or restoring (`onModeChange`).
 - While the list is unshared, item edits go straight to the database. Once an active share link exists the database refuses direct updates and deletes (phase 4a), so edits and removals are sent through `request_item_change` and answered by the organizer (neutral answers: "Ändringen är gjord" / "behöll önskningen som den var").
 
 ## Structure

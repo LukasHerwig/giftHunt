@@ -10,7 +10,7 @@ import { EmptyState } from '@/components/gh/EmptyState';
 import { ListRow } from '@/components/gh/ListRow';
 import { SectionHeader } from '@/components/gh/SectionHeader';
 import { StatusPill } from '@/components/gh/StatusPill';
-import { HomeLoading, InvitationCard, ListSection, NewListSheet } from './components';
+import { ArchivedSection, HomeLoading, InvitationCard, ListSection, NewListSheet } from './components';
 import { useHome } from './hooks/useHome';
 
 const Home = () => {
@@ -22,7 +22,7 @@ const Home = () => {
   const open = (id: string) => navigate(`/wishlist/${id}`);
   const itemsLabel = (count: number) => t('home.items', { count });
 
-  const noLists = owned.length === 0 && organized.length === 0;
+  const noLists = owned.length === 0 && organized.length === 0 && home.archived.length === 0;
 
   return (
     <div className="min-h-screen bg-gh-bg pb-safe text-gh-ink">
@@ -132,6 +132,8 @@ const Home = () => {
                   ))}
                 </ListSection>
               )}
+
+              {home.archived.length > 0 && <ArchivedSection rows={home.archived} onOpen={open} />}
             </>
           )}
         </main>

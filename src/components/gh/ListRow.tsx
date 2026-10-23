@@ -11,11 +11,13 @@ interface ListRowProps {
   chevron?: boolean;
   /** The "Ny önskelista" row at the end of a list: accent title, no chevron. */
   add?: boolean;
+  /** Quieter title, for rows that are no longer live. */
+  muted?: boolean;
   onClick: () => void;
 }
 
 /** The base row of every list: leading icon, title, one line of context and a trailing slot. */
-export const ListRow = ({ title, subtitle, icon: Icon, trailing, chevron, add, onClick }: ListRowProps) => (
+export const ListRow = ({ title, subtitle, icon: Icon, trailing, chevron, add, muted, onClick }: ListRowProps) => (
   <button
     type="button"
     onClick={onClick}
@@ -31,7 +33,7 @@ export const ListRow = ({ title, subtitle, icon: Icon, trailing, chevron, add, o
       <span
         className={cn(
           'truncate text-[17px] font-semibold leading-[22px]',
-          add ? 'text-gh-primary-strong' : 'text-gh-ink',
+          add ? 'text-gh-primary-strong' : muted ? 'text-gh-ink-2' : 'text-gh-ink',
         )}>
         {title}
       </span>

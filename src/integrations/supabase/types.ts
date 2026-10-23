@@ -181,14 +181,14 @@ isOneToOne: false
                   ]
                 },"wishlists": {
                   Row: {
-                    "created_at": string,"creator_id": string,"description": string | null,"enable_links": boolean | null,"enable_price": boolean | null,"enable_priority": boolean | null,"id": string,"is_self_managed": boolean,"title": string
+                    "archived_at": string | null,"created_at": string,"creator_id": string,"description": string | null,"enable_links": boolean | null,"enable_price": boolean | null,"enable_priority": boolean | null,"id": string,"is_self_managed": boolean,"title": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"creator_id": string,"description"?: string | null,"enable_links"?: boolean | null,"enable_price"?: boolean | null,"enable_priority"?: boolean | null,"id"?: string,"is_self_managed"?: boolean,"title": string
+                    "archived_at"?: string | null,"created_at"?: string,"creator_id": string,"description"?: string | null,"enable_links"?: boolean | null,"enable_price"?: boolean | null,"enable_priority"?: boolean | null,"id"?: string,"is_self_managed"?: boolean,"title": string
                   }
                   Update: {
-                    "created_at"?: string,"creator_id"?: string,"description"?: string | null,"enable_links"?: boolean | null,"enable_price"?: boolean | null,"enable_priority"?: boolean | null,"id"?: string,"is_self_managed"?: boolean,"title"?: string
+                    "archived_at"?: string | null,"created_at"?: string,"creator_id"?: string,"description"?: string | null,"enable_links"?: boolean | null,"enable_price"?: boolean | null,"enable_priority"?: boolean | null,"id"?: string,"is_self_managed"?: boolean,"title"?: string
                   }
                   Relationships: [
                     {
@@ -212,6 +212,9 @@ isOneToOne: false
           Functions: {
             "accept_invitation":
 { Args: { "p_invitation_id": string }; Returns: undefined
+                           },
+"archive_wishlist":
+{ Args: { "p_wishlist_id": string }; Returns: undefined
                            },
 "can_see_profile":
 { Args: { "p_profile_id": string }; Returns: boolean
@@ -252,7 +255,13 @@ isOneToOne: false
 "remove_wishlist_admin":
 { Args: { "p_wishlist_id": string }; Returns: Json
                            },
+"unarchive_wishlist":
+{ Args: { "p_wishlist_id": string }; Returns: undefined
+                           },
 "wishlist_has_share_link":
+{ Args: { "p_wishlist_id": string }; Returns: boolean
+                           },
+"wishlist_is_archived":
 { Args: { "p_wishlist_id": string }; Returns: boolean
                            }
           }

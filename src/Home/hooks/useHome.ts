@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { errorCode } from '@/Wishlist/lib/errorCode';
-import { firstName, toInvitationRows, toOrganizedRows, toOwnedRows, withoutOwnLists } from '../lib/homeRows';
+import { firstName, toArchivedRows, toInvitationRows, toOrganizedRows, toOwnedRows, withoutOwnLists } from '../lib/homeRows';
 import { validateNewList } from '../lib/newList';
 import { HomeService } from '../services/HomeService';
 import type { HomeData, NewListError, NewListForm } from '../types';
@@ -42,6 +42,7 @@ export const useHome = () => {
   }, [load]);
 
   const owned = useMemo(() => toOwnedRows(data?.owned ?? []), [data]);
+  const archived = useMemo(() => toArchivedRows(data?.owned ?? []), [data]);
   const organized = useMemo(() => toOrganizedRows(data?.organized ?? []), [data]);
   const invitations = useMemo(() => toInvitationRows(withoutOwnLists(data?.invitations ?? [], (data?.owned ?? []).map((list) => list.id))), [data]);
   const greetingName = firstName(data?.fullName);
@@ -114,6 +115,7 @@ export const useHome = () => {
     reload: load,
     owned,
     organized,
+    archived,
     invitations,
     greetingName,
     sheetOpen,

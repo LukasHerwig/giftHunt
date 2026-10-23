@@ -1,4 +1,5 @@
 import type {
+  ArchivedRow,
   InvitationRaw,
   InvitationRow,
   OrganizedListRaw,
@@ -23,14 +24,21 @@ export const firstName = (fullName: string | null | undefined): string | null =>
 };
 
 export const toOwnedRows = (lists: OwnedListRaw[]): OwnedRow[] =>
-  lists.map((list) => ({
-    id: list.id,
-    title: list.title,
-    itemCount: list.itemCount,
-    // On a self-managed list the "organizer" is the owner themselves.
-    organizerName: list.is_self_managed ? null : displayName(list.organizer),
-    selfManaged: list.is_self_managed,
-  }));
+  lists
+    .filter((list) => list.archived_at === null)
+    .map((list) => ({
+      id: list.id,
+      title: list.title,
+      itemCount: list.itemCount,
+      // On a self-managed list the "organizer" is the owner themselves.
+      organizerName: list.is_self_managed ? null : displayName(list.organizer),
+      selfManaged: list.is_self_managed,
+    }));
+
+export const toArchivedRows = (lists: OwnedListRaw[]): ArchivedRow[] =>
+  lists
+    .filter((list) => list.archived_at !== null)
+    .map((list) => ({ id: list.id, title: list.title, itemCount: list.itemCount }));
 
 export const toOrganizedRows = (lists: OrganizedListRaw[]): OrganizedRow[] =>
   lists.map((list) => ({

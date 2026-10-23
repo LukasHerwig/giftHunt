@@ -51,7 +51,7 @@ Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wish
 
 | Table               | Purpose                                                                                       |
 | ------------------- | --------------------------------------------------------------------------------------------- |
-| `wishlists`         | Owned by `creator_id`; has `enable_links/price/priority` config flags                         |
+| `wishlists`         | Owned by `creator_id`; has `enable_links/price/priority` config flags; `archived_at` when archived |
 | `wishlist_items`    | Items with optional `link`, `price_range`, `priority`, `is_giftcard`, `is_taken`, `claim_cap` |
 | `wishlist_admins`   | Many admins per wishlist (admin can see taken-by names, untake)                               |
 | `admin_invitations` | Token-based invitations to become admin                                                       |
@@ -116,6 +116,7 @@ When `is_giftcard = true`, multiple people can claim the same item via `item_cla
 - Invitation workflow: creator sends invite → recipient gets email with token → acceptance creates `wishlist_admins` record + marks invitation accepted.
 - Hide the invite button when an admin already exists OR a pending invitation exists.
 - A self-managed list (`is_self_managed = true`) lets the creator act as their own organizer on the same screen: add items, settings, share link, make free, remove a gift; no change requests.
+- An **archived** list (`archived_at` set) is read-only and visible only to its owner. `archive_wishlist` deletes the share link, invitations and organizer (the creator of a self-managed list keeps their own organizer row), drops waiting change requests and keeps items and claims; `unarchive_wishlist` restores a plain list, so the owner invites and shares again. `archived_at` changes only through those two functions.
 - An invited organizer cannot add items (the database refuses it): the owner decides what is on the list. The organizer can still edit, delete, make an item free and answer change requests.
 
 ### RLS patterns

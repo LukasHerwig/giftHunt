@@ -23,11 +23,13 @@ interface OrganizerWishlistProps {
   wishlistId: string;
   /** self = the creator of a self-managed list: also adds items and has settings, never requests. */
   mode: 'organizer' | 'self';
+  /** Archiving changes what this address is: the page resolves its mode again. */
+  onModeChange?: () => void;
 }
 
-export const OrganizerWishlist = ({ wishlistId, mode }: OrganizerWishlistProps) => {
+export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerWishlistProps) => {
   const { t } = useTranslation();
-  const wishlist = useOrganizerWishlist(wishlistId);
+  const wishlist = useOrganizerWishlist(wishlistId, onModeChange);
   const { data, loading, sheet, busy, segment, groups } = wishlist;
 
   if (loading) return <WishlistLoading />;
@@ -250,6 +252,7 @@ export const OrganizerWishlist = ({ wishlistId, mode }: OrganizerWishlistProps) 
           busy={busy}
           onSave={wishlist.saveSettings}
           onDelete={wishlist.deleteList}
+          onArchive={wishlist.archiveList}
           onClose={wishlist.closeSheet}
         />
       )}
