@@ -21,7 +21,7 @@ import type {
 
 export type Segment = 'available' | 'taken';
 
-export const useOrganizerWishlist = (wishlistId: string | undefined) => {
+export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChange?: () => void) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [data, setData] = useState<OrganizerData | null>(null);
@@ -223,6 +223,17 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
     }
   };
 
+
+  const archiveList = async () => {
+    if (!wishlistId) return;
+    const ok = await run(() => WishlistService.archiveList(wishlistId), 'wishlist.toast.archiveFailed');
+    if (ok) {
+      toast.success(t('wishlist.toast.archived'), 'sleep');
+      closeSheet();
+      onModeChange?.();
+    }
+  };
+
   return {
     loading,
     data,
@@ -250,5 +261,6 @@ export const useOrganizerWishlist = (wishlistId: string | undefined) => {
     copyLink,
     saveSettings,
     deleteList,
+    archiveList,
   };
 };

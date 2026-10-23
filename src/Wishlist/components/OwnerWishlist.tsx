@@ -21,9 +21,9 @@ interface OwnerWishlistProps {
   onModeChange: () => void;
 }
 
-export const OwnerWishlist = ({ wishlistId }: OwnerWishlistProps) => {
+export const OwnerWishlist = ({ wishlistId, onModeChange }: OwnerWishlistProps) => {
   const { t } = useTranslation();
-  const wishlist = useOwnerWishlist(wishlistId);
+  const wishlist = useOwnerWishlist(wishlistId, onModeChange);
   const { data, loading, sheet, busy } = wishlist;
 
   if (loading) return <WishlistLoading />;
@@ -207,6 +207,7 @@ export const OwnerWishlist = ({ wishlistId }: OwnerWishlistProps) => {
           busy={busy}
           onSave={wishlist.saveSettings}
           onDelete={wishlist.deleteList}
+          onArchive={wishlist.archiveList}
           onClose={wishlist.closeSheet}
         />
       )}
