@@ -88,7 +88,7 @@ export const SettingsSheet = ({ wishlist, busy, onSave, onDelete, onArchive, onC
         )}
         {confirming === 'archive' ? (
           <>
-            <ul className="m-0 flex flex-col gap-2 pl-5 text-[16px] leading-6 text-gh-ink">
+            <ul className="m-0 flex list-disc flex-col gap-2 pl-5 text-[16px] leading-6 text-gh-ink">
               {!wishlist.is_self_managed && <li>{t('wishlist.settingsSheet.archiveOrganizer')}</li>}
               <li>{t('wishlist.settingsSheet.archiveLink')}</li>
               <li>{t('wishlist.settingsSheet.archiveRequests')}</li>
@@ -96,7 +96,7 @@ export const SettingsSheet = ({ wishlist, busy, onSave, onDelete, onArchive, onC
             <p className="text-[14px] leading-5 text-gh-ink-2">{t('wishlist.settingsSheet.archiveKept')}</p>
             <ConfirmBlock
               question={t('wishlist.settingsSheet.archiveQuestion', { title: wishlist.title })}
-              context={t('wishlist.settingsSheet.archiveContext')}
+              context={t(wishlist.is_self_managed ? 'wishlist.settingsSheet.archiveContextSelf' : 'wishlist.settingsSheet.archiveContext')}
               confirmLabel={t('wishlist.settingsSheet.archiveAction')}
               cancelLabel={t('wishlist.confirm.cancel')}
               loading={busy}
