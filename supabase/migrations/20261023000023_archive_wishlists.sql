@@ -153,3 +153,45 @@ create policy "claims_admin_delete" on public.item_claims
   for delete to authenticated
   using (public.is_wishlist_admin(public.item_wishlist_id(item_id))
          and not public.wishlist_is_archived(public.item_wishlist_id(item_id)));
+
+-- remove_wishlist_admin is security definer, so the policies above do not reach it: an archived
+-- list keeps its organizer row (self-managed) and its taken status until it is restored.
+create or replace function public.remove_wishlist_admin(p_wishlist_id uuid)
+returns json language plpgsql volatile security definer set search_path = public as $$
+declare
+  v_email text;
+  v_had_links boolean;
+begin
+  if not public.is_wishlist_owner(p_wishlist_id) then
+    raise exception 'not_owner' using errcode = '42501';
+  end if;
+  if public.wishlist_is_archived(p_wishlist_id) then
+    raise exception 'archived_locked' using errcode = 'P0001';
+  end if;
+
+  select p.email into v_email
+  from wishlist_admins wa
+  join profiles p on p.id = wa.admin_id
+  where wa.wishlist_id = p_wishlist_id;
+
+  with deleted as (
+    delete from share_links where wishlist_id = p_wishlist_id returning 1
+  )
+  select count(*) > 0 into v_had_links from deleted;
+
+  update wishlist_items
+  set is_taken = false, taken_by_name = null, taken_at = null
+  where wishlist_id = p_wishlist_id and is_taken;
+
+  delete from wishlist_admins where wishlist_id = p_wishlist_id;
+
+  delete from admin_invitations where wishlist_id = p_wishlist_id;
+
+  -- Proposals made to the removed organizer must not be approved by a later one.
+  update item_change_requests
+  set status = 'withdrawn', resolved_by = auth.uid(), resolved_at = now()
+  where wishlist_id = p_wishlist_id and status = 'pending';
+
+  return json_build_object('admin_email', v_email, 'had_share_links', v_had_links);
+end;
+$$;

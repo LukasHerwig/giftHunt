@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(34);
+select plan(39);
 \ir _seed.psql
 
 -- A waiting change request on W1, to see it dropped by archiving
@@ -136,6 +136,21 @@ select lives_ok(
   $$ insert into public.share_links (wishlist_id, token, created_by)
      values ('aaaaaaaa-0000-0000-0000-000000000003', 'tok-w3', '11111111-0000-0000-0000-000000000005') $$,
   'a restored self-managed list can be shared again');
+reset role;
+
+-- remove_wishlist_admin is a definer function: it must refuse archived lists itself
+:as_owner
+select lives_ok($$ select public.archive_wishlist('aaaaaaaa-0000-0000-0000-000000000001') $$, 'W1 is archived again');
+select throws_ok(
+  $$ select public.remove_wishlist_admin('aaaaaaaa-0000-0000-0000-000000000001') $$,
+  'P0001', 'archived_locked', 'remove_wishlist_admin refuses an archived list');
+reset role;
+select ok((select is_taken from public.wishlist_items where id = :'i3'), 'taken status survives a refused remove_wishlist_admin');
+:as_self
+select lives_ok($$ select public.archive_wishlist('aaaaaaaa-0000-0000-0000-000000000003') $$, 'W3 is archived again');
+select throws_ok(
+  $$ select public.remove_wishlist_admin('aaaaaaaa-0000-0000-0000-000000000003') $$,
+  'P0001', 'archived_locked', 'the creator cannot strip their own organizer row on an archived list');
 reset role;
 
 select * from finish();
