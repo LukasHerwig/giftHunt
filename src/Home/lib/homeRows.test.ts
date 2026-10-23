@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   displayName,
   firstName,
+  toArchivedRows,
   toInvitationRows,
   toOrganizedRows,
   toOwnedRows,
@@ -32,6 +33,7 @@ const owned = (over: Partial<OwnedListRaw> = {}): OwnedListRaw => ({
   created_at: '2026-10-01T00:00:00Z',
   itemCount: 8,
   organizer: null,
+  archived_at: null,
   ...over,
 });
 
@@ -91,4 +93,13 @@ test('an invitation to a list the user made themselves is not shown', () => {
   const mine = invitation({ id: 'i2', wishlistId: 'own' });
   const theirs = invitation({ id: 'i3', wishlistId: 'other' });
   assert.deepEqual(withoutOwnLists([mine, theirs], ['own']).map((i) => i.id), ['i3']);
+});
+
+test('archived lists are kept out of the owned rows and listed on their own', () => {
+  const lists = [
+    owned({ id: 'a', title: 'Aktiv' }),
+    owned({ id: 'b', title: 'Gammal', itemCount: 2, archived_at: '2026-10-23T09:00:00Z' }),
+  ];
+  assert.deepEqual(toOwnedRows(lists).map((row) => row.id), ['a']);
+  assert.deepEqual(toArchivedRows(lists), [{ id: 'b', title: 'Gammal', itemCount: 2 }]);
 });

@@ -12,6 +12,8 @@ export interface OwnedListRaw {
   itemCount: number;
   /** The organizer who shares this list for the owner, if any. */
   organizer: ProfileName | null;
+  /** Set once the owner archives the list. */
+  archived_at: string | null;
 }
 
 export interface OrganizedListRaw {
@@ -58,6 +60,12 @@ export interface OwnedRow {
   organizerName: string | null;
   /** The viewer made it for someone else and shares it themselves. */
   selfManaged: boolean;
+}
+
+export interface ArchivedRow {
+  id: string;
+  title: string;
+  itemCount: number;
 }
 
 export interface OrganizedRow {

@@ -100,7 +100,12 @@ export type Sheet =
   | { type: 'settings' }
   | null;
 
-export type Mode = 'owner' | 'organizer' | 'self' | 'none';
+export type Mode = 'owner' | 'organizer' | 'self' | 'archived' | 'none';
+
+export interface ArchivedData {
+  wishlist: Wishlist;
+  items: OwnerItem[];
+}
 
 export interface SettingsValues {
   title: string;
