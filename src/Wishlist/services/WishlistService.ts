@@ -6,6 +6,7 @@ import { fetchLinkMetadata } from '@/lib/metadataUtils';
 import { getBaseUrl } from '@/lib/urlUtils';
 import { toItemRow, type ItemRowValues } from '../lib/itemForm';
 import type {
+  ArchivedData,
   ChangeRequestRow,
   ItemFormData,
   OrganizerState,
@@ -255,6 +256,24 @@ export class WishlistService {
         enable_priority: values.enablePriority,
       })
       .eq('id', wishlistId);
+    if (error) throw error;
+  }
+
+  /** An archived list: the owner reads the wishlist and its items, nothing else. */
+  static async loadArchivedData(wishlistId: string): Promise<ArchivedData> {
+    const wishlist = await WishlistService.loadWishlist(wishlistId);
+    if (!wishlist) throw new Error('wishlist_not_found');
+    return { wishlist, items: await WishlistService.loadItems(wishlistId) };
+  }
+
+  /** Removes the organizer, invitation and share link, and makes the list read-only. */
+  static async archiveList(wishlistId: string): Promise<void> {
+    const { error } = await supabase.rpc('archive_wishlist', { p_wishlist_id: wishlistId });
+    if (error) throw error;
+  }
+
+  static async unarchiveList(wishlistId: string): Promise<void> {
+    const { error } = await supabase.rpc('unarchive_wishlist', { p_wishlist_id: wishlistId });
     if (error) throw error;
   }
 

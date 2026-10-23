@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import { useAuth } from '@/components/auth/useAuth';
-import { OrganizerWishlist, OwnerWishlist, WishlistLoading } from './components';
+import { ArchivedWishlist, OrganizerWishlist, OwnerWishlist, WishlistLoading } from './components';
 import { resolveMode } from './lib/mode';
 import { WishlistService } from './services/WishlistService';
 import type { Mode } from './types';
@@ -15,6 +15,12 @@ const Wishlist = () => {
   const { user } = useAuth();
   const userId = user?.id;
   const [mode, setMode] = useState<Mode | null>(null);
+  const [version, setVersion] = useState(0);
+  /** Archiving or restoring changes what this address is: resolve the mode again. */
+  const refreshMode = useCallback(() => {
+    setMode(null);
+    setVersion((v) => v + 1);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,11 +42,13 @@ const Wishlist = () => {
     return () => {
       cancelled = true;
     };
-  }, [id, userId]);
+  }, [id, userId, version]);
 
   if (!id || mode === null) return <WishlistLoading />;
-  if (mode === 'owner') return <OwnerWishlist wishlistId={id} />;
-  if (mode === 'organizer' || mode === 'self') return <OrganizerWishlist wishlistId={id} mode={mode} />;
+  if (mode === 'archived') return <ArchivedWishlist wishlistId={id} onModeChange={refreshMode} />;
+  if (mode === 'owner') return <OwnerWishlist wishlistId={id} onModeChange={refreshMode} />;
+  if (mode === 'organizer' || mode === 'self')
+    return <OrganizerWishlist wishlistId={id} mode={mode} onModeChange={refreshMode} />;
   return <Navigate to="/" replace />;
 };
 

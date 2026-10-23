@@ -23,6 +23,8 @@ interface OrganizerWishlistProps {
   wishlistId: string;
   /** self = the creator of a self-managed list: also adds items and has settings, never requests. */
   mode: 'organizer' | 'self';
+  /** Archiving changes what this address is: the page resolves its mode again. */
+  onModeChange?: () => void;
 }
 
 export const OrganizerWishlist = ({ wishlistId, mode }: OrganizerWishlistProps) => {

@@ -17,6 +17,8 @@ import { WishlistLoading } from './WishlistLoading';
 
 interface OwnerWishlistProps {
   wishlistId: string;
+  /** Archiving changes what this address is: the page resolves its mode again. */
+  onModeChange: () => void;
 }
 
 export const OwnerWishlist = ({ wishlistId }: OwnerWishlistProps) => {

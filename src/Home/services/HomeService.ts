@@ -48,7 +48,7 @@ export class HomeService {
     const { data, error } = await supabase
       .from('wishlists')
       .select(
-        'id, title, description, is_self_managed, created_at, admins:wishlist_admins(profile:profiles!admin_id(full_name, email))',
+        'id, title, description, is_self_managed, created_at, archived_at, admins:wishlist_admins(profile:profiles!admin_id(full_name, email))',
       )
       .eq('creator_id', userId)
       .order('created_at', { ascending: false });

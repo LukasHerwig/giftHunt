@@ -15,19 +15,22 @@ interface ItemRowProps {
   claim?: { count: number; cap: number | null; label: string };
   /** Muted ground for items that can no longer be taken. */
   taken?: boolean;
-  onClick: () => void;
+  /** Without it the row is read-only (an archived list). */
+  onClick?: () => void;
 }
 
-export const ItemRow = ({ title, image, meta, status, giftCardLabel, claim, taken, onClick }: ItemRowProps) => (
-  <button
-    type="button"
-    onClick={onClick}
+export const ItemRow = ({ title, image, meta, status, giftCardLabel, claim, taken, onClick }: ItemRowProps) => {
+  const Root = onClick ? 'button' : 'div';
+  return (
+  <Root
+    {...(onClick ? { type: 'button' as const, onClick } : {})}
     className={cn(
       'relative flex min-h-[80px] w-full items-center gap-3 rounded-gh-lg border p-3 text-left text-gh-ink',
-      'transition-[transform,background-color] duration-[120ms] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100',
+      onClick &&
+        'transition-[transform,background-color] duration-[120ms] active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100',
       taken
         ? 'border-transparent bg-gh-taken-bg'
-        : 'border-gh-line bg-gh-surface-200 hover:border-gh-line-strong hover:bg-gh-surface-100',
+        : cn('border-gh-line bg-gh-surface-200', onClick && 'hover:border-gh-line-strong hover:bg-gh-surface-100'),
     )}>
     <ItemImage
       src={image}
@@ -56,6 +59,7 @@ export const ItemRow = ({ title, image, meta, status, giftCardLabel, claim, take
         </span>
       )}
     </span>
-    <ChevronRight className="h-5 w-5 flex-none text-gh-muted" aria-hidden="true" />
-  </button>
-);
+    {onClick && <ChevronRight className="h-5 w-5 flex-none text-gh-muted" aria-hidden="true" />}
+  </Root>
+  );
+};

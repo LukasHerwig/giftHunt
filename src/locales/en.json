@@ -316,7 +316,15 @@
       "deleteAction": "Delete the list",
       "errors": {
         "title_required": "The list needs a name."
-      }
+      },
+      "archive": "Archive the list",
+      "archiveQuestion": "Archive {{title}}?",
+      "archiveContext": "The organizer and the link cannot be brought back.",
+      "archiveAction": "Archive the list",
+      "archiveOrganizer": "The organizer and any pending invitation are removed.",
+      "archiveLink": "The share link stops working and cannot come back.",
+      "archiveRequests": "Waiting change requests are dropped.",
+      "archiveKept": "Your wishes are kept. Find the list under Archived on the start page and restore it any time."
     },
     "toast": {
       "loadFailed": "Could not load the list. Try again.",
@@ -344,7 +352,11 @@
       "settingsFailed": "Could not save the settings. Try again.",
       "settingsSaved": "The settings are saved",
       "deleteFailed": "Could not delete the list. Try again.",
-      "listDeleted": "The list is deleted"
+      "listDeleted": "The list is deleted",
+      "archived": "The list is archived",
+      "archiveFailed": "Could not archive the list. Try again.",
+      "restored": "The list is restored",
+      "restoreFailed": "Could not restore the list. Try again."
     },
     "org": {
       "eyebrow": "Wishlist by {{name}}",
@@ -424,6 +436,11 @@
         "linkCopied": "The link is copied",
         "copyFailed": "Could not copy the link. Copy it by hand from the box."
       }
+    },
+    "archived": {
+      "title": "This list is archived",
+      "text": "Only you can see it, and it cannot be changed. No organizer and no share link are left. Restore the list to invite and share again.",
+      "restore": "Restore the list"
     }
   },
   "home": {
@@ -485,6 +502,10 @@
       "organizerExists": "This list already has an organizer.",
       "emailNotConfirmed": "Confirm your e-mail address first, then try again."
     },
-    "retry": "Try again"
+    "retry": "Try again",
+    "sectionArchived": "Archived",
+    "archivedShow": "Show",
+    "archivedHide": "Hide",
+    "archivedLabel": "Archived"
   }
 }

@@ -316,7 +316,15 @@
       "deleteAction": "Radera listan",
       "errors": {
         "title_required": "Listan behöver ett namn."
-      }
+      },
+      "archive": "Arkivera listan",
+      "archiveQuestion": "Arkivera {{title}}?",
+      "archiveContext": "Arrangören och länken går inte att få tillbaka.",
+      "archiveAction": "Arkivera listan",
+      "archiveOrganizer": "Arrangören och en väntande inbjudan tas bort.",
+      "archiveLink": "Delningslänken slutar fungera och kan inte komma tillbaka.",
+      "archiveRequests": "Väntande ändringsförfrågningar tas bort.",
+      "archiveKept": "Önskningarna sparas. Du hittar listan under Arkiverade på Hem och kan återställa den när som helst."
     },
     "toast": {
       "loadFailed": "Det gick inte att ladda listan. Försök igen.",
@@ -344,7 +352,11 @@
       "settingsFailed": "Det gick inte att spara inställningarna. Försök igen.",
       "settingsSaved": "Inställningarna är sparade",
       "deleteFailed": "Det gick inte att radera listan. Försök igen.",
-      "listDeleted": "Listan är raderad"
+      "listDeleted": "Listan är raderad",
+      "archived": "Listan är arkiverad",
+      "archiveFailed": "Det gick inte att arkivera listan. Försök igen.",
+      "restored": "Listan är återställd",
+      "restoreFailed": "Det gick inte att återställa listan. Försök igen."
     },
     "org": {
       "eyebrow": "Önskelista av {{name}}",
@@ -424,6 +436,11 @@
         "linkCopied": "Länken är kopierad",
         "copyFailed": "Det gick inte att kopiera länken. Kopiera den för hand från rutan."
       }
+    },
+    "archived": {
+      "title": "Listan är arkiverad",
+      "text": "Den syns bara för dig och kan inte ändras. Ingen arrangör och ingen delningslänk är kvar. Återställ listan för att bjuda in och dela på nytt.",
+      "restore": "Återställ listan"
     }
   },
   "home": {
@@ -485,6 +502,10 @@
       "organizerExists": "Den här listan har redan en arrangör.",
       "emailNotConfirmed": "Bekräfta din e-postadress först och försök sedan igen."
     },
-    "retry": "Försök igen"
+    "retry": "Försök igen",
+    "sectionArchived": "Arkiverade",
+    "archivedShow": "Visa",
+    "archivedHide": "Dölj",
+    "archivedLabel": "Arkiverad"
   }
 }
