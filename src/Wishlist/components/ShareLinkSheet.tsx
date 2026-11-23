@@ -18,6 +18,8 @@ interface ShareLinkSheetProps {
   onCopy: () => void;
   onSetActive: (active: boolean) => void;
   onClose: () => void;
+  /** A helper only copies: the name of the creator, who creates and turns off the link. */
+  copyOnlyFor?: string;
 }
 
 /** Only the organizer sees the link: it shows what is taken. Create, copy, turn off, turn on again. */
@@ -30,6 +32,7 @@ export const ShareLinkSheet = ({
   onCopy,
   onSetActive,
   onClose,
+  copyOnlyFor,
 }: ShareLinkSheetProps) => {
   const { t } = useTranslation();
   const [confirmingOff, setConfirmingOff] = useState(false);
@@ -44,7 +47,37 @@ export const ShareLinkSheet = ({
       subtitle={listTitle}
       closeLabel={t('wishlist.form.close')}
       showTitleOnMobile>
-      {!shareLink ? (
+      {copyOnlyFor !== undefined ? (
+        !shareLink || !shareLink.is_active ? (
+          <div className="flex flex-col gap-1 rounded-gh-lg bg-gh-surface-300 p-4">
+            <h3 className="text-[18px] font-bold leading-6 text-gh-ink">{t('wishlist.helper.share.noneTitle')}</h3>
+            <p className="text-[16px] leading-6 text-gh-ink-2">
+              {t('wishlist.helper.share.noneText', { name: copyOnlyFor })}
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-2">
+              <span className="text-[12px] font-semibold leading-4 tracking-[0.2px] text-gh-ink-2">
+                {t('wishlist.org.share.urlLabel')}
+              </span>
+              <div className="rounded-gh-md border border-gh-line-strong bg-gh-surface-300 p-3">
+                <p className="break-all text-[15px] leading-[22px] text-gh-ink">{shareUrl(shareLink.token)}</p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              onClick={onCopy}
+              className="h-[52px] w-full gap-2 rounded-gh-md text-[17px] font-semibold">
+              {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+              {copied ? t('wishlist.org.share.copied') : t('wishlist.org.share.copy')}
+            </Button>
+            <p className="text-[13px] leading-[18px] text-gh-muted">
+              {t('wishlist.helper.share.caption', { name: copyOnlyFor })}
+            </p>
+          </>
+        )
+      ) : !shareLink ? (
         <>
           <div className="flex flex-col gap-1">
             <h3 className="text-[18px] font-bold leading-6 text-gh-ink">{t('wishlist.org.share.noneTitle')}</h3>

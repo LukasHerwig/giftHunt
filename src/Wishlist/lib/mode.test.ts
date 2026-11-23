@@ -43,3 +43,21 @@ test('nobody but the creator has a mode on an archived list', () => {
   const archived = '2026-10-23T09:00:00Z';
   assert.equal(resolveMode({ wishlist: list({ archived_at: archived }), userId: 'erik', isOrganizer: true }), 'none');
 });
+
+test('someone with an organizer row on a self-managed list they did not create is a helper', () => {
+  assert.equal(
+    resolveMode({ wishlist: list({ is_self_managed: true }), userId: 'anna', isOrganizer: true }),
+    'helper',
+  );
+});
+
+test('a helper has no mode on an archived list', () => {
+  assert.equal(
+    resolveMode({
+      wishlist: list({ is_self_managed: true, archived_at: '2026-10-23T09:00:00Z' }),
+      userId: 'anna',
+      isOrganizer: true,
+    }),
+    'none',
+  );
+});

@@ -442,6 +442,27 @@
       "title": "This list is archived",
       "text": "Only you can see it, and it cannot be changed. No organizer and no share link are left. Restore the list to invite and share again.",
       "restore": "Restore the list"
+    },
+    "helper": {
+      "eyebrow": "{{name}}'s wishlist · you're helping",
+      "button": "Helpers",
+      "share": {
+        "caption": "Anyone with the link can see the list and take a wish. {{name}} creates and turns off the link.",
+        "noneTitle": "No share link yet",
+        "noneText": "{{name}} creates the link when the list is ready to share. Then you can copy it here."
+      },
+      "sheet": {
+        "title": "Helpers",
+        "owner": "Made the list and invited you",
+        "body": "You can add, edit and delete wishes and see what is taken. {{name}} decides on the name, the settings and the link.",
+        "leave": "Leave list",
+        "leaveQuestion": "Leave {{title}}?",
+        "leaveContext": "You will no longer have access to the list. {{name}} can invite you again."
+      },
+      "toast": {
+        "left": "You left {{title}}",
+        "leaveFailed": "Could not leave the list. Try again."
+      }
     }
   },
   "home": {

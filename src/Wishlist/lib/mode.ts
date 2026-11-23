@@ -15,5 +15,6 @@ export const resolveMode = ({ wishlist, userId, isOrganizer }: ModeInput): Mode 
   }
   // An archived list is the owner's alone, whatever an organizer row says.
   if (wishlist.archived_at) return 'none';
-  return isOrganizer ? 'organizer' : 'none';
+  if (!isOrganizer) return 'none';
+  return wishlist.is_self_managed ? 'helper' : 'organizer';
 };

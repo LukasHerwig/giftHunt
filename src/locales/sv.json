@@ -442,6 +442,27 @@
       "title": "Listan är arkiverad",
       "text": "Den syns bara för dig och kan inte ändras. Ingen arrangör och ingen delningslänk är kvar. Återställ listan för att bjuda in och dela på nytt.",
       "restore": "Återställ listan"
+    },
+    "helper": {
+      "eyebrow": "Önskelista av {{name}} · du hjälper till",
+      "button": "Hjälpare",
+      "share": {
+        "caption": "Den som får länken kan se listan och ta en önskning. Det är {{name}} som skapar och stänger av länken.",
+        "noneTitle": "Ingen delningslänk än",
+        "noneText": "{{name}} skapar länken när listan ska delas. Sedan kan du kopiera den här."
+      },
+      "sheet": {
+        "title": "Hjälpare",
+        "owner": "Gjorde listan och bjöd in dig",
+        "body": "Du kan lägga till, ändra och ta bort önskningar och se vad som är taget. Namnet, inställningarna och länken bestämmer {{name}} över.",
+        "leave": "Lämna listan",
+        "leaveQuestion": "Lämna {{title}}?",
+        "leaveContext": "Du kommer inte längre åt listan. {{name}} kan bjuda in dig igen."
+      },
+      "toast": {
+        "left": "Du har lämnat {{title}}",
+        "leaveFailed": "Det gick inte att lämna listan. Försök igen."
+      }
     }
   },
   "home": {

@@ -82,6 +82,12 @@ export class OrganizerService {
     return data?.full_name ?? null;
   }
 
+  /** A helper steps down from a self-managed list. */
+  static async leave(wishlistId: string): Promise<void> {
+    const { error } = await supabase.rpc('leave_wishlist', { p_wishlist_id: wishlistId });
+    if (error) throw error;
+  }
+
   /** Makes a regular item free again (also clears claim rows left from when it was a gift card). */
   static async untake(itemId: string): Promise<void> {
     const { error: claimsError } = await supabase.from('item_claims').delete().eq('item_id', itemId);

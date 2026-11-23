@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useTranslation } from 'react-i18next';
-import { Plus, Settings, Share2 } from 'lucide-react';
+import { Plus, Settings, Share2, Users } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/gh/EmptyState';
@@ -12,6 +12,7 @@ import { useOrganizerWishlist } from '../hooks/useOrganizerWishlist';
 import { priorityName } from '../lib/itemForm';
 import { hasClaims, takerNames } from '../lib/organizerItems';
 import type { ItemWithClaims } from '../types';
+import { HelperInfoSheet } from './HelperInfoSheet';
 import { ItemFormSheet } from './ItemFormSheet';
 import { OrganizerItemSheet } from './OrganizerItemSheet';
 import { OrganizerRequestCard } from './OrganizerRequestCard';
@@ -21,8 +22,8 @@ import { WishlistLoading } from './WishlistLoading';
 
 interface OrganizerWishlistProps {
   wishlistId: string;
-  /** self = the creator of a self-managed list: also adds items and has settings, never requests. */
-  mode: 'organizer' | 'self';
+  /** self = the creator of a self-managed list: also adds items and has settings, never requests. helper = invited to such a list: adds items, no settings, no requests. */
+  mode: 'organizer' | 'self' | 'helper';
   /** Archiving changes what this address is: the page resolves its mode again. */
   onModeChange?: () => void;
 }
@@ -43,6 +44,9 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
   }
 
   const self = mode === 'self';
+  const helper = mode === 'helper';
+  /** Adds items: the creator of a self-managed list and its helpers. */
+  const adds = self || helper;
   const list = data.wishlist;
   const ownerName = data.ownerName ?? t('wishlist.org.ownerFallback');
   const shown = segment === 'available' ? groups.available : groups.taken;
@@ -82,7 +86,7 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
           <div className="flex max-w-[560px] flex-col gap-2">
             {!self && (
               <p className="text-[13px] leading-[18px] text-gh-muted">
-                {t('wishlist.org.eyebrow', { name: ownerName })}
+                {t(helper ? 'wishlist.helper.eyebrow' : 'wishlist.org.eyebrow', { name: ownerName })}
               </p>
             )}
             <h1 className="text-[32px] font-bold leading-9 tracking-[-0.8px] text-gh-ink">{list.title}</h1>
@@ -97,6 +101,17 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
               <Share2 aria-hidden="true" />
               {t('wishlist.shareButton')}
             </Button>
+            {helper && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={wishlist.openHelpers}
+                className="h-12 gap-2 rounded-gh-md px-4 text-[16px] font-semibold">
+                <Users aria-hidden="true" />
+                {t('wishlist.helper.button')}
+              </Button>
+            )}
+            {helper && <span className="hidden md:inline-flex">{addButton('')}</span>}
             {self && (
               <>
                 <Button
@@ -114,9 +129,9 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
           </div>
         </header>
 
-        {self && <div className="md:hidden">{addButton('w-full')}</div>}
+        {adds && <div className="md:hidden">{addButton('w-full')}</div>}
 
-        {!self && wishlist.requests.length > 0 && (
+        {!adds && wishlist.requests.length > 0 && (
           <section className="flex flex-col gap-3">
             <SectionHeader title={t('wishlist.org.sectionRequests')} count={wishlist.requests.length} />
             <div className="grid grid-cols-1 items-start gap-3 md:grid-cols-2">
@@ -187,7 +202,7 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
         </section>
       </main>
 
-      {sheet?.type === 'add' && self && (
+      {sheet?.type === 'add' && adds && (
         <ItemFormSheet
           key="add"
           mode="add"
@@ -243,6 +258,16 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
           onCreate={wishlist.createLink}
           onCopy={wishlist.copyLink}
           onSetActive={wishlist.setLinkActive}
+          onClose={wishlist.closeSheet}
+          copyOnlyFor={helper ? ownerName : undefined}
+        />
+      )}
+      {sheet?.type === 'helpers' && helper && (
+        <HelperInfoSheet
+          ownerName={ownerName}
+          listTitle={list.title}
+          busy={busy}
+          onLeave={wishlist.leaveList}
           onClose={wishlist.closeSheet}
         />
       )}

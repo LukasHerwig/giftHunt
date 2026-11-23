@@ -234,6 +234,17 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
     }
   };
 
+  /** A helper steps down: the list is no longer theirs to open. */
+  const leaveList = async () => {
+    if (!wishlistId || !data) return;
+    const title = data.wishlist.title;
+    const ok = await run(() => OrganizerService.leave(wishlistId), 'wishlist.helper.toast.leaveFailed');
+    if (ok) {
+      toast.success(t('wishlist.helper.toast.left', { title }), 'teary');
+      navigate('/');
+    }
+  };
+
   return {
     loading,
     data,
@@ -249,6 +260,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
     openEdit: (itemId: string) => setSheet({ type: 'edit', itemId }),
     openShare: () => setSheet({ type: 'share' }),
     openSettings: () => setSheet({ type: 'settings' }),
+    openHelpers: () => setSheet({ type: 'helpers' }),
     closeSheet,
     addItem,
     saveItem,
@@ -262,5 +274,6 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
     saveSettings,
     deleteList,
     archiveList,
+    leaveList,
   };
 };
