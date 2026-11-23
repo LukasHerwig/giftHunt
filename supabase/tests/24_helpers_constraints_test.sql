@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(17);
 \ir _seed.psql
 
 \set u_help1 '11111111-0000-0000-0000-000000000006'
@@ -54,6 +54,24 @@ select throws_ok(
   $$ insert into public.admin_invitations (wishlist_id, email, invitation_token, invited_by, expires_at)
      values ('aaaaaaaa-0000-0000-0000-000000000003', 'help1@test.se', 'inv-h1c', '11111111-0000-0000-0000-000000000005', now() + interval '7 days') $$,
   'P0001', 'already_helper', 'an existing helper cannot be invited again');
+reset role;
+
+-- Only the owner reaches the invitation rules: nobody else can probe addresses
+:as_stranger
+select throws_ok(
+  $$ insert into public.admin_invitations (wishlist_id, email, invitation_token, invited_by, expires_at)
+     values ('aaaaaaaa-0000-0000-0000-000000000003', 'self@test.se', 'inv-s1', '11111111-0000-0000-0000-000000000003', now() + interval '7 days') $$,
+  '42501', 'not_owner', 'a stranger cannot probe the creator''s address');
+reset role;
+:as_help1
+select throws_ok(
+  $$ insert into public.admin_invitations (wishlist_id, email, invitation_token, invited_by, expires_at)
+     values ('aaaaaaaa-0000-0000-0000-000000000003', 'help2@test.se', 'inv-s2', '11111111-0000-0000-0000-000000000006', now() + interval '7 days') $$,
+  '42501', 'not_owner', 'a helper cannot probe another helper''s address');
+select throws_ok(
+  $$ insert into public.admin_invitations (wishlist_id, email, invitation_token, invited_by, expires_at)
+     values ('aaaaaaaa-0000-0000-0000-000000000003', 'self@test.se', 'inv-s3', '11111111-0000-0000-0000-000000000006', now() + interval '7 days') $$,
+  '42501', 'not_owner', 'a helper cannot probe the creator''s address');
 reset role;
 
 -- Ordinary lists are unchanged

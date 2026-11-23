@@ -23,7 +23,7 @@ alter table public.admin_invitations
 create or replace function public.enforce_one_admin_per_ordinary_list()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  perform 1 from wishlists where id = new.wishlist_id for update;
+  perform 1 from wishlists where id = new.wishlist_id for no key update;
   if not public.is_self_managed(new.wishlist_id)
      and exists (select 1 from wishlist_admins
                  where wishlist_id = new.wishlist_id and admin_id <> new.admin_id) then
@@ -41,10 +41,15 @@ create trigger wishlist_admins_one_per_ordinary_list
 
 -- Ordinary list: any invitation row blocks a new one (as UNIQUE(wishlist_id) did).
 -- Self-managed list: not the creator's own address, not someone who already helps.
+-- BEFORE triggers run before RLS, so the owner check comes first: nobody else may
+-- learn from these errors (auth.uid() is null only for service_role/postgres).
 create or replace function public.admin_invitations_rules()
 returns trigger language plpgsql security definer set search_path = public as $$
 begin
-  perform 1 from wishlists where id = new.wishlist_id for update;
+  if auth.uid() is not null and not public.is_wishlist_owner(new.wishlist_id) then
+    raise exception 'not_owner' using errcode = '42501';
+  end if;
+  perform 1 from wishlists where id = new.wishlist_id for no key update;
   if not public.is_self_managed(new.wishlist_id) then
     if exists (select 1 from admin_invitations where wishlist_id = new.wishlist_id) then
       raise exception 'duplicate key value violates unique constraint "admin_invitations_one_per_ordinary_list"'
@@ -74,7 +79,12 @@ create or replace function public.accept_invitation(p_invitation_id uuid)
 returns void language plpgsql volatile security definer set search_path = public as $$
 declare
   v_inv admin_invitations%rowtype;
+  v_wishlist_id uuid;
 begin
+  -- Lock the wishlist before the invitation (same order as archive_wishlist and the
+  -- wishlist_admins trigger), so the two cannot deadlock.
+  select wishlist_id into v_wishlist_id from admin_invitations where id = p_invitation_id;
+  perform 1 from wishlists where id = v_wishlist_id for no key update;
   select * into v_inv from admin_invitations where id = p_invitation_id for update;
   -- is distinct from: a JWT without an email claim must not pass the check.
   if not found or lower(v_inv.email) is distinct from lower(auth.jwt() ->> 'email') then
