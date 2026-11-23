@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { InitialAvatar } from '@/components/gh/InitialAvatar';
 import { joinNames } from './lib/helpers';
+import { firstName } from '@/lib/initials';
 import { Gift, Plus, Users } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { EnvironmentIndicator } from '@/components/EnvironmentIndicator';
@@ -98,7 +99,7 @@ const Home = () => {
                           ? row.helperNames.length > 0
                             ? t('home.helpers', {
                                 count: row.helperNames.length,
-                                names: joinNames(row.helperNames, i18n.language),
+                                names: joinNames(row.helperNames.map(firstName), i18n.language, t('wishlist.helpers.and')),
                               })
                             : t('home.youOrganize')
                           : row.organizerName
@@ -109,9 +110,9 @@ const Home = () => {
                         .join(' · ')}
                       trailing={
                         row.helperNames.length > 0 ? (
-                          <span className="flex -space-x-2">
-                            {row.helperNames.slice(0, 3).map((name) => (
-                              <InitialAvatar key={name} name={name} size="sm" className="ring-2 ring-gh-surface-200" />
+                          <span className="flex -space-x-1.5">
+                            {row.helperNames.slice(0, 3).map((name, index) => (
+                              <InitialAvatar key={index} name={name} size="sm" className="ring-2 ring-gh-surface-200" />
                             ))}
                           </span>
                         ) : undefined

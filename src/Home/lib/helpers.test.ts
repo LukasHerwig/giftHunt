@@ -26,7 +26,17 @@ test('helpers are the non-creator admins of a self-managed list, named by name o
     { admin_id: 'h2', profile: bo },
     { admin_id: 'h3', profile: null },
   ];
-  assert.deepEqual(helperNames({ is_self_managed: true, creator_id: 'me' }, admins), ['Maja Ek', 'bo@x.se']);
+  assert.deepEqual(helperNames({ is_self_managed: true, creator_id: 'me' }, admins), ['bo@x.se', 'Maja Ek']);
+});
+
+test('helpers are sorted by name the way the list header sorts them', () => {
+  const admins = [
+    { admin_id: 'h1', profile: { full_name: 'Östen Ek', email: null } },
+    { admin_id: 'h2', profile: { full_name: 'Maja Ek', email: null } },
+    { admin_id: 'h3', profile: { full_name: 'Åsa Ek', email: null } },
+    { admin_id: 'h4', profile: { full_name: 'Bo Ek', email: null } },
+  ];
+  assert.deepEqual(helperNames({ is_self_managed: true, creator_id: 'me' }, admins), ['Bo Ek', 'Maja Ek', 'Åsa Ek', 'Östen Ek']);
 });
 
 test('an ordinary list has no helpers', () => {
@@ -54,4 +64,17 @@ test('names are joined the way people say them', () => {
   assert.equal(joinNames(['Maja', 'Bo'], 'sv'), 'Maja och Bo');
   assert.equal(joinNames(['Maja', 'Bo', 'Eva'], 'sv'), 'Maja, Bo och Eva');
   assert.equal(joinNames(['Maja', 'Bo'], 'en'), 'Maja and Bo');
+});
+
+test('joinNames falls back to a plain list when Intl.ListFormat is missing', () => {
+  const intl = Intl as unknown as { ListFormat?: unknown };
+  const original = intl.ListFormat;
+  intl.ListFormat = undefined;
+  try {
+    assert.equal(joinNames(['Maja'], 'sv', 'och'), 'Maja');
+    assert.equal(joinNames(['Maja', 'Bo'], 'sv', 'och'), 'Maja och Bo');
+    assert.equal(joinNames(['Maja', 'Bo', 'Eva'], 'en', 'and'), 'Maja, Bo and Eva');
+  } finally {
+    intl.ListFormat = original;
+  }
 });
