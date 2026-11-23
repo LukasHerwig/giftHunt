@@ -114,6 +114,13 @@
     "signIn": "Logga in",
     "signUp": "Skapa konto",
     "accepted": "Du är nu arrangör",
+    "helper": {
+      "titleNamed": "{{name}} vill ha hjälp med en lista",
+      "titleNoName": "Du är inbjuden att hjälpa till med en lista",
+      "lead": "Som hjälpare lägger du till och ändrar önskningar och ser vad som är taget. {{name}} bestämmer över listan och länken.",
+      "leadNoName": "Som hjälpare lägger du till och ändrar önskningar och ser vad som är taget.",
+      "accepted": "Du hjälper nu till med listan"
+    },
     "home": "Till startsidan",
     "gone": {
       "title": "Den här inbjudan gäller inte längre",
@@ -505,6 +512,10 @@
     "sectionInvitations": "Inbjudningar",
     "sectionMine": "Mina önskelistor",
     "sectionOrganize": "Listor jag arrangerar",
+    "sectionHelp": "Listor jag hjälper till med",
+    "helpedLine": "Önskelista av {{owner}} · {{wishes}}",
+    "helpers_one": "{{names}} hjälper till",
+    "helpers_other": "{{names}} hjälper till",
     "newList": "Ny önskelista",
     "items_one": "{{count}} önskning",
     "items_other": "{{count}} önskningar",
@@ -515,6 +526,9 @@
     "invitation": {
       "text": "{{name}} vill att du delar listan och håller koll på vem som köper vad.",
       "textNoName": "Du är inbjuden att dela den här listan och hålla koll på vem som köper vad.",
+      "helperText": "{{name}} vill ha hjälp med listan. Som hjälpare lägger du till önskningar och ser vad som är taget.",
+      "helperTextNoName": "Du är inbjuden att hjälpa till med den här listan. Som hjälpare lägger du till önskningar och ser vad som är taget.",
+      "helperAccept": "Hjälp till",
       "accept": "Bli arrangör",
       "decline": "Nej tack",
       "declineQuestion": "Avvisa inbjudan till {{title}}?",
@@ -550,6 +564,7 @@
       "created": "Önskelistan är skapad",
       "createFailed": "Det gick inte att skapa önskelistan. Försök igen.",
       "accepted": "Du är nu arrangör",
+      "helping": "Du hjälper nu till med {{title}}",
       "acceptFailed": "Det gick inte att godta inbjudan. Försök igen.",
       "declined": "Inbjudan är avvisad",
       "declineFailed": "Det gick inte att avvisa inbjudan. Försök igen.",

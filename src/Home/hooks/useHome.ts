@@ -4,7 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { toast } from '@/lib/toast';
 import { useAuth } from '@/components/auth/useAuth';
 import { errorCode } from '@/Wishlist/lib/errorCode';
-import { firstName, toArchivedRows, toInvitationRows, toOrganizedRows, toOwnedRows, withoutOwnLists } from '../lib/homeRows';
+import { firstName, toArchivedRows, toHelpedRows, toInvitationRows, toOrganizedRows, toOwnedRows, withoutOwnLists } from '../lib/homeRows';
+import { splitOrganized } from '../lib/helpers';
 import { validateNewList } from '../lib/newList';
 import { HomeService } from '../services/HomeService';
 import type { HomeData, NewListError, NewListForm } from '../types';
@@ -43,7 +44,9 @@ export const useHome = () => {
 
   const owned = useMemo(() => toOwnedRows(data?.owned ?? []), [data]);
   const archived = useMemo(() => toArchivedRows(data?.owned ?? []), [data]);
-  const organized = useMemo(() => toOrganizedRows(data?.organized ?? []), [data]);
+  const split = useMemo(() => splitOrganized(data?.organized ?? []), [data]);
+  const organized = useMemo(() => toOrganizedRows(split.organized), [split]);
+  const helped = useMemo(() => toHelpedRows(split.helped), [split]);
   const invitations = useMemo(() => toInvitationRows(withoutOwnLists(data?.invitations ?? [], (data?.owned ?? []).map((list) => list.id))), [data]);
   const greetingName = firstName(data?.fullName);
 
@@ -94,9 +97,13 @@ export const useHome = () => {
   };
 
   const acceptInvitation = async (invitationId: string) => {
+    const asked = data?.invitations.find((invitation) => invitation.id === invitationId);
     const ok = await run(() => HomeService.acceptInvitation(invitationId), 'home.toast.acceptFailed');
     if (ok) {
-      toast.success(t('home.toast.accepted'), 'love');
+      toast.success(
+        asked?.selfManaged ? t('home.toast.helping', { title: asked.title }) : t('home.toast.accepted'),
+        'love',
+      );
       await load();
     }
   };
@@ -115,6 +122,7 @@ export const useHome = () => {
     reload: load,
     owned,
     organized,
+    helped,
     archived,
     invitations,
     greetingName,

@@ -34,5 +34,6 @@ export const toInvitationData = (raw: InvitationQueryResult): InvitationData => 
   id: raw.id,
   wishlistId: raw.wishlist_id,
   title: raw.wishlist_title?.trim() ?? '',
+  selfManaged: raw.is_self_managed === true,
   inviterName: raw.inviter_full_name?.trim() || raw.inviter_email?.trim() || null,
 });

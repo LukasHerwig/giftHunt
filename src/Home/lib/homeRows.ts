@@ -1,6 +1,7 @@
 import type {
   ArchivedRow,
   InvitationRaw,
+  HelpedRow,
   InvitationRow,
   OrganizedListRaw,
   OrganizedRow,
@@ -33,6 +34,7 @@ export const toOwnedRows = (lists: OwnedListRaw[]): OwnedRow[] =>
       // On a self-managed list the "organizer" is the owner themselves.
       organizerName: list.is_self_managed ? null : displayName(list.organizer),
       selfManaged: list.is_self_managed,
+      helperNames: list.helperNames,
     }));
 
 export const toArchivedRows = (lists: OwnedListRaw[]): ArchivedRow[] =>
@@ -49,6 +51,14 @@ export const toOrganizedRows = (lists: OrganizedListRaw[]): OrganizedRow[] =>
     requestCount: list.requestCount,
   }));
 
+export const toHelpedRows = (lists: OrganizedListRaw[]): HelpedRow[] =>
+  lists.map((list) => ({
+    id: list.id,
+    title: list.title,
+    ownerName: displayName(list.owner),
+    itemCount: list.itemCount,
+  }));
+
 /** An invitation to a list the user made themselves can never be accepted, so it is not offered. */
 export const withoutOwnLists = (invitations: InvitationRaw[], ownedIds: string[]): InvitationRaw[] =>
   invitations.filter((invitation) => !ownedIds.includes(invitation.wishlistId));
@@ -57,5 +67,6 @@ export const toInvitationRows = (invitations: InvitationRaw[]): InvitationRow[] 
   invitations.map((invitation) => ({
     id: invitation.id,
     title: invitation.title,
+    selfManaged: invitation.selfManaged,
     inviterName: displayName(invitation.inviter),
   }));

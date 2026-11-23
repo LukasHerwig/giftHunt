@@ -12,6 +12,7 @@ const raw = (over: Partial<InvitationQueryResult> = {}): InvitationQueryResult =
   wishlist_id: 'w1',
   wishlist_title: ' Annas jul ',
   wishlist_description: null,
+  is_self_managed: false,
   inviter_email: 'anna@x.se',
   inviter_full_name: 'Anna Lind',
   ...over,
@@ -41,11 +42,15 @@ test('accept errors map to what the person sees', () => {
 });
 
 test('invitation data names the inviter by full name, trimmed title', () => {
-  assert.deepEqual(toInvitationData(raw()), { id: 'i1', wishlistId: 'w1', title: 'Annas jul', inviterName: 'Anna Lind' });
+  assert.deepEqual(toInvitationData(raw()), { id: 'i1', wishlistId: 'w1', title: 'Annas jul', selfManaged: false, inviterName: 'Anna Lind' });
 });
 
 test('the inviter falls back to the e-mail, then to nobody', () => {
   assert.equal(toInvitationData(raw({ inviter_full_name: ' ' })).inviterName, 'anna@x.se');
   assert.equal(toInvitationData(raw({ inviter_full_name: null, inviter_email: null })).inviterName, null);
   assert.equal(toInvitationData(raw({ wishlist_title: null })).title, '');
+});
+
+test('invitation data says when the invitation asks for a helper', () => {
+  assert.equal(toInvitationData(raw({ is_self_managed: true })).selfManaged, true);
 });

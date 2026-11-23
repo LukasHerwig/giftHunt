@@ -114,6 +114,13 @@
     "signIn": "Sign in",
     "signUp": "Create account",
     "accepted": "You are now an organizer",
+    "helper": {
+      "titleNamed": "{{name}} wants help with a list",
+      "titleNoName": "You are invited to help with a list",
+      "lead": "As a helper you add and edit wishes and see what is taken. {{name}} decides on the list and the link.",
+      "leadNoName": "As a helper you add and edit wishes and see what is taken.",
+      "accepted": "You are now helping with the list"
+    },
     "home": "Go to the start page",
     "gone": {
       "title": "This invitation is no longer valid",
@@ -505,6 +512,10 @@
     "sectionInvitations": "Invitations",
     "sectionMine": "My wishlists",
     "sectionOrganize": "Lists I organize",
+    "sectionHelp": "Lists I help with",
+    "helpedLine": "{{owner}}'s list · {{wishes}}",
+    "helpers_one": "{{names}} is helping",
+    "helpers_other": "{{names}} are helping",
     "newList": "New wishlist",
     "items_one": "{{count}} wish",
     "items_other": "{{count}} wishes",
@@ -515,6 +526,9 @@
     "invitation": {
       "text": "{{name}} wants you to share the list and keep track of who buys what.",
       "textNoName": "You are invited to share this list and keep track of who buys what.",
+      "helperText": "{{name}} wants help with the list. As a helper you add wishes and see what is taken.",
+      "helperTextNoName": "You are invited to help with this list. As a helper you add wishes and see what is taken.",
+      "helperAccept": "Help out",
       "accept": "Become organizer",
       "decline": "No thanks",
       "declineQuestion": "Turn down the invitation to {{title}}?",
@@ -550,6 +564,7 @@
       "created": "The wishlist is created",
       "createFailed": "Could not create the wishlist. Try again.",
       "accepted": "You are now an organizer",
+      "helping": "You are now helping with {{title}}",
       "acceptFailed": "Could not accept the invitation. Try again.",
       "declined": "The invitation is turned down",
       "declineFailed": "Could not turn down the invitation. Try again.",

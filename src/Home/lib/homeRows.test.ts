@@ -4,6 +4,7 @@ import {
   displayName,
   firstName,
   toArchivedRows,
+  toHelpedRows,
   toInvitationRows,
   toOrganizedRows,
   toOwnedRows,
@@ -33,13 +34,14 @@ const owned = (over: Partial<OwnedListRaw> = {}): OwnedListRaw => ({
   created_at: '2026-10-01T00:00:00Z',
   itemCount: 8,
   organizer: null,
+  helperNames: [],
   archived_at: null,
   ...over,
 });
 
 test('an owned list names its organizer', () => {
   const [row] = toOwnedRows([owned({ organizer: { full_name: 'Lina Ek', email: 'l@x.se' } })]);
-  assert.deepEqual(row, { id: 'w1', title: 'Eriks födelsedag', itemCount: 8, organizerName: 'Lina Ek', selfManaged: false });
+  assert.deepEqual(row, { id: 'w1', title: 'Eriks födelsedag', itemCount: 8, organizerName: 'Lina Ek', selfManaged: false, helperNames: [] });
 });
 
 test('a self-managed list never names an organizer (it is the viewer)', () => {
@@ -59,6 +61,7 @@ const organized = (over: Partial<OrganizedListRaw> = {}): OrganizedListRaw => ({
   id: 'w2',
   title: 'Kajsas bebisshower',
   description: null,
+  is_self_managed: false,
   itemCount: 12,
   owner: { full_name: 'Kajsa Ek', email: 'k@x.se' },
   requestCount: 2,
@@ -80,12 +83,13 @@ const invitation = (over: Partial<InvitationRaw> = {}): InvitationRaw => ({
   wishlistId: 'w3',
   title: 'Annas 35-årsdag',
   description: null,
+  selfManaged: false,
   inviter: { full_name: 'Anna Lind', email: 'a@x.se' },
   ...over,
 });
 
 test('an invitation shows the list and who invited', () => {
-  assert.deepEqual(toInvitationRows([invitation()]), [{ id: 'i1', title: 'Annas 35-årsdag', inviterName: 'Anna Lind' }]);
+  assert.deepEqual(toInvitationRows([invitation()]), [{ id: 'i1', title: 'Annas 35-årsdag', selfManaged: false, inviterName: 'Anna Lind' }]);
   assert.equal(toInvitationRows([invitation({ inviter: null })])[0].inviterName, null);
 });
 
@@ -102,4 +106,18 @@ test('archived lists are kept out of the owned rows and listed on their own', ()
   ];
   assert.deepEqual(toOwnedRows(lists).map((row) => row.id), ['a']);
   assert.deepEqual(toArchivedRows(lists), [{ id: 'b', title: 'Gammal', itemCount: 2 }]);
+});
+
+test('a self-managed owned list carries its helpers for the card', () => {
+  const [row] = toOwnedRows([owned({ is_self_managed: true, helperNames: ['Maja', 'Bo'] })]);
+  assert.deepEqual(row.helperNames, ['Maja', 'Bo']);
+});
+
+test('a helped list shows its owner and size, no request count', () => {
+  const [row] = toHelpedRows([organized({ is_self_managed: true })]);
+  assert.deepEqual(row, { id: 'w2', title: 'Kajsas bebisshower', ownerName: 'Kajsa Ek', itemCount: 12 });
+});
+
+test('an invitation knows whether it asks for a helper', () => {
+  assert.equal(toInvitationRows([invitation({ selfManaged: true })])[0].selfManaged, true);
 });
