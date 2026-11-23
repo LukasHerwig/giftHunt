@@ -24,7 +24,26 @@ export const formFromItem = (item: OwnerItem): ItemFormData => ({
   claimCap: item.claim_cap ?? null,
 });
 
-export const validateItemForm = (form: ItemFormData): ItemFormError | null => {
+export interface ItemFormFieldSettings {
+  enable_links: boolean | null;
+  enable_price: boolean | null;
+  enable_priority: boolean | null;
+}
+
+export interface VisibleItemFields {
+  link: boolean;
+  price: boolean;
+  priority: boolean;
+}
+
+/** The list's settings decide which optional fields the form shows; unset counts as off. */
+export const itemFormFields = (list: ItemFormFieldSettings): VisibleItemFields => ({
+  link: list.enable_links === true,
+  price: list.enable_price === true,
+  priority: list.enable_priority === true,
+});
+
+export const validateItemForm =(form: ItemFormData): ItemFormError | null => {
   const title = form.title.trim();
   if (title === '') return 'title_required';
   if (title.length > TITLE_MAX) return 'title_too_long';

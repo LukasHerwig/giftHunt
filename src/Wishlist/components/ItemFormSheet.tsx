@@ -6,7 +6,7 @@ import { ConfirmBlock } from '@/components/gh/ConfirmBlock';
 import { DangerButton } from '@/components/gh/DangerButton';
 import { ResponsiveSheet } from '@/components/ResponsiveSheet';
 import { fetchLinkMetadata } from '@/lib/metadataUtils';
-import { emptyItemForm, formFromItem } from '../lib/itemForm';
+import { emptyItemForm, formFromItem, itemFormFields, type ItemFormFieldSettings } from '../lib/itemForm';
 import { ItemFormFields } from './ItemFormFields';
 import type { ItemFormData, ItemFormError, OwnerItem } from '../types';
 
@@ -20,6 +20,8 @@ interface ItemFormSheetProps {
   /** This item already has an open request. */
   pending: boolean;
   listTitle: string;
+  /** The list's settings: link, price and priority show only when turned on. */
+  settings: ItemFormFieldSettings;
   /** A warning above the fields, e.g. "Mormor has taken this". */
   note?: string;
   busy: boolean;
@@ -36,6 +38,7 @@ export const ItemFormSheet = ({
   organizerName,
   pending,
   listTitle,
+  settings,
   note,
   busy,
   onSubmit,
@@ -112,6 +115,7 @@ export const ItemFormSheet = ({
           <ItemFormFields
             form={form}
             mode={mode}
+            fields={itemFormFields(settings)}
             error={error}
             resolving={resolving}
             onChange={change}
