@@ -110,13 +110,14 @@ const Home = () => {
                         .join(' · ')}
                       trailing={
                         row.helperNames.length > 0 ? (
-                          <span className="flex -space-x-1.5">
+                          <span className="flex gap-1">
                             {row.helperNames.slice(0, 3).map((name, index) => (
-                              <InitialAvatar key={index} name={name} size="sm" className="ring-2 ring-gh-surface-200" />
+                              <InitialAvatar key={index} name={name} size="sm" className="h-7 w-7 ring-2 ring-gh-surface-200" />
                             ))}
                           </span>
                         ) : undefined
                       }
+                      wrapSubtitle
                       chevron
                       onClick={() => open(row.id)}
                     />
