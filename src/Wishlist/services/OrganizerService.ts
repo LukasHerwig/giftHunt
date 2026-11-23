@@ -1,5 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 import { getBaseUrl } from '@/lib/urlUtils';
+import { toHelperEntries, type AdminRow, type HelperEntry } from '../lib/helpers';
 import { REQUEST_COLUMNS, WishlistService } from './WishlistService';
 import type {
   ChangeRequestRow,
@@ -80,6 +81,44 @@ export class OrganizerService {
       .maybeSingle();
     if (error) throw error;
     return data?.full_name ?? null;
+  }
+
+  /** Helpers and waiting invitations of a self-managed list (the creator's own row left out). */
+  static async loadHelpers(wishlistId: string, creatorId: string): Promise<HelperEntry[]> {
+    const [admins, invites] = await Promise.all([
+      supabase
+        .from('wishlist_admins')
+        .select('admin_id, profiles!admin_id(email, full_name)')
+        .eq('wishlist_id', wishlistId),
+      supabase
+        .from('admin_invitations')
+        .select('id, email, accepted, expires_at')
+        .eq('wishlist_id', wishlistId)
+        .eq('accepted', false),
+    ]);
+    if (admins.error) throw admins.error;
+    if (invites.error) throw invites.error;
+    return toHelperEntries(
+      creatorId,
+      (admins.data ?? []) as unknown as AdminRow[],
+      invites.data ?? [],
+      new Date(),
+    );
+  }
+
+  /** The creator takes a helper off the list; the wishes and what is taken stay. */
+  static async removeHelper(wishlistId: string, adminId: string): Promise<void> {
+    const { error } = await supabase.rpc('remove_wishlist_helper', {
+      p_wishlist_id: wishlistId,
+      p_admin_id: adminId,
+    });
+    if (error) throw error;
+  }
+
+  /** A helper steps down from a self-managed list. */
+  static async leave(wishlistId: string): Promise<void> {
+    const { error } = await supabase.rpc('leave_wishlist', { p_wishlist_id: wishlistId });
+    if (error) throw error;
   }
 
   /** Makes a regular item free again (also clears claim rows left from when it was a gift card). */

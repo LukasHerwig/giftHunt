@@ -47,7 +47,7 @@ const Wishlist = () => {
   if (!id || mode === null) return <WishlistLoading />;
   if (mode === 'archived') return <ArchivedWishlist wishlistId={id} onModeChange={refreshMode} />;
   if (mode === 'owner') return <OwnerWishlist wishlistId={id} onModeChange={refreshMode} />;
-  if (mode === 'organizer' || mode === 'self')
+  if (mode === 'organizer' || mode === 'self' || mode === 'helper')
     return <OrganizerWishlist wishlistId={id} mode={mode} onModeChange={refreshMode} />;
   return <Navigate to="/" replace />;
 };

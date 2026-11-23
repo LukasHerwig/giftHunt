@@ -2,6 +2,9 @@ import { cn } from '@/lib/utils';
 import { PAGE_COLUMN } from '@/components/pageColumn';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { InitialAvatar } from '@/components/gh/InitialAvatar';
+import { joinNames } from './lib/helpers';
+import { firstName } from '@/lib/initials';
 import { Gift, Plus, Users } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { EnvironmentIndicator } from '@/components/EnvironmentIndicator';
@@ -14,15 +17,15 @@ import { ArchivedSection, HomeLoading, InvitationCard, ListSection, NewListSheet
 import { useHome } from './hooks/useHome';
 
 const Home = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const home = useHome();
-  const { owned, organized, invitations } = home;
+  const { owned, organized, helped, invitations } = home;
 
   const open = (id: string) => navigate(`/wishlist/${id}`);
   const itemsLabel = (count: number) => t('home.items', { count });
 
-  const noLists = owned.length === 0 && organized.length === 0 && home.archived.length === 0;
+  const noLists = owned.length === 0 && organized.length === 0 && helped.length === 0 && home.archived.length === 0;
 
   return (
     <div className="min-h-screen bg-gh-bg pb-safe text-gh-ink">
@@ -93,13 +96,28 @@ const Home = () => {
                       subtitle={[
                         itemsLabel(row.itemCount),
                         row.selfManaged
-                          ? t('home.youOrganize')
+                          ? row.helperNames.length > 0
+                            ? t('home.helpers', {
+                                count: row.helperNames.length,
+                                names: joinNames(row.helperNames.map(firstName), i18n.language, t('wishlist.helpers.and')),
+                              })
+                            : t('home.youOrganize')
                           : row.organizerName
                             ? t('home.organizerLine', { name: row.organizerName })
                             : null,
                       ]
                         .filter(Boolean)
                         .join(' · ')}
+                      trailing={
+                        row.helperNames.length > 0 ? (
+                          <span className="flex gap-1">
+                            {row.helperNames.slice(0, 3).map((name, index) => (
+                              <InitialAvatar key={index} name={name} size="sm" className="h-7 w-7 ring-2 ring-gh-surface-200" />
+                            ))}
+                          </span>
+                        ) : undefined
+                      }
+                      wrapSubtitle
                       chevron
                       onClick={() => open(row.id)}
                     />
@@ -124,6 +142,26 @@ const Home = () => {
                               {t('home.requests', { count: row.requestCount })}
                             </StatusPill>
                           ) : undefined
+                        }
+                        chevron
+                        onClick={() => open(row.id)}
+                      />
+                    </li>
+                  ))}
+                </ListSection>
+              )}
+
+              {helped.length > 0 && (
+                <ListSection title={t('home.sectionHelp')} count={helped.length}>
+                  {helped.map((row) => (
+                    <li key={row.id}>
+                      <ListRow
+                        icon={Users}
+                        title={row.title}
+                        subtitle={
+                          row.ownerName
+                            ? t('home.helpedLine', { owner: row.ownerName, wishes: itemsLabel(row.itemCount) })
+                            : itemsLabel(row.itemCount)
                         }
                         chevron
                         onClick={() => open(row.id)}

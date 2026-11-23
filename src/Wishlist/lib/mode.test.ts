@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveMode } from './mode.ts';
+import { leavesWhenListGone, resolveMode } from './mode.ts';
 
 const list = (over: Partial<{ creator_id: string; is_self_managed: boolean; archived_at: string | null }> = {}) => ({
   creator_id: 'owner',
@@ -42,4 +42,33 @@ test('the creator of an archived list is in archived mode, normal or self-manage
 test('nobody but the creator has a mode on an archived list', () => {
   const archived = '2026-10-23T09:00:00Z';
   assert.equal(resolveMode({ wishlist: list({ archived_at: archived }), userId: 'erik', isOrganizer: true }), 'none');
+});
+
+test('someone with an organizer row on a self-managed list they did not create is a helper', () => {
+  assert.equal(
+    resolveMode({ wishlist: list({ is_self_managed: true }), userId: 'anna', isOrganizer: true }),
+    'helper',
+  );
+});
+
+test('a helper has no mode on an archived list', () => {
+  assert.equal(
+    resolveMode({
+      wishlist: list({ is_self_managed: true, archived_at: '2026-10-23T09:00:00Z' }),
+      userId: 'anna',
+      isOrganizer: true,
+    }),
+    'none',
+  );
+});
+
+test('a helper or organizer whose list is gone on reload leaves it', () => {
+  assert.equal(leavesWhenListGone('helper', 'wishlist_not_found'), true);
+  assert.equal(leavesWhenListGone('organizer', 'wishlist_not_found'), true);
+});
+
+test('the creator stays, and other load errors never leave the list', () => {
+  assert.equal(leavesWhenListGone('self', 'wishlist_not_found'), false);
+  assert.equal(leavesWhenListGone('helper', ''), false);
+  assert.equal(leavesWhenListGone('organizer', 'Failed to fetch'), false);
 });

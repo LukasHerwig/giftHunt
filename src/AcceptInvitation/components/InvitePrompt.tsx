@@ -12,11 +12,26 @@ interface InvitePromptProps {
 export const InvitePrompt = ({ invitation, onSignIn, onSignUp }: InvitePromptProps) => {
   const { t } = useTranslation();
   const name = invitation.inviterName;
+  const helper = invitation.selfManaged;
   return (
     <>
       <AccountHeading
-        title={name ? t('acceptInvitation.titleNamed', { name }) : t('acceptInvitation.titleNoName')}
-        lead={t('acceptInvitation.lead')}
+        title={
+          helper
+            ? name
+              ? t('acceptInvitation.helper.titleNamed', { name })
+              : t('acceptInvitation.helper.titleNoName')
+            : name
+              ? t('acceptInvitation.titleNamed', { name })
+              : t('acceptInvitation.titleNoName')
+        }
+        lead={
+          helper
+            ? name
+              ? t('acceptInvitation.helper.lead', { name })
+              : t('acceptInvitation.helper.leadNoName')
+            : t('acceptInvitation.lead')
+        }
       />
       <article className="flex flex-col gap-1 rounded-gh-lg border border-gh-line bg-gh-surface-200 p-4">
         <span className="text-[13px] leading-[18px] text-gh-muted">{t('acceptInvitation.listLabel')}</span>

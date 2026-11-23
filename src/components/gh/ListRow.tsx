@@ -13,11 +13,13 @@ interface ListRowProps {
   add?: boolean;
   /** Quieter title, for rows that are no longer live. */
   muted?: boolean;
+  /** Let the subtitle wrap to a second line instead of truncating. */
+  wrapSubtitle?: boolean;
   onClick: () => void;
 }
 
 /** The base row of every list: leading icon, title, one line of context and a trailing slot. */
-export const ListRow = ({ title, subtitle, icon: Icon, trailing, chevron, add, muted, onClick }: ListRowProps) => (
+export const ListRow = ({ title, subtitle, icon: Icon, trailing, chevron, add, muted, wrapSubtitle, onClick }: ListRowProps) => (
   <button
     type="button"
     onClick={onClick}
@@ -37,7 +39,9 @@ export const ListRow = ({ title, subtitle, icon: Icon, trailing, chevron, add, m
         )}>
         {title}
       </span>
-      {subtitle && <span className="truncate text-[13px] leading-[18px] text-gh-muted">{subtitle}</span>}
+      {subtitle && (
+        <span className={cn('text-[13px] leading-[18px] text-gh-muted', !wrapSubtitle && 'truncate')}>{subtitle}</span>
+      )}
     </span>
     {trailing}
     {chevron && <ChevronRight className="h-5 w-5 flex-none text-gh-muted" aria-hidden="true" />}

@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { helperNames, ownedOrganizer } from '../lib/helpers';
 import { toNewListRow } from '../lib/newList';
 import type {
   HomeData,
@@ -48,21 +49,23 @@ export class HomeService {
     const { data, error } = await supabase
       .from('wishlists')
       .select(
-        'id, title, description, is_self_managed, created_at, archived_at, admins:wishlist_admins(profile:profiles!admin_id(full_name, email))',
+        'id, title, description, is_self_managed, creator_id, created_at, archived_at, admins:wishlist_admins(admin_id, profile:profiles!admin_id(full_name, email))',
       )
       .eq('creator_id', userId)
       .order('created_at', { ascending: false });
     if (error) throw error;
 
-    type Row = Omit<OwnedListRaw, 'itemCount' | 'organizer'> & {
-      admins: { profile: ProfileName | null }[] | null;
+    type Row = Omit<OwnedListRaw, 'itemCount' | 'organizer' | 'helperNames'> & {
+      creator_id: string;
+      admins: { admin_id: string; profile: ProfileName | null }[] | null;
     };
     const lists = (data ?? []) as unknown as Row[];
     const counts = await HomeService.countItems(lists.map((list) => list.id));
-    return lists.map(({ admins, ...list }) => ({
+    return lists.map(({ admins, creator_id, ...list }) => ({
       ...list,
       itemCount: counts.get(list.id) ?? 0,
-      organizer: admins?.[0]?.profile ?? null,
+      organizer: ownedOrganizer({ ...list, creator_id }, admins ?? []),
+      helperNames: helperNames({ ...list, creator_id }, admins ?? []),
     }));
   }
 
@@ -71,7 +74,7 @@ export class HomeService {
     const { data, error } = await supabase
       .from('wishlists')
       .select(
-        'id, title, description, owner:profiles!creator_id(full_name, email), mine:wishlist_admins!inner(admin_id)',
+        'id, title, description, is_self_managed, owner:profiles!creator_id(full_name, email), mine:wishlist_admins!inner(admin_id)',
       )
       .eq('mine.admin_id', userId)
       .neq('creator_id', userId)
@@ -108,7 +111,7 @@ export class HomeService {
     const { data, error } = await supabase
       .from('admin_invitations')
       .select(
-        'id, wishlist_id, wishlist:wishlists(title, description), inviter:profiles!invited_by(full_name, email)',
+        'id, wishlist_id, wishlist:wishlists(title, description, is_self_managed), inviter:profiles!invited_by(full_name, email)',
       )
       .ilike('email', email)
       .eq('accepted', false)
@@ -118,7 +121,7 @@ export class HomeService {
     type Row = {
       id: string;
       wishlist_id: string;
-      wishlist: { title: string; description: string | null } | null;
+      wishlist: { title: string; description: string | null; is_self_managed: boolean } | null;
       inviter: ProfileName | null;
     };
     return ((data ?? []) as unknown as Row[]).map((row) => ({
@@ -126,6 +129,7 @@ export class HomeService {
       wishlistId: row.wishlist_id,
       title: row.wishlist?.title ?? '',
       description: row.wishlist?.description ?? null,
+      selfManaged: row.wishlist?.is_self_managed ?? false,
       inviter: row.inviter,
     }));
   }

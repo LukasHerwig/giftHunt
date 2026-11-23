@@ -15,5 +15,13 @@ export const resolveMode = ({ wishlist, userId, isOrganizer }: ModeInput): Mode 
   }
   // An archived list is the owner's alone, whatever an organizer row says.
   if (wishlist.archived_at) return 'none';
-  return isOrganizer ? 'organizer' : 'none';
+  if (!isOrganizer) return 'none';
+  return wishlist.is_self_managed ? 'helper' : 'organizer';
 };
+
+/**
+ * A helper or organizer whose list no longer loads was removed (or the list went away)
+ * while the screen was open: leave it instead of staying on a dead screen.
+ */
+export const leavesWhenListGone = (mode: Mode, code: string): boolean =>
+  code === 'wishlist_not_found' && (mode === 'helper' || mode === 'organizer');

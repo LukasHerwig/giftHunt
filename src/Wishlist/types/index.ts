@@ -100,7 +100,7 @@ export type Sheet =
   | { type: 'settings' }
   | null;
 
-export type Mode = 'owner' | 'organizer' | 'self' | 'archived' | 'none';
+export type Mode = 'owner' | 'organizer' | 'self' | 'helper' | 'archived' | 'none';
 
 export interface ArchivedData {
   wishlist: Wishlist;
@@ -162,4 +162,5 @@ export type OrganizerSheet =
   | { type: 'edit'; itemId: string }
   | { type: 'share' }
   | { type: 'settings' }
+  | { type: 'helpers' }
   | null;

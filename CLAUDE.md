@@ -38,7 +38,7 @@ Each top-level directory under `src/` is a self-contained feature with:
 - `services/` — Supabase query functions
 - `types/` — TypeScript interfaces
 
-Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, or the creator of a self-managed list), `Auth` (`/auth`: sign in / sign up), `Onboarding` (first-time name), `Profile` (`/profile`: name, theme, language, sign out), `AcceptInvitation` (`/accept-invitation?token=…`: accepts directly when signed in), `PublicWishlist` (share-link view for anonymous users).
+Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wishlist` (`/wishlist/:id`: one screen that adapts to the viewer: the owner, an invited organizer, the creator of a self-managed list, or a helper of a self-managed list), `Auth` (`/auth`: sign in / sign up), `Onboarding` (first-time name), `Profile` (`/profile`: name, theme, language, sign out), `AcceptInvitation` (`/accept-invitation?token=…`: accepts directly when signed in), `PublicWishlist` (share-link view for anonymous users).
 
 **Shared code:**
 
@@ -53,8 +53,8 @@ Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wish
 | ------------------- | --------------------------------------------------------------------------------------------- |
 | `wishlists`         | Owned by `creator_id`; has `enable_links/price/priority` config flags; `archived_at` when archived |
 | `wishlist_items`    | Items with optional `link`, `price_range`, `priority`, `is_giftcard`, `is_taken`, `claim_cap` |
-| `wishlist_admins`   | Many admins per wishlist (admin can see taken-by names, untake)                               |
-| `admin_invitations` | Token-based invitations to become admin                                                       |
+| `wishlist_admins`   | One admin per ordinary list; several (helpers) on a self-managed list; sees taken-by names, untake |
+| `admin_invitations` | Token-based invitations to become admin or helper; `accepted_by` records who accepted         |
 | `share_links`       | Tokens enabling public `/shared/:token` access                                                |
 | `item_claims`       | Per-claimer records for gift card items (`id`, `item_id`, `claimer_name`, `claimed_at`)       |
 | `profiles`          | Auth user profiles                                                                            |
@@ -112,12 +112,13 @@ When `is_giftcard = true`, multiple people can claim the same item via `item_cla
 
 ### Admin system rules
 
-- One admin per wishlist (enforced by DB constraint).
+- One admin per ordinary wishlist (enforced by DB trigger: `admin_already_exists`, P0001) and one invitation per ordinary wishlist (invitation trigger, `23505`). Only the list's owner gets past the invitation trigger (`not_owner`, 42501), so nobody else can probe addresses. A self-managed list can have several organizers, the creator and invited **helpers**, and several pending invitations (one per e-mail: unique on `wishlist_id, lower(email)` while pending).
 - Invitation workflow: creator sends invite → recipient gets email with token → acceptance creates `wishlist_admins` record + marks invitation accepted.
-- Hide the invite button when an admin already exists OR a pending invitation exists.
+- On an ordinary list, hide the invite button when an admin already exists OR a pending invitation exists. On a self-managed list the creator invites helpers from the Hjälpare sheet, withdraws invitations and removes helpers (`remove_wishlist_helper`: keeps the share link, taken status and claims).
+- A helper on a self-managed list adds, edits and deletes items (`items_helper_insert`), sees what is taken, makes an item free, removes a gift and copies the active share link; they cannot change settings, rename, archive or delete the list, create or turn off the link, or invite. A helper leaves through `leave_wishlist` (refuses ordinary lists and the creator: `not_helper`). The list shows on Home under "Listor jag hjälper till med".
 - A self-managed list (`is_self_managed = true`) lets the creator act as their own organizer on the same screen: add items, settings, share link, make free, remove a gift; no change requests.
 - An **archived** list (`archived_at` set) is read-only and visible only to its owner. `archive_wishlist` deletes the share link, invitations and organizer (the creator of a self-managed list keeps their own organizer row), drops waiting change requests and keeps items and claims; `unarchive_wishlist` restores a plain list, so the owner invites and shares again. `archived_at` changes only through those two functions.
-- An invited organizer cannot add items (the database refuses it): the owner decides what is on the list. The organizer can still edit, delete, make an item free and answer change requests.
+- On an ordinary list the invited organizer cannot add items (the database refuses it): the owner decides what is on the list. The organizer can still edit, delete, make an item free and answer change requests.
 
 ### RLS patterns
 

@@ -114,6 +114,13 @@
     "signIn": "Sign in",
     "signUp": "Create account",
     "accepted": "You are now an organizer",
+    "helper": {
+      "titleNamed": "{{name}} wants help with a list",
+      "titleNoName": "You are invited to help with a list",
+      "lead": "As a helper you add and edit wishes and see what is taken. {{name}} decides on the list and the link.",
+      "leadNoName": "As a helper you add and edit wishes and see what is taken.",
+      "accepted": "You are now helping with the list"
+    },
     "home": "Go to the start page",
     "gone": {
       "title": "This invitation is no longer valid",
@@ -442,6 +449,60 @@
       "title": "This list is archived",
       "text": "Only you can see it, and it cannot be changed. No organizer and no share link are left. Restore the list to invite and share again.",
       "restore": "Restore the list"
+    },
+    "helper": {
+      "eyebrow": "{{name}}'s wishlist · you're helping",
+      "button": "Helpers",
+      "share": {
+        "caption": "Anyone with the link can see the list and take a wish. {{name}} creates and turns off the link.",
+        "noneTitle": "No share link yet",
+        "noneText": "{{name}} creates the link when the list is ready to share. Then you can copy it here."
+      },
+      "sheet": {
+        "title": "Helpers",
+        "owner": "Made the list and invited you",
+        "body": "You can add, edit and delete wishes and see what is taken. {{name}} decides on the name, the settings and the link.",
+        "leave": "Leave list",
+        "leaveQuestion": "Leave {{title}}?",
+        "leaveContext": "You will no longer have access to the list. {{name}} can invite you again."
+      },
+      "toast": {
+        "left": "You left {{title}}",
+        "leaveFailed": "Could not leave the list. Try again.",
+        "notOnList": "You are no longer on this list"
+      }
+    },
+    "helpers": {
+      "title": "Helpers",
+      "lead": "Helpers add and edit wishes and see what is taken. The list, the link and the settings are yours.",
+      "sectionHelping": "Helping",
+      "sectionWaiting": "Waiting for an answer",
+      "invited": "Invited",
+      "remove": "Remove",
+      "withdraw": "Withdraw",
+      "removeQuestion": "Remove {{name}} as a helper?",
+      "removeContext": "{{name}} will no longer have access to the list. The wishes and what is taken stay.",
+      "removeConfirm": "Remove {{name}}",
+      "withdrawQuestion": "Withdraw the invitation to {{email}}?",
+      "withdrawContext": "The link in the e-mail stops working.",
+      "emptyTitle": "No one is helping yet",
+      "emptyText": "Invite someone to run the list with you, like a partner or a grandparent.",
+      "inviteLabel": "Invite a helper",
+      "emailPlaceholder": "name@example.com",
+      "invite": "Send invitation",
+      "inviteCaption": "They get an email with a link. The invitation is valid for 7 days.",
+      "toast": {
+        "invited": "Invitation sent to {{email}}",
+        "removed": "The helper is removed",
+        "removeFailed": "Could not remove the helper. Try again.",
+        "invitePending": "There is already an invitation to that address.",
+        "inviteSelf": "You cannot invite yourself.",
+        "alreadyHelper": "That person is already helping.",
+        "helperGone": "That person is no longer helping."
+      },
+      "stackLabel_one": "{{names}} is helping",
+      "stackLabel_other": "{{names}} are helping",
+      "and": "and"
     }
   },
   "home": {
@@ -451,6 +512,10 @@
     "sectionInvitations": "Invitations",
     "sectionMine": "My wishlists",
     "sectionOrganize": "Lists I organize",
+    "sectionHelp": "Lists I help with",
+    "helpedLine": "{{owner}}'s list · {{wishes}}",
+    "helpers_one": "{{names}} is helping",
+    "helpers_other": "{{names}} are helping",
     "newList": "New wishlist",
     "items_one": "{{count}} wish",
     "items_other": "{{count}} wishes",
@@ -461,6 +526,9 @@
     "invitation": {
       "text": "{{name}} wants you to share the list and keep track of who buys what.",
       "textNoName": "You are invited to share this list and keep track of who buys what.",
+      "helperText": "{{name}} wants help with the list. As a helper you add wishes and see what is taken.",
+      "helperTextNoName": "You are invited to help with this list. As a helper you add wishes and see what is taken.",
+      "helperAccept": "Help out",
       "accept": "Become organizer",
       "decline": "No thanks",
       "declineQuestion": "Turn down the invitation to {{title}}?",
@@ -496,6 +564,7 @@
       "created": "The wishlist is created",
       "createFailed": "Could not create the wishlist. Try again.",
       "accepted": "You are now an organizer",
+      "helping": "You are now helping with {{title}}",
       "acceptFailed": "Could not accept the invitation. Try again.",
       "declined": "The invitation is turned down",
       "declineFailed": "Could not turn down the invitation. Try again.",

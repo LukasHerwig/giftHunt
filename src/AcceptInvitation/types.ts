@@ -8,6 +8,7 @@ export interface InvitationQueryResult {
   wishlist_id: string;
   wishlist_title: string | null;
   wishlist_description: string | null;
+  is_self_managed: boolean;
   inviter_email: string | null;
   inviter_full_name: string | null;
 }
@@ -16,5 +17,7 @@ export interface InvitationData {
   id: string;
   wishlistId: string;
   title: string;
+  /** The invitation asks for a helper on a self-managed list. */
+  selfManaged: boolean;
   inviterName: string | null;
 }

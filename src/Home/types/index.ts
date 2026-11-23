@@ -12,6 +12,8 @@ export interface OwnedListRaw {
   itemCount: number;
   /** The organizer who shares this list for the owner, if any. */
   organizer: ProfileName | null;
+  /** People helping on a self-managed list (never the owner). */
+  helperNames: string[];
   /** Set once the owner archives the list. */
   archived_at: string | null;
 }
@@ -20,6 +22,7 @@ export interface OrganizedListRaw {
   id: string;
   title: string;
   description: string | null;
+  is_self_managed: boolean;
   itemCount: number;
   owner: ProfileName | null;
   /** Pending change requests waiting for this organizer. */
@@ -31,6 +34,8 @@ export interface InvitationRaw {
   wishlistId: string;
   title: string;
   description: string | null;
+  /** The invitation asks for a helper on a self-managed list. */
+  selfManaged: boolean;
   inviter: ProfileName | null;
 }
 
@@ -60,6 +65,8 @@ export interface OwnedRow {
   organizerName: string | null;
   /** The viewer made it for someone else and shares it themselves. */
   selfManaged: boolean;
+  /** Names of people helping on a self-managed list. */
+  helperNames: string[];
 }
 
 export interface ArchivedRow {
@@ -76,8 +83,17 @@ export interface OrganizedRow {
   requestCount: number;
 }
 
+/** A list the viewer helps with: someone else's self-managed list. */
+export interface HelpedRow {
+  id: string;
+  title: string;
+  ownerName: string | null;
+  itemCount: number;
+}
+
 export interface InvitationRow {
   id: string;
   title: string;
+  selfManaged: boolean;
   inviterName: string | null;
 }

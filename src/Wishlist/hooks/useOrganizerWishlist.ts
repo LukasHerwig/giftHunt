@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { toast } from '@/lib/toast';
 import { errorCode } from '../lib/errorCode';
+import type { HelperEntry } from '../lib/helpers';
 import { validateItemForm } from '../lib/itemForm';
+import { leavesWhenListGone } from '../lib/mode';
 import { splitItems } from '../lib/organizerItems';
 import { toOrganizerRequests } from '../lib/organizerRequests';
 import { OrganizerService, shareUrl } from '../services/OrganizerService';
@@ -15,13 +17,20 @@ import type {
   OrganizerData,
   OrganizerItem,
   OrganizerRequest,
+  Mode,
   OrganizerSheet,
   SettingsValues,
 } from '../types';
 
 export type Segment = 'available' | 'taken';
 
-export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChange?: () => void) => {
+export const useOrganizerWishlist = (
+  wishlistId: string | undefined,
+  onModeChange?: () => void,
+  mode: Mode = 'organizer',
+) => {
+  /** Helpers are loaded only for the creator of a self-managed list. */
+  const loadsHelpers = mode === 'self';
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [data, setData] = useState<OrganizerData | null>(null);
@@ -30,6 +39,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
   const [segment, setSegment] = useState<Segment>('available');
   const [busy, setBusy] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [helpers, setHelpers] = useState<HelperEntry[]>([]);
   // A second tap while an action runs must not start a second one (busy only updates after a render).
   const running = useRef(false);
 
@@ -39,14 +49,24 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
       return;
     }
     try {
-      setData(await OrganizerService.loadOrganizerData(wishlistId));
+      const loaded = await OrganizerService.loadOrganizerData(wishlistId);
+      setData(loaded);
+      if (loadsHelpers) {
+        setHelpers(await OrganizerService.loadHelpers(wishlistId, loaded.wishlist.creator_id));
+      }
     } catch (error) {
       console.error('Load organizer wishlist error:', error);
+      if (leavesWhenListGone(mode, errorCode(error))) {
+        // Removed from the list while the screen was open: the page resolves its mode again and goes Home.
+        toast.error(t('wishlist.helper.toast.notOnList'), 'lost');
+        onModeChange?.();
+        return;
+      }
       toast.error(t('wishlist.org.toast.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [wishlistId, t]);
+  }, [wishlistId, loadsHelpers, mode, onModeChange, t]);
 
   useEffect(() => {
     void load();
@@ -85,6 +105,17 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
           await load();
         } else if (code === 'share_link_not_found') {
           toast.error(t('wishlist.org.toast.linkGone'), 'lost');
+          await load();
+        } else if (code === 'invite_pending') {
+          toast.error(t('wishlist.helpers.toast.invitePending'));
+          await load();
+        } else if (code === 'cannot_invite_self') {
+          toast.error(t('wishlist.helpers.toast.inviteSelf'));
+        } else if (code === 'already_helper') {
+          toast.error(t('wishlist.helpers.toast.alreadyHelper'));
+          await load();
+        } else if (code === 'not_helper') {
+          toast.error(t('wishlist.helpers.toast.helperGone'), 'lost');
           await load();
         } else {
           toast.error(t(errorKey));
@@ -234,8 +265,72 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
     }
   };
 
+  /** A helper steps down: the list is no longer theirs to open. */
+  const leaveList = async () => {
+    if (!wishlistId || !data) return;
+    const title = data.wishlist.title;
+    // not_helper: the creator already removed them, so they are off the list either way.
+    let alreadyOff = false;
+    const ok = await run(async () => {
+      try {
+        await OrganizerService.leave(wishlistId);
+      } catch (error) {
+        if (errorCode(error) !== 'not_helper') throw error;
+        alreadyOff = true;
+      }
+    }, 'wishlist.helper.toast.leaveFailed');
+    if (ok && alreadyOff) {
+      toast.error(t('wishlist.helper.toast.notOnList'), 'lost');
+      navigate('/');
+    } else if (ok) {
+      toast.success(t('wishlist.helper.toast.left', { title }), 'teary');
+      navigate('/');
+    }
+  };
+
+  /** Self-managed lists only. Returns whether the invitation went out (the form clears on true). */
+  const inviteHelper = async (email: string): Promise<'invalid_email' | boolean> => {
+    const trimmed = email.trim();
+    if (!wishlistId) return false;
+    if (!/^\S+@\S+\.\S+$/.test(trimmed)) return 'invalid_email';
+    let emailSent = true;
+    const ok = await run(async () => {
+      emailSent = (await WishlistService.invite(wishlistId, trimmed)).emailSent;
+    }, 'wishlist.toast.inviteFailed');
+    if (ok) {
+      if (emailSent) toast.success(t('wishlist.helpers.toast.invited', { email: trimmed }), 'wink');
+      else toast.error(t('wishlist.share.sentFailedLead', { email: trimmed }));
+      await load();
+    }
+    return ok;
+  };
+
+  const withdrawHelperInvite = async (invitationId: string) => {
+    const ok = await run(
+      () => WishlistService.revokeInvitation(invitationId),
+      'wishlist.toast.revokeFailed',
+    );
+    if (ok) {
+      toast.success(t('wishlist.toast.inviteRevoked'), 'teary');
+      await load();
+    }
+  };
+
+  const removeHelper = async (adminId: string) => {
+    if (!wishlistId) return;
+    const ok = await run(
+      () => OrganizerService.removeHelper(wishlistId, adminId),
+      'wishlist.helpers.toast.removeFailed',
+    );
+    if (ok) {
+      toast.success(t('wishlist.helpers.toast.removed'), 'teary');
+      await load();
+    }
+  };
+
   return {
     loading,
+    helpers,
     data,
     groups,
     requests,
@@ -249,6 +344,7 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
     openEdit: (itemId: string) => setSheet({ type: 'edit', itemId }),
     openShare: () => setSheet({ type: 'share' }),
     openSettings: () => setSheet({ type: 'settings' }),
+    openHelpers: () => setSheet({ type: 'helpers' }),
     closeSheet,
     addItem,
     saveItem,
@@ -262,5 +358,9 @@ export const useOrganizerWishlist = (wishlistId: string | undefined, onModeChang
     saveSettings,
     deleteList,
     archiveList,
+    leaveList,
+    inviteHelper,
+    withdrawHelperInvite,
+    removeHelper,
   };
 };

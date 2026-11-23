@@ -23,7 +23,13 @@ export const InvitationCard = ({ invitation, busy, onAccept, onDecline }: Invita
       <div className="flex flex-col gap-1">
         <h3 className="text-[17px] font-semibold leading-[22px] text-gh-ink">{invitation.title}</h3>
         <p className="text-[14px] leading-5 text-gh-ink-2">
-          {name ? t('home.invitation.text', { name }) : t('home.invitation.textNoName')}
+          {invitation.selfManaged
+            ? name
+              ? t('home.invitation.helperText', { name })
+              : t('home.invitation.helperTextNoName')
+            : name
+              ? t('home.invitation.text', { name })
+              : t('home.invitation.textNoName')}
         </p>
       </div>
       {declining ? (
@@ -53,7 +59,7 @@ export const InvitationCard = ({ invitation, busy, onAccept, onDecline }: Invita
             onClick={() => onAccept(invitation.id)}
             className="h-[52px] flex-1 gap-2 rounded-gh-md text-[16px] font-semibold md:flex-none md:px-6">
             <Check aria-hidden="true" />
-            {t('home.invitation.accept')}
+            {t(invitation.selfManaged ? 'home.invitation.helperAccept' : 'home.invitation.accept')}
           </Button>
         </div>
       )}
