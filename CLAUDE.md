@@ -18,8 +18,8 @@ npx supabase start   # Start local Docker-based Supabase
 npx supabase stop
 npx supabase db reset            # Wipe local DB and re-apply all migrations
 npx supabase db diff --file name # Generate migration from local schema changes
-npx supabase db push             # Apply migrations to production
-npx supabase db pull             # Sync production schema to local
+npx supabase db push --remote    # Apply migrations to production (CLI 3.x targets local without --remote)
+npx supabase db pull --remote    # Sync production schema to local
 ```
 
 There is no frontend test suite. Database RLS and RPC tests (pgTAP) live in `supabase/tests/`: `npm run test:db` (needs the local stack: `npx supabase start`, then `npx supabase db reset`).
