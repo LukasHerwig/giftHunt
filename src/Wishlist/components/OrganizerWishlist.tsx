@@ -121,10 +121,17 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
                 <Users aria-hidden="true" />
                 {t('wishlist.helper.button')}
                 {helperNames.length > 0 && (
-                  <span role="img" aria-label={stackLabel} className="flex -space-x-1.5">
-                    {helperNames.slice(0, 3).map((name, index) => (
-                      <InitialAvatar key={index} name={name} size="sm" className="ring-2 ring-gh-surface-100" />
+                  <span role="img" aria-label={stackLabel} className="flex items-center gap-1">
+                    {helperNames.slice(0, 2).map((name, index) => (
+                      <InitialAvatar key={index} name={name} size="sm" className="h-7 w-7 ring-2 ring-gh-surface-100" />
                     ))}
+                    {helperNames.length > 2 && (
+                      <span
+                        aria-hidden="true"
+                        className="flex h-7 min-w-7 items-center justify-center rounded-full bg-gh-surface-300 px-1.5 text-[12px] font-semibold text-gh-ink">
+                        +{helperNames.length - 2}
+                      </span>
+                    )}
                   </span>
                 )}
               </Button>
