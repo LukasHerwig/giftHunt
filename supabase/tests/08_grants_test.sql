@@ -55,6 +55,7 @@ select set_eq(
     ('items_owner_insert'),
     ('items_owner_update'),
     ('items_owner_delete'),
+    ('items_helper_insert'),
     ('items_admin_select'),
     ('items_admin_update'),
     ('items_admin_delete'),

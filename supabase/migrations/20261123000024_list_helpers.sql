@@ -110,3 +110,116 @@ begin
   update admin_invitations set accepted = true, accepted_by = auth.uid() where id = p_invitation_id;
 end;
 $$;
+
+-- ============================================================================
+-- Task 2: what helpers may do
+-- A helper (extra wishlist_admins row on a self-managed list) may add, edit and
+-- delete items and remove claims. The share link, the list itself and
+-- invitations stay with the creator.
+-- ============================================================================
+
+create policy "items_helper_insert" on public.wishlist_items
+  for insert to authenticated
+  with check (public.is_wishlist_admin(wishlist_id)
+              and public.is_self_managed(wishlist_id)
+              and not public.wishlist_is_archived(wishlist_id));
+
+drop policy if exists "share_links_admin_insert" on public.share_links;
+drop policy if exists "share_links_admin_update" on public.share_links;
+drop policy if exists "share_links_admin_delete" on public.share_links;
+
+create policy "share_links_admin_insert" on public.share_links
+  for insert to authenticated
+  with check (public.is_wishlist_admin(wishlist_id) and created_by = auth.uid()
+              and not public.wishlist_is_archived(wishlist_id)
+              and (not public.is_self_managed(wishlist_id) or public.is_wishlist_owner(wishlist_id)));
+
+create policy "share_links_admin_update" on public.share_links
+  for update to authenticated
+  using (public.is_wishlist_admin(wishlist_id) and not public.wishlist_is_archived(wishlist_id)
+         and (not public.is_self_managed(wishlist_id) or public.is_wishlist_owner(wishlist_id)))
+  with check (public.is_wishlist_admin(wishlist_id) and not public.wishlist_is_archived(wishlist_id)
+              and (not public.is_self_managed(wishlist_id) or public.is_wishlist_owner(wishlist_id)));
+
+create policy "share_links_admin_delete" on public.share_links
+  for delete to authenticated
+  using (public.is_wishlist_admin(wishlist_id)
+         and (not public.is_self_managed(wishlist_id) or public.is_wishlist_owner(wishlist_id)));
+
+-- Guest page: on a self-managed list the organizer shown is the creator.
+create or replace function public.get_shared_wishlist(p_token text)
+returns json language plpgsql stable security definer set search_path = public as $$
+declare
+  v_link share_links%rowtype;
+begin
+  select * into v_link from share_links where token = p_token;
+  if not found then
+    raise exception 'invalid_link' using errcode = 'P0002';
+  end if;
+  if not v_link.is_active then
+    raise exception 'inactive_link' using errcode = 'P0001';
+  end if;
+  if v_link.expires_at is not null and v_link.expires_at < now() then
+    raise exception 'expired_link' using errcode = 'P0001';
+  end if;
+
+  return json_build_object(
+    'wishlist', (
+      select json_build_object(
+        'title', w.title,
+        'description', w.description,
+        'enable_links', w.enable_links,
+        'enable_price', w.enable_price,
+        'enable_priority', w.enable_priority,
+        'creator_name', p.full_name,
+        'organizer_name', (
+          select pa.full_name
+          from wishlist_admins wa
+          join profiles pa on pa.id = wa.admin_id
+          where wa.wishlist_id = w.id
+            and (not w.is_self_managed or wa.admin_id = w.creator_id)))
+      from wishlists w
+      left join profiles p on p.id = w.creator_id
+      where w.id = v_link.wishlist_id),
+    'items', coalesce((
+      select json_agg(json_build_object(
+          'id', i.id,
+          'title', i.title,
+          'description', i.description,
+          'link', i.link,
+          'url', i.url,
+          'price_range', i.price_range,
+          'priority', i.priority,
+          'is_taken', i.is_taken,
+          'is_giftcard', i.is_giftcard,
+          'claim_cap', i.claim_cap,
+          'claim_count', (select count(*) from item_claims c where c.item_id = i.id))
+        order by i.priority desc nulls first, i.created_at desc)
+      from wishlist_items i
+      where i.wishlist_id = v_link.wishlist_id), '[]'::json),
+    'share_link', json_build_object(
+      'wishlist_id', v_link.wishlist_id,
+      'expires_at', v_link.expires_at)
+  );
+end;
+$$;
+
+create or replace function public.get_invitation_by_token(p_token text)
+returns json language sql stable security definer set search_path = public as $$
+  select json_build_object(
+    'id', ai.id,
+    'email', ai.email,
+    'accepted', ai.accepted,
+    'expires_at', ai.expires_at,
+    'invited_by', ai.invited_by,
+    'wishlist_id', ai.wishlist_id,
+    'wishlist_title', w.title,
+    'wishlist_description', w.description,
+    'is_self_managed', w.is_self_managed,
+    'inviter_email', p.email,
+    'inviter_full_name', p.full_name)
+  from admin_invitations ai
+  join wishlists w on w.id = ai.wishlist_id
+  left join profiles p on p.id = ai.invited_by
+  where ai.invitation_token = p_token;
+$$;
