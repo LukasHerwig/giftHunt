@@ -260,7 +260,8 @@ grant execute on function public.remove_wishlist_helper(uuid, uuid) to authentic
 create or replace function public.leave_wishlist(p_wishlist_id uuid)
 returns void language plpgsql volatile security definer set search_path = public as $$
 begin
-  if public.is_wishlist_owner(p_wishlist_id) then
+  -- Ordinary lists: the organizer is removed by the owner (remove_wishlist_admin cleans up).
+  if not public.is_self_managed(p_wishlist_id) or public.is_wishlist_owner(p_wishlist_id) then
     raise exception 'not_helper' using errcode = 'P0002';
   end if;
 

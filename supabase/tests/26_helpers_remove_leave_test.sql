@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(27);
+select plan(31);
 \ir _seed.psql
 
 \set u_help1 '11111111-0000-0000-0000-000000000006'
@@ -106,6 +106,24 @@ select throws_ok($$ select public.accept_invitation('cccccccc-0000-0000-0000-000
   'P0002', 'invitation_not_found', 'a pending invitation cannot be accepted after archive');
 reset role;
 select is((select count(*)::int from public.wishlist_admins where wishlist_id = :'w3'), 1, 'only the creator row is left');
+
+-- Archived list: removing a helper is locked; a stranger cannot leave
+:as_self
+select throws_ok($$ select public.remove_wishlist_helper('aaaaaaaa-0000-0000-0000-000000000003', '11111111-0000-0000-0000-000000000006') $$,
+  'P0001', 'archived_locked', 'removing a helper on an archived list is locked');
+reset role;
+:as_stranger
+select throws_ok($$ select public.leave_wishlist('aaaaaaaa-0000-0000-0000-000000000003') $$,
+  'P0002', 'not_helper', 'a stranger cannot leave');
+reset role;
+
+-- Ordinary list: the organizer cannot leave, the row stays
+:as_admin
+select throws_ok($$ select public.leave_wishlist('aaaaaaaa-0000-0000-0000-000000000001') $$,
+  'P0002', 'not_helper', 'an ordinary-list organizer cannot leave');
+reset role;
+select is((select count(*)::int from public.wishlist_admins where wishlist_id = :'w1' and admin_id = :'u_admin'), 1,
+  'the organizer row on W1 is still there');
 
 select * from finish();
 rollback;
