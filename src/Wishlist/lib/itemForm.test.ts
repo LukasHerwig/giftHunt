@@ -4,6 +4,7 @@ import {
   buildProposal,
   emptyItemForm,
   formFromItem,
+  itemFormFields,
   priorityName,
   toItemRow,
   validateItemForm,
@@ -108,4 +109,22 @@ test('priorityName maps 1-3 to low, medium, high and anything else to null', () 
   assert.equal(priorityName(3), 'high');
   assert.equal(priorityName(null), null);
   assert.equal(priorityName(0), null);
+});
+
+test('the form shows only the fields the list has turned on', () => {
+  assert.deepEqual(
+    itemFormFields({ enable_links: true, enable_price: false, enable_priority: false }),
+    { link: true, price: false, priority: false },
+  );
+  assert.deepEqual(
+    itemFormFields({ enable_links: false, enable_price: true, enable_priority: true }),
+    { link: false, price: true, priority: true },
+  );
+});
+
+test('a setting that was never saved counts as off, as on the shared page', () => {
+  assert.deepEqual(
+    itemFormFields({ enable_links: null, enable_price: null, enable_priority: null }),
+    { link: false, price: false, priority: false },
+  );
 });

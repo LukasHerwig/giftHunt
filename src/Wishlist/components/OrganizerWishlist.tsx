@@ -233,6 +233,7 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
           organizerName={null}
           pending={false}
           listTitle={list.title}
+          settings={list}
           busy={busy}
           onSubmit={wishlist.addItem}
           onRemove={() => undefined}
@@ -261,6 +262,7 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
           organizerName={null}
           pending={false}
           listTitle={list.title}
+          settings={list}
           note={
             hasClaims(selected.item, selected.claims)
               ? t('wishlist.org.editNote', { names: takerNames(selected.item, selected.claims).join(', ') })

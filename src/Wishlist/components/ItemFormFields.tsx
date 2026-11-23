@@ -3,6 +3,7 @@ import { Chip } from '@/components/gh/Chip';
 import { SwitchRow } from '@/components/gh/SwitchRow';
 import { TextArea } from '@/components/gh/TextArea';
 import { TextField } from '@/components/gh/TextField';
+import type { VisibleItemFields } from '../lib/itemForm';
 import type { ItemFormData, ItemFormError } from '../types';
 
 const PRIORITIES: { value: number | null; key: 'none' | 'low' | 'medium' | 'high' }[] = [
@@ -15,6 +16,8 @@ const PRIORITIES: { value: number | null; key: 'none' | 'low' | 'medium' | 'high
 interface ItemFormFieldsProps {
   form: ItemFormData;
   mode: 'add' | 'edit';
+  /** Which optional fields the list's settings turn on. A hidden field keeps its value. */
+  fields: VisibleItemFields;
   error: ItemFormError | null;
   resolving: boolean;
   onChange: (patch: Partial<ItemFormData>) => void;
@@ -22,7 +25,7 @@ interface ItemFormFieldsProps {
 }
 
 /** Title first, everything else optional. Shared by adding and editing. */
-export const ItemFormFields = ({ form, mode, error, resolving, onChange, onLinkBlur }: ItemFormFieldsProps) => {
+export const ItemFormFields = ({ form, mode, fields, error, resolving, onChange, onLinkBlur }: ItemFormFieldsProps) => {
   const { t } = useTranslation();
   const optional = t('wishlist.form.optional');
   const titleError =
@@ -41,40 +44,46 @@ export const ItemFormFields = ({ form, mode, error, resolving, onChange, onLinkB
         error={titleError}
         autoComplete="off"
       />
-      <TextField
-        label={`${t('wishlist.form.link')} ${optional}`}
-        inputMode="url"
-        autoCapitalize="none"
-        autoComplete="off"
-        value={form.link}
-        // A new link means a new picture: clear the old one so it is fetched again.
-        onChange={(e) => onChange({ link: e.target.value, url: '' })}
-        onBlur={onLinkBlur}
-        help={resolving ? t('wishlist.form.linkLoading') : t('wishlist.form.linkHelp')}
-      />
-      <TextField
-        label={`${t('wishlist.form.price')} ${optional}`}
-        value={form.priceRange}
-        onChange={(e) => onChange({ priceRange: e.target.value })}
-        autoComplete="off"
-      />
+      {fields.link && (
+        <TextField
+          label={`${t('wishlist.form.link')} ${optional}`}
+          inputMode="url"
+          autoCapitalize="none"
+          autoComplete="off"
+          value={form.link}
+          // A new link means a new picture: clear the old one so it is fetched again.
+          onChange={(e) => onChange({ link: e.target.value, url: '' })}
+          onBlur={onLinkBlur}
+          help={resolving ? t('wishlist.form.linkLoading') : t('wishlist.form.linkHelp')}
+        />
+      )}
+      {fields.price && (
+        <TextField
+          label={`${t('wishlist.form.price')} ${optional}`}
+          value={form.priceRange}
+          onChange={(e) => onChange({ priceRange: e.target.value })}
+          autoComplete="off"
+        />
+      )}
       <TextArea
         label={`${t('wishlist.form.description')} ${optional}`}
         value={form.description}
         onChange={(e) => onChange({ description: e.target.value })}
       />
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-[12px] font-semibold leading-4 tracking-[0.2px] text-gh-ink-2">
-          {t('wishlist.form.priority')} <span className="font-normal text-gh-muted">{optional}</span>
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {PRIORITIES.map(({ value, key }) => (
-            <Chip key={key} selected={form.priority === value} onClick={() => onChange({ priority: value })}>
-              {t(`wishlist.form.prio.${key}`)}
-            </Chip>
-          ))}
-        </div>
-      </fieldset>
+      {fields.priority && (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-2 text-[12px] font-semibold leading-4 tracking-[0.2px] text-gh-ink-2">
+            {t('wishlist.form.priority')} <span className="font-normal text-gh-muted">{optional}</span>
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            {PRIORITIES.map(({ value, key }) => (
+              <Chip key={key} selected={form.priority === value} onClick={() => onChange({ priority: value })}>
+                {t(`wishlist.form.prio.${key}`)}
+              </Chip>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <div className="overflow-hidden rounded-gh-lg border border-gh-line bg-gh-surface-200">
         <SwitchRow
           label={t('wishlist.form.giftCard')}

@@ -166,6 +166,7 @@ export const OwnerWishlist = ({ wishlistId, onModeChange }: OwnerWishlistProps) 
           organizerName={wishlist.organizerName}
           pending={false}
           listTitle={list.title}
+          settings={list}
           busy={busy}
           onSubmit={wishlist.addItem}
           onRemove={() => undefined}
@@ -181,6 +182,7 @@ export const OwnerWishlist = ({ wishlistId, onModeChange }: OwnerWishlistProps) 
           organizerName={wishlist.organizerName}
           pending={wishlist.pendingItemIds.has(selectedItem.id)}
           listTitle={list.title}
+          settings={list}
           busy={busy}
           onSubmit={(form) => wishlist.saveItem(selectedItem, form)}
           onRemove={() => wishlist.removeItem(selectedItem)}
