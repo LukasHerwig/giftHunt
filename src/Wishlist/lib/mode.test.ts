@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveMode } from './mode.ts';
+import { leavesWhenListGone, resolveMode } from './mode.ts';
 
 const list = (over: Partial<{ creator_id: string; is_self_managed: boolean; archived_at: string | null }> = {}) => ({
   creator_id: 'owner',
@@ -60,4 +60,15 @@ test('a helper has no mode on an archived list', () => {
     }),
     'none',
   );
+});
+
+test('a helper or organizer whose list is gone on reload leaves it', () => {
+  assert.equal(leavesWhenListGone('helper', 'wishlist_not_found'), true);
+  assert.equal(leavesWhenListGone('organizer', 'wishlist_not_found'), true);
+});
+
+test('the creator stays, and other load errors never leave the list', () => {
+  assert.equal(leavesWhenListGone('self', 'wishlist_not_found'), false);
+  assert.equal(leavesWhenListGone('helper', ''), false);
+  assert.equal(leavesWhenListGone('organizer', 'Failed to fetch'), false);
 });

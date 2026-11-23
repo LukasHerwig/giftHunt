@@ -235,7 +235,12 @@ export class WishlistService {
   }
 
   static async revokeInvitation(invitationId: string): Promise<void> {
-    const { error } = await supabase.from('admin_invitations').delete().eq('id', invitationId);
+    // Only a pending invitation: one accepted a moment ago stays (removing a helper is its own action).
+    const { error } = await supabase
+      .from('admin_invitations')
+      .delete()
+      .eq('id', invitationId)
+      .eq('accepted', false);
     if (error) throw error;
   }
 

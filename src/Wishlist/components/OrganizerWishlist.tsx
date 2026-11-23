@@ -9,6 +9,7 @@ import { EmptyState } from '@/components/gh/EmptyState';
 import { ItemRow } from '@/components/gh/ItemRow';
 import { SectionHeader } from '@/components/gh/SectionHeader';
 import { Segmented } from '@/components/gh/Segmented';
+import { joinNames } from '@/Home/lib/helpers';
 import { useOrganizerWishlist } from '../hooks/useOrganizerWishlist';
 import { priorityName } from '../lib/itemForm';
 import { hasClaims, takerNames } from '../lib/organizerItems';
@@ -31,8 +32,8 @@ interface OrganizerWishlistProps {
 }
 
 export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerWishlistProps) => {
-  const { t } = useTranslation();
-  const wishlist = useOrganizerWishlist(wishlistId, onModeChange, mode === 'self');
+  const { t, i18n } = useTranslation();
+  const wishlist = useOrganizerWishlist(wishlistId, onModeChange, mode);
   const { data, loading, sheet, busy, segment, groups } = wishlist;
 
   if (loading) return <WishlistLoading />;
@@ -59,10 +60,7 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
   const helperNames = wishlist.helpers.flatMap((h) => (h.kind === 'helper' ? [h.name] : []));
   const stackLabel = t('wishlist.helpers.stackLabel', {
     count: helperNames.length,
-    names:
-      helperNames.length > 1
-        ? `${helperNames.slice(0, -1).join(', ')} ${t('wishlist.helpers.and')} ${helperNames[helperNames.length - 1]}`
-        : helperNames.join(''),
+    names: joinNames(helperNames, i18n.language, t('wishlist.helpers.and')),
   });
 
   const rowStatus = ({ item, claims }: ItemWithClaims) => {

@@ -5,6 +5,7 @@ import { toast } from '@/lib/toast';
 import { errorCode } from '../lib/errorCode';
 import type { HelperEntry } from '../lib/helpers';
 import { validateItemForm } from '../lib/itemForm';
+import { leavesWhenListGone } from '../lib/mode';
 import { splitItems } from '../lib/organizerItems';
 import { toOrganizerRequests } from '../lib/organizerRequests';
 import { OrganizerService, shareUrl } from '../services/OrganizerService';
@@ -16,6 +17,7 @@ import type {
   OrganizerData,
   OrganizerItem,
   OrganizerRequest,
+  Mode,
   OrganizerSheet,
   SettingsValues,
 } from '../types';
@@ -25,9 +27,10 @@ export type Segment = 'available' | 'taken';
 export const useOrganizerWishlist = (
   wishlistId: string | undefined,
   onModeChange?: () => void,
-  /** Helpers are loaded only for the creator of a self-managed list. */
-  loadsHelpers = false,
+  mode: Mode = 'organizer',
 ) => {
+  /** Helpers are loaded only for the creator of a self-managed list. */
+  const loadsHelpers = mode === 'self';
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [data, setData] = useState<OrganizerData | null>(null);
@@ -53,11 +56,17 @@ export const useOrganizerWishlist = (
       }
     } catch (error) {
       console.error('Load organizer wishlist error:', error);
+      if (leavesWhenListGone(mode, errorCode(error))) {
+        // Removed from the list while the screen was open: the page resolves its mode again and goes Home.
+        toast.error(t('wishlist.helper.toast.notOnList'), 'lost');
+        onModeChange?.();
+        return;
+      }
       toast.error(t('wishlist.org.toast.loadFailed'));
     } finally {
       setLoading(false);
     }
-  }, [wishlistId, loadsHelpers, t]);
+  }, [wishlistId, loadsHelpers, mode, onModeChange, t]);
 
   useEffect(() => {
     void load();
