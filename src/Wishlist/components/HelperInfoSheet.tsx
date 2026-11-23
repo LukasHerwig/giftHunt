@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { InitialAvatar } from '@/components/gh/InitialAvatar';
 import { ConfirmBlock } from '@/components/gh/ConfirmBlock';
 import { ResponsiveSheet } from '@/components/ResponsiveSheet';
 
@@ -29,11 +30,7 @@ export const HelperInfoSheet = ({ ownerName, listTitle, busy, onLeave, onClose }
       closeLabel={t('wishlist.form.close')}
       showTitleOnMobile>
       <div className="flex items-center gap-3">
-        <span
-          aria-hidden="true"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gh-surface-300 text-[15px] font-semibold text-gh-ink">
-          {ownerName.trim().charAt(0).toUpperCase()}
-        </span>
+        <InitialAvatar name={ownerName} />
         <div className="flex min-w-0 flex-col">
           <span className="truncate text-[16px] font-semibold leading-6 text-gh-ink">{ownerName}</span>
           <span className="text-[13px] leading-[18px] text-gh-muted">{t('wishlist.helper.sheet.owner')}</span>

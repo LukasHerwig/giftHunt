@@ -461,8 +461,41 @@
       },
       "toast": {
         "left": "Du har lämnat {{title}}",
-        "leaveFailed": "Det gick inte att lämna listan. Försök igen."
+        "leaveFailed": "Det gick inte att lämna listan. Försök igen.",
+        "notOnList": "Du är inte längre med på listan"
       }
+    },
+    "helpers": {
+      "title": "Hjälpare",
+      "lead": "Hjälpare lägger till och ändrar önskningar och ser vad som är taget. Listan, länken och inställningarna är dina.",
+      "sectionHelping": "Hjälper till",
+      "sectionWaiting": "Väntar på svar",
+      "invited": "Inbjuden",
+      "remove": "Ta bort",
+      "withdraw": "Dra tillbaka",
+      "removeQuestion": "Ta bort {{name}} som hjälpare?",
+      "removeContext": "{{name}} kommer inte längre åt listan. Önskningarna och det som är taget ligger kvar.",
+      "removeConfirm": "Ta bort {{name}}",
+      "withdrawQuestion": "Dra tillbaka inbjudan till {{email}}?",
+      "withdrawContext": "Länken i mejlet slutar fungera.",
+      "emptyTitle": "Ingen hjälper till än",
+      "emptyText": "Bjud in någon som ska fixa listan med dig, till exempel en partner eller en mor- eller farförälder.",
+      "inviteLabel": "Bjud in en hjälpare",
+      "emailPlaceholder": "namn@exempel.se",
+      "invite": "Skicka inbjudan",
+      "inviteCaption": "Hen får ett mejl med en länk. Inbjudan gäller i 7 dagar.",
+      "toast": {
+        "invited": "Inbjudan är skickad till {{email}}",
+        "removed": "Hjälparen är borttagen",
+        "removeFailed": "Det gick inte att ta bort hjälparen. Försök igen.",
+        "invitePending": "Det finns redan en inbjudan till den adressen.",
+        "inviteSelf": "Du kan inte bjuda in dig själv.",
+        "alreadyHelper": "Den personen hjälper redan till.",
+        "helperGone": "Den personen hjälper inte längre till."
+      },
+      "stackLabel_one": "{{names}} hjälper till",
+      "stackLabel_other": "{{names}} hjälper till",
+      "and": "och"
     }
   },
   "home": {

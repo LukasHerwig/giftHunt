@@ -461,8 +461,41 @@
       },
       "toast": {
         "left": "You left {{title}}",
-        "leaveFailed": "Could not leave the list. Try again."
+        "leaveFailed": "Could not leave the list. Try again.",
+        "notOnList": "You are no longer on this list"
       }
+    },
+    "helpers": {
+      "title": "Helpers",
+      "lead": "Helpers add and edit wishes and see what is taken. The list, the link and the settings are yours.",
+      "sectionHelping": "Helping",
+      "sectionWaiting": "Waiting for an answer",
+      "invited": "Invited",
+      "remove": "Remove",
+      "withdraw": "Withdraw",
+      "removeQuestion": "Remove {{name}} as a helper?",
+      "removeContext": "{{name}} will no longer have access to the list. The wishes and what is taken stay.",
+      "removeConfirm": "Remove {{name}}",
+      "withdrawQuestion": "Withdraw the invitation to {{email}}?",
+      "withdrawContext": "The link in the e-mail stops working.",
+      "emptyTitle": "No one is helping yet",
+      "emptyText": "Invite someone to run the list with you, like a partner or a grandparent.",
+      "inviteLabel": "Invite a helper",
+      "emailPlaceholder": "name@example.com",
+      "invite": "Send invitation",
+      "inviteCaption": "They get an email with a link. The invitation is valid for 7 days.",
+      "toast": {
+        "invited": "Invitation sent to {{email}}",
+        "removed": "The helper is removed",
+        "removeFailed": "Could not remove the helper. Try again.",
+        "invitePending": "There is already an invitation to that address.",
+        "inviteSelf": "You cannot invite yourself.",
+        "alreadyHelper": "That person is already helping.",
+        "helperGone": "That person is no longer helping."
+      },
+      "stackLabel_one": "{{names}} is helping",
+      "stackLabel_other": "{{names}} are helping",
+      "and": "and"
     }
   },
   "home": {

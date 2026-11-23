@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Plus, Settings, Share2, Users } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import { Button } from '@/components/ui/button';
+import { InitialAvatar } from '@/components/gh/InitialAvatar';
 import { EmptyState } from '@/components/gh/EmptyState';
 import { ItemRow } from '@/components/gh/ItemRow';
 import { SectionHeader } from '@/components/gh/SectionHeader';
@@ -12,6 +13,7 @@ import { useOrganizerWishlist } from '../hooks/useOrganizerWishlist';
 import { priorityName } from '../lib/itemForm';
 import { hasClaims, takerNames } from '../lib/organizerItems';
 import type { ItemWithClaims } from '../types';
+import { HelpersSheet } from './HelpersSheet';
 import { HelperInfoSheet } from './HelperInfoSheet';
 import { ItemFormSheet } from './ItemFormSheet';
 import { OrganizerItemSheet } from './OrganizerItemSheet';
@@ -30,7 +32,7 @@ interface OrganizerWishlistProps {
 
 export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerWishlistProps) => {
   const { t } = useTranslation();
-  const wishlist = useOrganizerWishlist(wishlistId, onModeChange);
+  const wishlist = useOrganizerWishlist(wishlistId, onModeChange, mode === 'self');
   const { data, loading, sheet, busy, segment, groups } = wishlist;
 
   if (loading) return <WishlistLoading />;
@@ -53,6 +55,15 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
   const entry = (itemId: string): ItemWithClaims | undefined =>
     [...groups.available, ...groups.taken].find((e) => e.item.id === itemId);
   const selected = sheet && 'itemId' in sheet ? entry(sheet.itemId) : undefined;
+
+  const helperNames = wishlist.helpers.flatMap((h) => (h.kind === 'helper' ? [h.name] : []));
+  const stackLabel = t('wishlist.helpers.stackLabel', {
+    count: helperNames.length,
+    names:
+      helperNames.length > 1
+        ? `${helperNames.slice(0, -1).join(', ')} ${t('wishlist.helpers.and')} ${helperNames[helperNames.length - 1]}`
+        : helperNames.join(''),
+  });
 
   const rowStatus = ({ item, claims }: ItemWithClaims) => {
     if (segment === 'available') return { kind: 'available' as const, label: t('publicWishlist.statusAvailable') };
@@ -101,7 +112,7 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
               <Share2 aria-hidden="true" />
               {t('wishlist.shareButton')}
             </Button>
-            {helper && (
+            {adds && (
               <Button
                 type="button"
                 variant="outline"
@@ -109,6 +120,13 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
                 className="h-12 gap-2 rounded-gh-md px-4 text-[16px] font-semibold">
                 <Users aria-hidden="true" />
                 {t('wishlist.helper.button')}
+                {helperNames.length > 0 && (
+                  <span role="img" aria-label={stackLabel} className="flex -space-x-1.5">
+                    {helperNames.slice(0, 3).map((name, index) => (
+                      <InitialAvatar key={index} name={name} size="sm" className="ring-2 ring-gh-surface-100" />
+                    ))}
+                  </span>
+                )}
               </Button>
             )}
             {helper && <span className="hidden md:inline-flex">{addButton('')}</span>}
@@ -268,6 +286,17 @@ export const OrganizerWishlist = ({ wishlistId, mode, onModeChange }: OrganizerW
           listTitle={list.title}
           busy={busy}
           onLeave={wishlist.leaveList}
+          onClose={wishlist.closeSheet}
+        />
+      )}
+      {sheet?.type === 'helpers' && self && (
+        <HelpersSheet
+          helpers={wishlist.helpers}
+          listTitle={list.title}
+          busy={busy}
+          onInvite={wishlist.inviteHelper}
+          onWithdraw={wishlist.withdrawHelperInvite}
+          onRemove={wishlist.removeHelper}
           onClose={wishlist.closeSheet}
         />
       )}
