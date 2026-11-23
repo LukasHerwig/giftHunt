@@ -223,3 +223,99 @@ returns json language sql stable security definer set search_path = public as $$
   left join profiles p on p.id = ai.invited_by
   where ai.invitation_token = p_token;
 $$;
+
+-- ============================================================================
+-- Removing and leaving
+-- ============================================================================
+
+-- The creator removes one helper. Share link, items, taken status and claims stay.
+create or replace function public.remove_wishlist_helper(p_wishlist_id uuid, p_admin_id uuid)
+returns void language plpgsql volatile security definer set search_path = public as $$
+begin
+  if not public.is_wishlist_owner(p_wishlist_id) then
+    raise exception 'not_owner' using errcode = '42501';
+  end if;
+  if not public.is_self_managed(p_wishlist_id) then
+    raise exception 'not_self_managed' using errcode = 'P0001';
+  end if;
+  if public.wishlist_is_archived(p_wishlist_id) then
+    raise exception 'archived_locked' using errcode = 'P0001';
+  end if;
+  if p_admin_id = auth.uid() then
+    raise exception 'cannot_remove_creator' using errcode = 'P0001';
+  end if;
+
+  delete from wishlist_admins where wishlist_id = p_wishlist_id and admin_id = p_admin_id;
+  if not found then
+    raise exception 'not_helper' using errcode = 'P0002';
+  end if;
+  delete from admin_invitations where wishlist_id = p_wishlist_id and accepted_by = p_admin_id;
+end;
+$$;
+
+revoke execute on function public.remove_wishlist_helper(uuid, uuid) from public, anon;
+grant execute on function public.remove_wishlist_helper(uuid, uuid) to authenticated, service_role;
+
+-- A helper leaves. The creator is not a helper, so for them this is not_helper.
+create or replace function public.leave_wishlist(p_wishlist_id uuid)
+returns void language plpgsql volatile security definer set search_path = public as $$
+begin
+  if public.is_wishlist_owner(p_wishlist_id) then
+    raise exception 'not_helper' using errcode = 'P0002';
+  end if;
+
+  delete from wishlist_admins where wishlist_id = p_wishlist_id and admin_id = auth.uid();
+  if not found then
+    raise exception 'not_helper' using errcode = 'P0002';
+  end if;
+  delete from admin_invitations where wishlist_id = p_wishlist_id and accepted_by = auth.uid();
+end;
+$$;
+
+revoke execute on function public.leave_wishlist(uuid) from public, anon;
+grant execute on function public.leave_wishlist(uuid) to authenticated, service_role;
+
+-- remove_wishlist_admin is for ordinary lists only; a self-managed list uses
+-- remove_wishlist_helper. Otherwise as in 20261023000023_archive_wishlists.sql.
+create or replace function public.remove_wishlist_admin(p_wishlist_id uuid)
+returns json language plpgsql volatile security definer set search_path = public as $$
+declare
+  v_email text;
+  v_had_links boolean;
+begin
+  if not public.is_wishlist_owner(p_wishlist_id) then
+    raise exception 'not_owner' using errcode = '42501';
+  end if;
+  if public.wishlist_is_archived(p_wishlist_id) then
+    raise exception 'archived_locked' using errcode = 'P0001';
+  end if;
+  if public.is_self_managed(p_wishlist_id) then
+    raise exception 'self_managed' using errcode = 'P0001';
+  end if;
+
+  select p.email into v_email
+  from wishlist_admins wa
+  join profiles p on p.id = wa.admin_id
+  where wa.wishlist_id = p_wishlist_id;
+
+  with deleted as (
+    delete from share_links where wishlist_id = p_wishlist_id returning 1
+  )
+  select count(*) > 0 into v_had_links from deleted;
+
+  update wishlist_items
+  set is_taken = false, taken_by_name = null, taken_at = null
+  where wishlist_id = p_wishlist_id and is_taken;
+
+  delete from wishlist_admins where wishlist_id = p_wishlist_id;
+
+  delete from admin_invitations where wishlist_id = p_wishlist_id;
+
+  -- Proposals made to the removed organizer must not be approved by a later one.
+  update item_change_requests
+  set status = 'withdrawn', resolved_by = auth.uid(), resolved_at = now()
+  where wishlist_id = p_wishlist_id and status = 'pending';
+
+  return json_build_object('admin_email', v_email, 'had_share_links', v_had_links);
+end;
+$$;

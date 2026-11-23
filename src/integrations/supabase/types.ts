@@ -25,14 +25,14 @@ export type Database = {
           Tables: {
             "admin_invitations": {
                   Row: {
-                    "accepted": boolean,"created_at": string,"email": string,"expires_at": string | null,"id": string,"invitation_token": string,"invited_by": string,"wishlist_id": string
+                    "accepted": boolean,"accepted_by": string | null,"created_at": string,"email": string,"expires_at": string | null,"id": string,"invitation_token": string,"invited_by": string,"wishlist_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "accepted"?: boolean,"created_at"?: string,"email": string,"expires_at"?: string | null,"id"?: string,"invitation_token": string,"invited_by": string,"wishlist_id": string
+                    "accepted"?: boolean,"accepted_by"?: string | null,"created_at"?: string,"email": string,"expires_at"?: string | null,"id"?: string,"invitation_token": string,"invited_by": string,"wishlist_id": string
                   }
                   Update: {
-                    "accepted"?: boolean,"created_at"?: string,"email"?: string,"expires_at"?: string | null,"id"?: string,"invitation_token"?: string,"invited_by"?: string,"wishlist_id"?: string
+                    "accepted"?: boolean,"accepted_by"?: string | null,"created_at"?: string,"email"?: string,"expires_at"?: string | null,"id"?: string,"invitation_token"?: string,"invited_by"?: string,"wishlist_id"?: string
                   }
                   Relationships: [
                     {
@@ -44,24 +44,56 @@ isOneToOne: false
     },{
       foreignKeyName: "admin_invitations_wishlist_id_fkey"
       columns: ["wishlist_id"]
-isOneToOne: true
+isOneToOne: false
       referencedRelation: "wishlists"
       referencedColumns: ["id"]
     }
                   ]
                 },"item_change_requests": {
-  Row: {
-    "created_at": string,"created_by": string,"id": string,"item_id": string | null,"item_title": string,"kind": string,"message": string | null,"proposed": Json | null,"resolved_at": string | null,"resolved_by": string | null,"status": string,"wishlist_id": string
-  }
-  ComputedFields: never
-  Insert: {
-    "created_at"?: string,"created_by": string,"id"?: string,"item_id"?: string | null,"item_title": string,"kind": string,"message"?: string | null,"proposed"?: Json | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"wishlist_id": string
-  }
-  Update: {
-    "created_at"?: string,"created_by"?: string,"id"?: string,"item_id"?: string | null,"item_title"?: string,"kind"?: string,"message"?: string | null,"proposed"?: Json | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"wishlist_id"?: string
-  }
-  Relationships: []
-},"item_claims": {
+                  Row: {
+                    "created_at": string,"created_by": string,"id": string,"item_id": string | null,"item_title": string,"kind": string,"message": string | null,"proposed": Json | null,"resolved_at": string | null,"resolved_by": string | null,"status": string,"wishlist_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"created_by": string,"id"?: string,"item_id"?: string | null,"item_title": string,"kind": string,"message"?: string | null,"proposed"?: Json | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"wishlist_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"created_by"?: string,"id"?: string,"item_id"?: string | null,"item_title"?: string,"kind"?: string,"message"?: string | null,"proposed"?: Json | null,"resolved_at"?: string | null,"resolved_by"?: string | null,"status"?: string,"wishlist_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "item_change_requests_created_by_fkey"
+      columns: ["created_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "item_change_requests_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "wishlist_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "item_change_requests_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "wishlist_items_admin"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "item_change_requests_resolved_by_fkey"
+      columns: ["resolved_by"]
+isOneToOne: false
+      referencedRelation: "profiles"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "item_change_requests_wishlist_id_fkey"
+      columns: ["wishlist_id"]
+isOneToOne: false
+      referencedRelation: "wishlists"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"item_claims": {
                   Row: {
                     "claimed_at": string,"claimer_name": string,"created_at": string,"id": string,"item_id": string
                   }
@@ -78,6 +110,12 @@ isOneToOne: true
       columns: ["item_id"]
 isOneToOne: false
       referencedRelation: "wishlist_items"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "item_claims_item_id_fkey"
+      columns: ["item_id"]
+isOneToOne: false
+      referencedRelation: "wishlist_items_admin"
       referencedColumns: ["id"]
     }
                   ]
@@ -148,7 +186,7 @@ isOneToOne: false
     },{
       foreignKeyName: "wishlist_admins_wishlist_id_fkey"
       columns: ["wishlist_id"]
-isOneToOne: true
+isOneToOne: false
       referencedRelation: "wishlists"
       referencedColumns: ["id"]
     }
@@ -203,11 +241,26 @@ isOneToOne: false
           }
           Views: {
             "wishlist_items_admin": {
-              Row: {
-                "claim_cap": number | null,"created_at": string,"description": string | null,"id": string,"is_giftcard": boolean | null,"is_taken": boolean,"link": string | null,"price_range": string | null,"priority": number | null,"taken_at": string | null,"taken_by_name": string | null,"title": string,"updated_at": string,"url": string | null,"wishlist_id": string
-              }
-              Relationships: []
-            }
+                  Row: {
+                    "claim_cap": number | null,"created_at": string,"description": string | null,"id": string,"is_giftcard": boolean | null,"is_taken": boolean,"link": string | null,"price_range": string | null,"priority": number | null,"taken_at": string | null,"taken_by_name": string | null,"title": string,"updated_at": string,"url": string | null,"wishlist_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                           "claim_cap"?: number | null,"created_at"?: string | null,"description"?: string | null,"id"?: string | null,"is_giftcard"?: boolean | null,"is_taken"?: boolean | null,"link"?: string | null,"price_range"?: string | null,"priority"?: number | null,"taken_at"?: string | null,"taken_by_name"?: string | null,"title"?: string | null,"updated_at"?: string | null,"url"?: string | null,"wishlist_id"?: string | null
+                         }
+                        Update: {
+                           "claim_cap"?: number | null,"created_at"?: string | null,"description"?: string | null,"id"?: string | null,"is_giftcard"?: boolean | null,"is_taken"?: boolean | null,"link"?: string | null,"price_range"?: string | null,"priority"?: number | null,"taken_at"?: string | null,"taken_by_name"?: string | null,"title"?: string | null,"updated_at"?: string | null,"url"?: string | null,"wishlist_id"?: string | null
+                         }
+                        Relationships: [
+                    {
+      foreignKeyName: "wishlist_items_wishlist_id_fkey"
+      columns: ["wishlist_id"]
+isOneToOne: false
+      referencedRelation: "wishlists"
+      referencedColumns: ["id"]
+    }
+                  ]
+                }
           }
           Functions: {
             "accept_invitation":
@@ -222,6 +275,9 @@ isOneToOne: false
 "claim_shared_item":
 { Args: { "p_item_id": string,"p_name": string,"p_token": string }; Returns: undefined
                            },
+"decline_invitation":
+{ Args: { "p_invitation_id": string }; Returns: undefined
+                           },
 "get_invitation_by_token":
 { Args: { "p_token": string }; Returns: Json
                            },
@@ -229,6 +285,9 @@ isOneToOne: false
 { Args: { "p_token": string }; Returns: Json
                            },
 "has_pending_invitation":
+{ Args: { "p_wishlist_id": string }; Returns: boolean
+                           },
+"is_self_managed":
 { Args: { "p_wishlist_id": string }; Returns: boolean
                            },
 "is_wishlist_admin":
@@ -240,29 +299,35 @@ isOneToOne: false
 "item_wishlist_id":
 { Args: { "p_item_id": string }; Returns: string
                            },
-"request_item_change":
-{ Args: { "p_item_id": string,"p_kind": string,"p_proposed"?: Json }; Returns: string
-                           },
-"withdraw_change_request":
-{ Args: { "p_request_id": string }; Returns: undefined
-                           },
-"resolve_change_request":
-{ Args: { "p_request_id": string,"p_approve": boolean,"p_message"?: string }; Returns: undefined
-                           },
-"decline_invitation":
-{ Args: { "p_invitation_id": string }; Returns: undefined
+"leave_wishlist":
+{ Args: { "p_wishlist_id": string }; Returns: undefined
                            },
 "remove_wishlist_admin":
 { Args: { "p_wishlist_id": string }; Returns: Json
                            },
+"remove_wishlist_helper":
+{ Args: { "p_admin_id": string,"p_wishlist_id": string }; Returns: undefined
+                           },
+"request_item_change":
+{ Args: { "p_item_id": string,"p_kind": string,"p_proposed"?: Json }; Returns: string
+                           },
+"resolve_change_request":
+{ Args: { "p_approve": boolean,"p_message"?: string,"p_request_id": string }; Returns: undefined
+                           },
 "unarchive_wishlist":
 { Args: { "p_wishlist_id": string }; Returns: undefined
+                           },
+"validate_change_proposal":
+{ Args: { "p_proposed": Json }; Returns: undefined
                            },
 "wishlist_has_share_link":
 { Args: { "p_wishlist_id": string }; Returns: boolean
                            },
 "wishlist_is_archived":
 { Args: { "p_wishlist_id": string }; Returns: boolean
+                           },
+"withdraw_change_request":
+{ Args: { "p_request_id": string }; Returns: undefined
                            }
           }
           Enums: {
