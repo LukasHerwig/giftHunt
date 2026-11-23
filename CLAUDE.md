@@ -53,8 +53,8 @@ Features: `Home` (`/`: invitations, my lists, lists I organize, new list), `Wish
 | ------------------- | --------------------------------------------------------------------------------------------- |
 | `wishlists`         | Owned by `creator_id`; has `enable_links/price/priority` config flags; `archived_at` when archived |
 | `wishlist_items`    | Items with optional `link`, `price_range`, `priority`, `is_giftcard`, `is_taken`, `claim_cap` |
-| `wishlist_admins`   | Many admins per wishlist (admin can see taken-by names, untake)                               |
-| `admin_invitations` | Token-based invitations to become admin                                                       |
+| `wishlist_admins`   | One admin per ordinary list; several (helpers) on a self-managed list; sees taken-by names, untake |
+| `admin_invitations` | Token-based invitations to become admin or helper; `accepted_by` records who accepted         |
 | `share_links`       | Tokens enabling public `/shared/:token` access                                                |
 | `item_claims`       | Per-claimer records for gift card items (`id`, `item_id`, `claimer_name`, `claimed_at`)       |
 | `profiles`          | Auth user profiles                                                                            |
@@ -112,9 +112,10 @@ When `is_giftcard = true`, multiple people can claim the same item via `item_cla
 
 ### Admin system rules
 
-- One admin per wishlist (enforced by DB constraint).
+- One admin per ordinary wishlist (enforced by DB trigger, `23505`). A self-managed list can have several organizers, the creator and invited **helpers**, and several pending invitations (one per e-mail: unique on `wishlist_id, lower(email)` while pending).
 - Invitation workflow: creator sends invite → recipient gets email with token → acceptance creates `wishlist_admins` record + marks invitation accepted.
-- Hide the invite button when an admin already exists OR a pending invitation exists.
+- On an ordinary list, hide the invite button when an admin already exists OR a pending invitation exists. On a self-managed list the creator invites helpers from the Hjälpare sheet, withdraws invitations and removes helpers (`remove_wishlist_helper`: keeps the share link, taken status and claims).
+- A helper on a self-managed list has the invited organizer's rights (everything except adding items and settings), can copy the share link but not create or turn it off, and leaves through `leave_wishlist` (refuses ordinary lists and the creator: `not_helper`). The list shows on Home under "Listor jag hjälper till med".
 - A self-managed list (`is_self_managed = true`) lets the creator act as their own organizer on the same screen: add items, settings, share link, make free, remove a gift; no change requests.
 - An **archived** list (`archived_at` set) is read-only and visible only to its owner. `archive_wishlist` deletes the share link, invitations and organizer (the creator of a self-managed list keeps their own organizer row), drops waiting change requests and keeps items and claims; `unarchive_wishlist` restores a plain list, so the owner invites and shares again. `archived_at` changes only through those two functions.
 - An invited organizer cannot add items (the database refuses it): the owner decides what is on the list. The organizer can still edit, delete, make an item free and answer change requests.
